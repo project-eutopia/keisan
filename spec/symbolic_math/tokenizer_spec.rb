@@ -155,5 +155,19 @@ RSpec.describe SymbolicMath::Tokenizer do
         SymbolicMath::Tokens::Number
       ])
     end
+
+    it "handles non nested groups properly" do
+      tokenizer = described_class.new("(1 + 2) * (3 + 4)")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        SymbolicMath::Tokens::Group,
+        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::Group
+      ])
+
+      expect(tokenizer.tokens[0].string).to eq "(1+2)"
+      expect(tokenizer.tokens[1].string).to eq "*"
+      expect(tokenizer.tokens[2].string).to eq "(3+4)"
+    end
   end
 end
