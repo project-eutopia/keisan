@@ -1,7 +1,7 @@
 module SymbolicMath
   module Tokens
     class Group < Token
-      REGEX = /(\(.*?\))/
+      REGEX = /(\((?:[^()]*\g<0>*)*\))/
 
       attr_reader :sub_tokens
 

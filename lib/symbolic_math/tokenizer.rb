@@ -1,9 +1,9 @@
 module SymbolicMath
   class Tokenizer
     TOKEN_CLASSES = [
+      Tokens::Group,
       Tokens::Word,
       Tokens::Number,
-      Tokens::Group,
       Tokens::Operator,
       Tokens::Comma
     ]

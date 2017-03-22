@@ -127,15 +127,17 @@ RSpec.describe SymbolicMath::Tokenizer do
     end
 
     it "has nested groups properly tokenized" do
-      tokenizer = described_class.new("1 + (2 + (3+4) + 5)")
+      tokenizer = described_class.new("1 + (2 + (3+4) + 5) + (6)")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::Number,
         SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::Group,
+        SymbolicMath::Tokens::Operator,
         SymbolicMath::Tokens::Group
       ])
 
-      group = tokenizer.tokens.last
+      group = tokenizer.tokens[2]
       expect(group.string).to eq "(2+(3+4)+5)"
 
       expect(group.sub_tokens.map(&:class)).to match_array([
@@ -154,6 +156,9 @@ RSpec.describe SymbolicMath::Tokenizer do
         SymbolicMath::Tokens::Operator,
         SymbolicMath::Tokens::Number
       ])
+
+      group = tokenizer.tokens[4]
+      expect(group.string).to eq "(6)"
     end
 
     it "handles non nested groups properly" do
