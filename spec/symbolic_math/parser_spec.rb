@@ -135,5 +135,68 @@ RSpec.describe SymbolicMath::Parser do
         expect(arguments.last.components[2].value).to eq 1
       end
     end
+
+    context "combination" do
+      it "parses correctly" do
+        parser = described_class.new(string: "-sin(x ** (2+1)) + (a + b*z) / (c + d*z)")
+
+        expect(parser.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::UnaryMinus,
+          SymbolicMath::Parsing::Function,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::Group,
+          SymbolicMath::Parsing::Divide,
+          SymbolicMath::Parsing::Group
+        ])
+
+        function = parser.components[1]
+        expect(function.name).to eq "sin"
+        expect(function.arguments.count).to eq 1
+        argument = function.arguments.first
+
+        expect(argument.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Exponent,
+          SymbolicMath::Parsing::Group
+        ])
+
+        expect(argument.components[0].name).to eq "x"
+        group = argument.components[2]
+
+        expect(group.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::Number
+        ])
+
+        expect(group.components[0].value).to eq 2
+        expect(group.components[2].value).to eq 1
+
+        numerator = parser.components[3]
+        denominator = parser.components[5]
+
+        expect(numerator.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Times,
+          SymbolicMath::Parsing::Variable
+        ])
+        expect(denominator.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Times,
+          SymbolicMath::Parsing::Variable
+        ])
+
+        expect(numerator.components[0].name).to eq "a"
+        expect(numerator.components[2].name).to eq "b"
+        expect(numerator.components[4].name).to eq "z"
+        expect(denominator.components[0].name).to eq "c"
+        expect(denominator.components[2].name).to eq "d"
+        expect(denominator.components[4].name).to eq "z"
+      end
+    end
   end
 end
