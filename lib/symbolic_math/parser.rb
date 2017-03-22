@@ -16,7 +16,7 @@ module SymbolicMath
 
       @components = []
 
-      parse!
+      parse_components!
     end
 
     def node
@@ -25,7 +25,7 @@ module SymbolicMath
 
     private
 
-    def parse!
+    def parse_components!
       @unparsed_tokens = tokens.dup
 
       # Components will store the elements (numbers, variables, bracket components, function calls)
@@ -56,7 +56,7 @@ module SymbolicMath
 
       elsif @components[-1].is_a?(Parsing::Element)
         if @components[-1].is_a?(Parsing::Variable) && token.type == :group
-          # Have a function
+          # Have a function actually, not a variable
           @components[-1] = Parsing::Function.new(
             @components[-1].name,
             token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|

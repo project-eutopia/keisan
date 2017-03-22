@@ -28,7 +28,7 @@ module SymbolicMath
         token_class = TOKEN_CLASSES[i].new(token_string)
       end
 
-      raise SymbolicMath::Exceptions::TokenizingError.new("Expected \"#{@expression}\", tokenized \"{#{tokenizing_check}\"") unless tokenizing_check == @expression
+      raise SymbolicMath::Exceptions::TokenizingError.new("Expected \"#{@expression}\", tokenized \"#{tokenizing_check}\"") unless tokenizing_check == @expression
     end
   end
 end

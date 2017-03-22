@@ -1,11 +1,11 @@
 module SymbolicMath
   module Tokens
     class Operator < Token
-      PLUS_OR_MINUS = /(?:[\+\-]+)/
+      EXPONENT = /(?:\*\*)/
       TIMES = /(?:\*)/
       DIVIDE = /(?:\/)/
-      EXPONENT = /(?:\*\*)/
-      REGEX = /(#{EXPONENT}|#{PLUS_OR_MINUS}|#{TIMES}|#{DIVIDE})/
+      PLUS_OR_MINUS = /(?:[\+\-]+)/
+      REGEX = /(#{EXPONENT}|#{TIMES}|#{DIVIDE}|#{PLUS_OR_MINUS})/
 
       def self.regex
         REGEX

@@ -1,6 +1,6 @@
 module SymbolicMath
   module Parsing
-    class UnaryOperator < Group
+    class UnaryOperator < Component
       def priority
         SymbolicMath::AST::Times.priority
       end

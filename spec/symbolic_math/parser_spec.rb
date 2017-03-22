@@ -26,6 +26,23 @@ RSpec.describe SymbolicMath::Parser do
       end
     end
 
+    context "has unary operators" do
+      it "correctly picks them up" do
+        parser = described_class.new(string: "+2 * -x")
+
+        expect(parser.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::UnaryPlus,
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::Times,
+          SymbolicMath::Parsing::UnaryMinus,
+          SymbolicMath::Parsing::Variable
+        ])
+
+        expect(parser.components[1].value).to eq 2
+        expect(parser.components[4].name).to eq "x"
+      end
+    end
+
     context "has brackets" do
       it "uses Parsing::Group to contain the element" do
         parser = described_class.new(string: "2 * (3 + 5)")
