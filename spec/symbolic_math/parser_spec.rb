@@ -82,41 +82,41 @@ RSpec.describe SymbolicMath::Parser do
         expect(group.components[2].name).to eq "z"
       end
     end
-  end
 
-  context "has function call" do
-    it "contains the correct arguments" do
-      parser = described_class.new(string: "1 + atan2(x + 1, y - 1)")
+    context "has function call" do
+      it "contains the correct arguments" do
+        parser = described_class.new(string: "1 + atan2(x + 1, y - 1)")
 
-      expect(parser.components.map(&:class)).to match_array([
-        SymbolicMath::Parsing::Number,
-        SymbolicMath::Parsing::Plus,
-        SymbolicMath::Parsing::Function
-      ])
+        expect(parser.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::Function
+        ])
 
-      expect(parser.components[0].value).to eq 1
-      expect(parser.components[2].name).to eq "atan2"
+        expect(parser.components[0].value).to eq 1
+        expect(parser.components[2].name).to eq "atan2"
 
-      arguments = parser.components[2].arguments
-      expect(arguments.count).to eq 2
+        arguments = parser.components[2].arguments
+        expect(arguments.count).to eq 2
 
-      expect(arguments.all? {|argument| argument.is_a?(SymbolicMath::Parsing::Argument)}).to be true
+        expect(arguments.all? {|argument| argument.is_a?(SymbolicMath::Parsing::Argument)}).to be true
 
-      expect(arguments.first.components.map(&:class)).to match_array([
-        SymbolicMath::Parsing::Variable,
-        SymbolicMath::Parsing::Plus,
-        SymbolicMath::Parsing::Number
-      ])
-      expect(arguments.first.components[0].name).to eq "x"
-      expect(arguments.first.components[2].value).to eq 1
+        expect(arguments.first.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::Number
+        ])
+        expect(arguments.first.components[0].name).to eq "x"
+        expect(arguments.first.components[2].value).to eq 1
 
-      expect(arguments.last.components.map(&:class)).to match_array([
-        SymbolicMath::Parsing::Variable,
-        SymbolicMath::Parsing::Minus,
-        SymbolicMath::Parsing::Number
-      ])
-      expect(arguments.last.components[0].name).to eq "y"
-      expect(arguments.last.components[2].value).to eq 1
+        expect(arguments.last.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Variable,
+          SymbolicMath::Parsing::Minus,
+          SymbolicMath::Parsing::Number
+        ])
+        expect(arguments.last.components[0].name).to eq "y"
+        expect(arguments.last.components[2].value).to eq 1
+      end
     end
   end
 end
