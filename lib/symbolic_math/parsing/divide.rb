@@ -2,7 +2,11 @@ module SymbolicMath
   module Parsing
     class Divide < Operator
       def priority
-        SymbolicMath::AST::Times.priority
+        node_class.priority
+      end
+
+      def node_class
+        SymbolicMath::AST::Times
       end
     end
   end

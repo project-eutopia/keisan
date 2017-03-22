@@ -2,7 +2,11 @@ module SymbolicMath
   module Parsing
     class Minus < Operator
       def priority
-        SymbolicMath::AST::Plus.priority
+        node_class.priority
+      end
+
+      def node_class
+        SymbolicMath::AST::Plus
       end
     end
   end

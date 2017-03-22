@@ -1,8 +1,8 @@
 module SymbolicMath
   module Parsing
     class UnaryOperator < Component
-      def priority
-        SymbolicMath::AST::Times.priority
+      def node_class
+        raise SymbolicMath::Exponent::NotImplementedError.new
       end
     end
   end

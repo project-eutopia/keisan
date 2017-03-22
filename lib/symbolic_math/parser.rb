@@ -19,8 +19,8 @@ module SymbolicMath
       parse_components!
     end
 
-    def node
-      # TODO
+    def ast
+      @ast ||= SymbolicMath::AST::Builder.new(parser: self).ast
     end
 
     private
@@ -49,7 +49,7 @@ module SymbolicMath
 
       elsif @components[-1].is_a?(Parsing::UnaryOperator)
         # Expect an element
-        if token.type != :number && token.type != :word
+        if token.type != :number && token.type != :word && token.type != :group
           raise SymbolicMath::Exceptions::ParseError.new("Expected an element, received #{token.string}")
         end
         add_element_to_components!(token)

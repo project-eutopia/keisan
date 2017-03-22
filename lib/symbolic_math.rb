@@ -11,7 +11,16 @@ require "symbolic_math/ast/number"
 require "symbolic_math/ast/variable"
 
 require "symbolic_math/ast/parent"
+require "symbolic_math/ast/unary_operator"
+require "symbolic_math/ast/unary_plus"
+require "symbolic_math/ast/unary_minus"
+require "symbolic_math/ast/unary_inverse"
 require "symbolic_math/ast/operator"
+require "symbolic_math/ast/plus"
+require "symbolic_math/ast/times"
+require "symbolic_math/ast/exponent"
+
+require "symbolic_math/ast/builder"
 
 require "symbolic_math/token"
 require "symbolic_math/tokens/comma"
