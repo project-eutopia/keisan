@@ -19,10 +19,16 @@ module SymbolicMath
 
       @scan = @expression.scan(TOKEN_REGEX)
 
+      tokenizing_check = ""
+
       @tokens = @scan.map do |scan_result|
         i = scan_result.find_index {|token| !token.nil?}
-        token_class = TOKEN_CLASSES[i].new(scan_result[i])
+        token_string = scan_result[i]
+        tokenizing_check << token_string
+        token_class = TOKEN_CLASSES[i].new(token_string)
       end
+
+      raise SymbolicMath::Exceptions::TokenizingError.new("Expected \"#{@expression}\", tokenized \"{#{tokenizing_check}\"") unless tokenizing_check == @expression
     end
   end
 end

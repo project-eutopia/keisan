@@ -1,6 +1,13 @@
 require "spec_helper"
 
 RSpec.describe SymbolicMath::Tokenizer do
+  context "invalid symbols" do
+    it "raises a TokenizingError" do
+      expect { described_class.new("2^3") }.to raise_error(SymbolicMath::Exceptions::TokenizingError)
+      expect { described_class.new("[1]") }.to raise_error(SymbolicMath::Exceptions::TokenizingError)
+    end
+  end
+
   context "numbers" do
     context "integer" do
       it "gets integers correctly" do
