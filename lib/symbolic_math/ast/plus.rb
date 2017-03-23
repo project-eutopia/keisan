@@ -22,6 +22,15 @@ module SymbolicMath
         0
       end
 
+      def value(context = nil)
+        # Special case of string concatenation
+        if children.all? {|child| child.is_a?(SymbolicMath::AST::String)}
+          children.map {|child| child.content}.join
+        else
+          super
+        end
+      end
+
       private
 
       def convert_minus_to_plus!

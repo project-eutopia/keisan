@@ -1,14 +1,14 @@
 module SymbolicMath
   module AST
     class String < Literal
-      attr_reader :value
+      attr_reader :content
 
-      def initialize(value)
-        @value = value
+      def initialize(content)
+        @content = content
       end
 
       def value(context = nil)
-        value
+        content
       end
     end
   end
