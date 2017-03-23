@@ -2,6 +2,7 @@ module SymbolicMath
   class Tokenizer
     TOKEN_CLASSES = [
       Tokens::Group,
+      Tokens::String,
       Tokens::Word,
       Tokens::Number,
       Tokens::ArithmeticOperator,
