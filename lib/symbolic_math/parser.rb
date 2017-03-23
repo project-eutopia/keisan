@@ -80,6 +80,10 @@ module SymbolicMath
         @components << SymbolicMath::Parsing::UnaryPlus.new
       when :-
         @components << SymbolicMath::Parsing::UnaryMinus.new
+      when :"~"
+        @components << SymbolicMath::Parsing::BitwiseNot.new
+      when :"~~"
+        @components << SymbolicMath::Parsing::BitwiseNotNot.new
       else
         raise SymbolicMath::Exceptions::ParseError.new("Unhandled unary operator type #{token.operator_type}")
       end
@@ -111,6 +115,17 @@ module SymbolicMath
         @components << SymbolicMath::Parsing::Divide.new
       when :^
         @components << SymbolicMath::Parsing::Exponent.new
+      # Bitwise
+      when :"&"
+        @components << SymbolicMath::Parsing::BitwiseAnd.new
+      when :"|"
+        @components << SymbolicMath::Parsing::BitwiseOr.new
+      when :"^"
+        @components << SymbolicMath::Parsing::BitwiseXor.new
+      when :"~"
+        @components << SymbolicMath::Parsing::BitwiseNot.new
+      when :"~~"
+        @components << SymbolicMath::Parsing::BitwiseNotNot.new
       else
         raise SymbolicMath::Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
       end

@@ -136,6 +136,22 @@ RSpec.describe SymbolicMath::Parser do
       end
     end
 
+    context "bitwise" do
+      it "parses correctly" do
+        parser = described_class.new(string: "~~~~9 & 8 | ~16")
+
+        expect(parser.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::BitwiseNotNot,
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::BitwiseAnd,
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::BitwiseOr,
+          SymbolicMath::Parsing::BitwiseNot,
+          SymbolicMath::Parsing::Number
+        ])
+      end
+    end
+
     context "combination" do
       it "parses correctly" do
         parser = described_class.new(string: "-sin(x ** (2+1)) + (a + b*z) / (c + d*z)")

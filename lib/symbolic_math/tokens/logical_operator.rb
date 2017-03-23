@@ -1,6 +1,6 @@
 module SymbolicMath
   module Tokens
-    class LogicalOperator < Token
+    class LogicalOperator < Operator
       LESS_THAN_OR_EQUAL_TO = /(?:\<\=)/
       GREATER_THAN_OR_EQUAL_TO = /(?:\>\=)/
       LESS_THAN = /(?:\<)/

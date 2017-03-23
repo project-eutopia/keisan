@@ -1,6 +1,6 @@
 module SymbolicMath
   module Tokens
-    class BitwiseOperator < Token
+    class BitwiseOperator < Operator
       AND = /(?:\&)/
       OR = /(?:\|)/
       XOR = /(?:\^)/

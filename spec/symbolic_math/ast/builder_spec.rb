@@ -2,21 +2,26 @@ require "spec_helper"
 
 RSpec.describe SymbolicMath::AST::Builder do
   context "simple operations" do
-    it "correctly builds the AST" do
-      operations = {
-        "1 + 2"               => eq(3),
-        "7.5 - 3"             => eq(4.5),
-        "2 + 3 * 5"           => eq(17),
-        "8 / 5"               => eq(Rational(8,5)),
-        "(1+2) * (3+4*(1+1))" => eq(33),
-        "4**2 + 3 * 5"        => eq(31),
-        "2 ** (1/2)"          => eq(Math.sqrt(2)),
-        "sin(pi)"             => be_within(1e-10).of(0)
-      }
+    operations = {
+      "1 + 2"               => 3,
+      "7.5 - 3"             => 4.5,
+      "2 + 3 * 5"           => 17,
+      "8 / 5"               => Rational(8,5),
+      "(1+2) * (3+4*(1+1))" => 33,
+      "4**2 + 3 * 5"        => 31,
+      "2 ** (1/2)"          => Math.sqrt(2)
+    }
 
-      operations.each do |operation, matcher|
-        expect(described_class.new(string: operation).ast.value).to matcher
+    operations.each do |operation, value|
+      it "correctly builds the AST for #{operation}" do
+        expect(described_class.new(string: operation).ast.value).to eq value
       end
+    end
+  end
+
+  context "function" do
+    it "properly parses" do
+      expect(described_class.new(string: "sin(pi)").ast.value).to be_within(1e-10).of(0)
     end
   end
 
