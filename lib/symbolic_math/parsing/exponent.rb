@@ -1,10 +1,6 @@
 module SymbolicMath
   module Parsing
-    class Exponent < Operator
-      def priority
-        node_class.priority
-      end
-
+    class Exponent < ArithmeticOperator
       def node_class
         SymbolicMath::AST::Exponent
       end

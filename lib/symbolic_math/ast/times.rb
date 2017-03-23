@@ -1,6 +1,6 @@
 module SymbolicMath
   module AST
-    class Times < Operator
+    class Times < ArithmeticOperator
       def initialize(children = [], parsing_operators = [])
         super
         convert_divide_to_inverse!
@@ -14,10 +14,12 @@ module SymbolicMath
         2..Float::INFINITY
       end
 
-      def value(context = nil)
-        children.inject(1) do |product, child|
-          product * child.value(context)
-        end
+      def symbol
+        :*
+      end
+
+      def blank_value
+        1
       end
 
       private

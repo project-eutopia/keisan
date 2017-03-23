@@ -1,6 +1,6 @@
 module SymbolicMath
   module AST
-    class Plus < Operator
+    class Plus < ArithmeticOperator
       def initialize(children = [], parsing_operators = [])
         super
         convert_minus_to_plus!
@@ -14,10 +14,12 @@ module SymbolicMath
         2..Float::INFINITY
       end
 
-      def value(context = nil)
-        children.inject(0) do |sum, child|
-          sum + child.value(context)
-        end
+      def symbol
+        :+
+      end
+
+      def blank_value
+        0
       end
 
       private

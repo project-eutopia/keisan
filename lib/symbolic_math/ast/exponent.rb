@@ -1,6 +1,6 @@
 module SymbolicMath
   module AST
-    class Exponent < Operator
+    class Exponent < ArithmeticOperator
       def self.priority
         30
       end
@@ -9,10 +9,16 @@ module SymbolicMath
         (2..2)
       end
 
-      def value(context = nil)
-        children.reverse.inject(1) do |result, child|
-          child.value(context) ** result
-        end
+      def associativity
+        :right
+      end
+
+      def symbol
+        :**
+      end
+
+      def blank_value
+        1
       end
     end
   end

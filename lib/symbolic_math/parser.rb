@@ -100,6 +100,7 @@ module SymbolicMath
 
     def add_operator_to_components!(token)
       case token.operator_type
+      # Arithmetic
       when :+
         @components << SymbolicMath::Parsing::Plus.new
       when :-

@@ -20,6 +20,31 @@ module SymbolicMath
       def arity
         raise SymbolicMath::Exceptions::NotImplementedError.new
       end
+
+      def associativity
+        raise SymbolicMath::Exceptions::NotImplementedError.new
+      end
+
+      def symbol
+        raise SymbolicMath::Exceptions::NotImplementedError.new
+      end
+
+      def blank_value
+        raise SymbolicMath::Exceptions::NotImplementedError.new
+      end
+
+      def value(context = nil)
+        args = children
+        args = args.reverse if associativity == :right
+
+        args.inject(blank_value) do |result, child|
+          if associativity == :left
+            result.send(symbol, child.value(context))
+          else
+            child.value(context).send(symbol, result)
+          end
+        end
+      end
     end
   end
 end

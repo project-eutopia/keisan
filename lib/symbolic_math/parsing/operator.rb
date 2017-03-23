@@ -2,7 +2,7 @@ module SymbolicMath
   module Parsing
     class Operator < Component
       def priority
-        raise SymbolicMath::Exceptions::NotImplementedError.new
+        node_class.priority
       end
 
       def node_class
