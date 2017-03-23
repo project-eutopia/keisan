@@ -8,10 +8,11 @@ module SymbolicMath
         super(arguments)
       end
 
-      def value(context)
+      def value(context = nil)
+        context = SymbolicMath::Context.new if context.nil?
         argument_values = children.map {|child| child.value(context)}
         function = context.function(name)
-        function.call(argument_values)
+        function.call(*argument_values)
       end
     end
   end

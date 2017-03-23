@@ -9,6 +9,8 @@ require "symbolic_math/functions/registry"
 require "symbolic_math/functions/default_registry"
 require "symbolic_math/variables/registry"
 require "symbolic_math/variables/default_registry"
+require "symbolic_math/context"
+
 require "symbolic_math/ast/node"
 
 require "symbolic_math/ast/literal"

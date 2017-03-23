@@ -66,9 +66,13 @@ module SymbolicMath
           SymbolicMath::AST::Variable.new(component.name)
         when SymbolicMath::Parsing::Group
           Builder.new(components: component.components).node
-        # TODO
-        # when SymbolicMath::Parsing::Function
-        #   SymbolicMath::AST::Variable.new(component.name)
+        when SymbolicMath::Parsing::Function
+          SymbolicMath::AST::Function.new(
+            component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            },
+            component.name
+          )
         else
           raise SymbolicMath::Exceptions::ASTError.new("Unhandled component, #{component}")
         end

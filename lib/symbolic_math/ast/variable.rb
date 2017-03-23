@@ -7,8 +7,9 @@ module SymbolicMath
         @name = name
       end
 
-      def value(context)
-        context.fetch(name)
+      def value(context = nil)
+        context = SymbolicMath::Context.new if context.nil?
+        context.variable(name)
       end
     end
   end
