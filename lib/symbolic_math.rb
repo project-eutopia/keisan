@@ -98,5 +98,7 @@ require "symbolic_math/parsing/logical_not_not"
 
 require "symbolic_math/parser"
 
+require "symbolic_math/calculator"
+
 module SymbolicMath
 end
