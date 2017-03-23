@@ -101,6 +101,66 @@ RSpec.describe SymbolicMath::Parser do
     end
 
     context "has function call" do
+      describe "no arguments" do
+        it "has no arguments" do
+          parser = described_class.new(string: "f()")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Function
+          ])
+
+          fn = parser.components.first
+          expect(fn.arguments).to match_array([])
+        end
+      end
+
+      describe "one argument" do
+        it "has one argument" do
+          parser = described_class.new(string: "f(x+1)")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Function
+          ])
+
+          fn = parser.components.first
+          expect(fn.arguments.count).to eq 1
+
+          expect(fn.arguments.first.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Variable,
+            SymbolicMath::Parsing::Plus,
+            SymbolicMath::Parsing::Number
+          ])
+          expect(fn.arguments.first.components[0].name).to eq "x"
+          expect(fn.arguments.first.components[2].value).to eq 1
+        end
+      end
+
+      describe "two arguments" do
+        it "has two arguments" do
+          parser = described_class.new(string: "f(x+1, y-1)")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Function
+          ])
+
+          fn = parser.components.first
+          expect(fn.arguments.count).to eq 2
+
+          expect(fn.arguments.first.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Variable,
+            SymbolicMath::Parsing::Plus,
+            SymbolicMath::Parsing::Number
+          ])
+          expect(fn.arguments.first.components[0].name).to eq "x"
+          expect(fn.arguments.first.components[2].value).to eq 1
+
+          expect(fn.arguments.last.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Variable,
+            SymbolicMath::Parsing::Minus,
+            SymbolicMath::Parsing::Number
+          ])
+          expect(fn.arguments.last.components[0].name).to eq "y"
+          expect(fn.arguments.last.components[2].value).to eq 1
+        end
+      end
+
       it "contains the correct arguments" do
         parser = described_class.new(string: "1 + atan2(x + 1, y - 1)")
 
