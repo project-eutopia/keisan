@@ -328,5 +328,20 @@ RSpec.describe SymbolicMath::Parser do
         expect(denominator.components[4].name).to eq "z"
       end
     end
+
+    context "string" do
+      it "parses correctly" do
+        parser = described_class.new(string: "'this is a ' + \"test\"")
+
+        expect(parser.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::String,
+          SymbolicMath::Parsing::Plus,
+          SymbolicMath::Parsing::String
+        ])
+
+        expect(parser.components[0].value).to eq "this is a "
+        expect(parser.components[2].value).to eq "test"
+      end
+    end
   end
 end

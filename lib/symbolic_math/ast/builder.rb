@@ -62,6 +62,8 @@ module SymbolicMath
         case component
         when SymbolicMath::Parsing::Number
           SymbolicMath::AST::Number.new(component.value)
+        when SymbolicMath::Parsing::String
+          SymbolicMath::AST::String.new(component.value)
         when SymbolicMath::Parsing::Variable
           SymbolicMath::AST::Variable.new(component.name)
         when SymbolicMath::Parsing::Boolean

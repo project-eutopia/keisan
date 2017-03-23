@@ -49,10 +49,12 @@ module SymbolicMath
 
       elsif @components[-1].is_a?(Parsing::UnaryOperator)
         # Expect an element
-        if token.type != :number && token.type != :word && token.type != :group
+        case token.type
+        when :number, :string, :word, :group
+          add_element_to_components!(token)
+        else
           raise SymbolicMath::Exceptions::ParseError.new("Expected an element, received #{token.string}")
         end
-        add_element_to_components!(token)
 
       elsif @components[-1].is_a?(Parsing::Element)
         if @components[-1].is_a?(Parsing::Variable) && token.type == :group
@@ -101,6 +103,8 @@ module SymbolicMath
       case token
       when SymbolicMath::Tokens::Number
         @components << SymbolicMath::Parsing::Number.new(token.value)
+      when SymbolicMath::Tokens::String
+        @components << SymbolicMath::Parsing::String.new(token.value)
       when SymbolicMath::Tokens::Word
         case token.string.downcase
         when "true"

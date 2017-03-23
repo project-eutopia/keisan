@@ -15,6 +15,7 @@ require "symbolic_math/ast/node"
 
 require "symbolic_math/ast/literal"
 require "symbolic_math/ast/number"
+require "symbolic_math/ast/string"
 require "symbolic_math/ast/boolean"
 require "symbolic_math/ast/variable"
 
@@ -64,6 +65,7 @@ require "symbolic_math/parsing/component"
 
 require "symbolic_math/parsing/element"
 require "symbolic_math/parsing/number"
+require "symbolic_math/parsing/string"
 require "symbolic_math/parsing/boolean"
 require "symbolic_math/parsing/variable"
 require "symbolic_math/parsing/function"

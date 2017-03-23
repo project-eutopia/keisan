@@ -298,7 +298,7 @@ RSpec.describe SymbolicMath::Tokenizer do
 
   context "strings" do
     it "has correct parsing" do
-      tokenizer = described_class.new("'hello' + \"world\"")
+      tokenizer = described_class.new("'hello world' + \" foo bar \"")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::String,
@@ -306,11 +306,11 @@ RSpec.describe SymbolicMath::Tokenizer do
         SymbolicMath::Tokens::String
       ])
 
-      expect(tokenizer.tokens[0].string).to eq "'hello'"
-      expect(tokenizer.tokens[0].value).to eq "hello"
+      expect(tokenizer.tokens[0].string).to eq "'hello world'"
+      expect(tokenizer.tokens[0].value).to eq "hello world"
       expect(tokenizer.tokens[1].string).to eq "+"
-      expect(tokenizer.tokens[2].string).to eq '"world"'
-      expect(tokenizer.tokens[2].value).to eq "world"
+      expect(tokenizer.tokens[2].string).to eq '" foo bar "'
+      expect(tokenizer.tokens[2].value).to eq " foo bar "
     end
   end
 end

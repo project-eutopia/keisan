@@ -18,7 +18,7 @@ module SymbolicMath
     attr_reader :expression, :tokens
 
     def initialize(expression)
-      @expression = expression.gsub(/\s+/, "")
+      @expression = expression.split(SymbolicMath::Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, "") : s}.join
 
       @scan = @expression.scan(TOKEN_REGEX)
 
