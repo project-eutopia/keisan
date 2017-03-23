@@ -4,7 +4,7 @@ RSpec.describe SymbolicMath::Variables::Registry do
   let(:variables) { {} }
   let(:parent) { nil }
   let(:use_defaults) { true }
-  let(:registry) { described_class.new(variables, parent, use_defaults) }
+  let(:registry) { described_class.new(variables: variables, parent: parent, use_defaults: use_defaults) }
 
   context "with no parent, and using defaults" do
     it "raises error when not present" do

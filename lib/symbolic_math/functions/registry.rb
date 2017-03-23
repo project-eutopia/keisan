@@ -1,7 +1,7 @@
 module SymbolicMath
   module Functions
     class Registry
-      def initialize(functions = {}, parent = nil, use_defaults = true)
+      def initialize(functions: {}, parent: nil, use_defaults: true)
         @hash = {}
         @parent = parent
         @use_defaults = use_defaults

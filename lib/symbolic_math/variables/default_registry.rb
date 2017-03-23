@@ -15,7 +15,7 @@ module SymbolicMath
       }
 
       def self.registry
-        @registry ||= Registry.new(VARIABLES, nil)
+        @registry ||= Registry.new(variables: VARIABLES, parent: nil)
       end
     end
   end

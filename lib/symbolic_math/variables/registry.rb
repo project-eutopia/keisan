@@ -1,7 +1,7 @@
 module SymbolicMath
   module Variables
     class Registry
-      def initialize(variables = {}, parent = nil, use_defaults = true)
+      def initialize(variables: {}, parent: nil, use_defaults: true)
         @hash = {}
         @parent = parent
         @use_defaults = use_defaults
