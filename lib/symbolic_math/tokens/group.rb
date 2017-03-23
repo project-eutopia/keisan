@@ -1,7 +1,7 @@
 module SymbolicMath
   module Tokens
     class Group < Token
-      REGEX = /(\((?:[^()]*\g<0>*)*\))/
+      REGEX = /(\((?:[^\[\]()]*\g<0>*)*\)|\[(?:[^\[\]()]*\g<0>*)*\])/
 
       attr_reader :sub_tokens
 
@@ -12,6 +12,16 @@ module SymbolicMath
 
       def self.regex
         REGEX
+      end
+
+      # Either :round, :square
+      def group_type
+        case string[0]
+        when "("
+          :round
+        when "["
+          :square
+        end
       end
     end
   end

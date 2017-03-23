@@ -4,7 +4,6 @@ RSpec.describe SymbolicMath::Tokenizer do
   context "invalid symbols" do
     it "raises a TokenizingError" do
       expect { described_class.new("2%3") }.to raise_error(SymbolicMath::Exceptions::TokenizingError)
-      expect { described_class.new("x[1]") }.to raise_error(SymbolicMath::Exceptions::TokenizingError)
     end
   end
 
@@ -130,6 +129,52 @@ RSpec.describe SymbolicMath::Tokenizer do
         expect(token).to be_a(SymbolicMath::Tokens::Group)
         expect(token.string).to eq "()"
         expect(token.sub_tokens).to match_array([])
+      end
+    end
+
+    context "mixed braces" do
+      it "works as expected" do
+        tokenizer = described_class.new("1 + (x - [ 3+4 ] + 5) - [6,7]")
+
+        expect(tokenizer.tokens.map(&:class)).to match_array([
+          SymbolicMath::Tokens::Number,
+          SymbolicMath::Tokens::ArithmeticOperator,
+          SymbolicMath::Tokens::Group,
+          SymbolicMath::Tokens::ArithmeticOperator,
+          SymbolicMath::Tokens::Group
+        ])
+
+        expect(tokenizer.tokens[0].value).to eq 1
+        expect(tokenizer.tokens[1].operator_type).to eq :+
+        expect(tokenizer.tokens[2].string).to eq "(x-[3+4]+5)"
+        expect(tokenizer.tokens[3].operator_type).to eq :-
+        expect(tokenizer.tokens[4].string).to eq "[6,7]"
+
+        group = tokenizer.tokens[2]
+        expect(group.sub_tokens.map(&:class)).to match_array([
+          SymbolicMath::Tokens::Word,
+          SymbolicMath::Tokens::ArithmeticOperator,
+          SymbolicMath::Tokens::Group,
+          SymbolicMath::Tokens::ArithmeticOperator,
+          SymbolicMath::Tokens::Number
+        ])
+
+        expect(group.sub_tokens[0].string).to eq "x"
+        expect(group.sub_tokens[1].operator_type).to eq :-
+        expect(group.sub_tokens[2].string).to eq "[3+4]"
+        expect(group.sub_tokens[3].operator_type).to eq :+
+        expect(group.sub_tokens[4].value).to eq 5
+
+        group = tokenizer.tokens[4]
+        expect(group.sub_tokens.map(&:class)).to match_array([
+          SymbolicMath::Tokens::Number,
+          SymbolicMath::Tokens::Comma,
+          SymbolicMath::Tokens::Number
+        ])
+
+        expect(group.sub_tokens[0].value).to eq 6
+        expect(group.sub_tokens[1].string).to eq ","
+        expect(group.sub_tokens[2].value).to eq 7
       end
     end
 
