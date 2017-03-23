@@ -124,7 +124,7 @@ module SymbolicMath
         @components << SymbolicMath::Parsing::Times.new
       when :/
         @components << SymbolicMath::Parsing::Divide.new
-      when :^
+      when :**
         @components << SymbolicMath::Parsing::Exponent.new
       # Bitwise
       when :"&"

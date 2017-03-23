@@ -15,7 +15,7 @@ module SymbolicMath
         case string
         when EXPONENT
           # Must match first to override matching against single "*"
-          :^
+          :**
         when TIMES
           :*
         when DIVIDE

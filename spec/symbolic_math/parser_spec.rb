@@ -138,7 +138,7 @@ RSpec.describe SymbolicMath::Parser do
 
     context "bitwise operators" do
       it "parses correctly" do
-        parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1)")
+        parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1) ^ 4")
 
         expect(parser.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::BitwiseNotNot,
@@ -146,11 +146,14 @@ RSpec.describe SymbolicMath::Parser do
           SymbolicMath::Parsing::BitwiseAnd,
           SymbolicMath::Parsing::Number,
           SymbolicMath::Parsing::BitwiseOr,
-          SymbolicMath::Parsing::Group
+          SymbolicMath::Parsing::Group,
+          SymbolicMath::Parsing::BitwiseXor,
+          SymbolicMath::Parsing::Number
         ])
 
         expect(parser.components[1].value).to eq 9
         expect(parser.components[3].value).to eq 8
+        expect(parser.components[7].value).to eq 4
 
         group = parser.components[5]
         expect(group.components.map(&:class)).to match_array([
