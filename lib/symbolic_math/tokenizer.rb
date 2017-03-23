@@ -5,6 +5,8 @@ module SymbolicMath
       Tokens::Word,
       Tokens::Number,
       Tokens::Operator,
+      Tokens::LogicalOperator,
+      Tokens::BitwiseOperator,
       Tokens::Comma
     ]
 

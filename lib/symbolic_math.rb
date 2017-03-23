@@ -35,6 +35,8 @@ require "symbolic_math/tokens/comma"
 require "symbolic_math/tokens/group"
 require "symbolic_math/tokens/number"
 require "symbolic_math/tokens/operator"
+require "symbolic_math/tokens/logical_operator"
+require "symbolic_math/tokens/bitwise_operator"
 require "symbolic_math/tokens/word"
 
 require "symbolic_math/tokenizer"
