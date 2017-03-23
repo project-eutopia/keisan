@@ -4,7 +4,7 @@ module SymbolicMath
       Tokens::Group,
       Tokens::Word,
       Tokens::Number,
-      Tokens::Operator,
+      Tokens::ArithmeticOperator,
       Tokens::LogicalOperator,
       Tokens::BitwiseOperator,
       Tokens::Comma

@@ -14,7 +14,7 @@ RSpec.describe SymbolicMath::Tokenizer do
         tokenizer = described_class.new("-2")
 
         expect(tokenizer.tokens.map(&:class)).to match_array([
-          SymbolicMath::Tokens::Operator,
+          SymbolicMath::Tokens::ArithmeticOperator,
           SymbolicMath::Tokens::Number
         ])
 
@@ -60,9 +60,9 @@ RSpec.describe SymbolicMath::Tokenizer do
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::Word,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Word
       ])
 
@@ -76,18 +76,18 @@ RSpec.describe SymbolicMath::Tokenizer do
       tokenizer = described_class.new("-1+2-3*-4/5**6")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number
       ])
 
@@ -138,9 +138,9 @@ RSpec.describe SymbolicMath::Tokenizer do
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Group,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Group
       ])
 
@@ -149,9 +149,9 @@ RSpec.describe SymbolicMath::Tokenizer do
 
       expect(group.sub_tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Group,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number
       ])
 
@@ -160,7 +160,7 @@ RSpec.describe SymbolicMath::Tokenizer do
 
       expect(group.sub_tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::Number,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Number
       ])
 
@@ -173,7 +173,7 @@ RSpec.describe SymbolicMath::Tokenizer do
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         SymbolicMath::Tokens::Group,
-        SymbolicMath::Tokens::Operator,
+        SymbolicMath::Tokens::ArithmeticOperator,
         SymbolicMath::Tokens::Group
       ])
 
