@@ -23,11 +23,12 @@ module SymbolicMath
       end
 
       def value(context = nil)
+        children_values = children.map {|child| child.value(context)}
         # Special case of string concatenation
-        if children.all? {|child| child.is_a?(SymbolicMath::AST::String)}
-          children.map {|child| child.content}.join
+        if children_values.all? {|child| child.is_a?(::String)}
+          children_values.join
         else
-          super
+          children_values.inject(0, &:+)
         end
       end
 
