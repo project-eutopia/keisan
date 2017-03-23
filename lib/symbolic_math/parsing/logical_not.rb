@@ -1,6 +1,6 @@
 module SymbolicMath
   module Parsing
-    class LogicalNot < LogicalOperator
+    class LogicalNot < UnaryOperator
       def node_class
         SymbolicMath::AST::UnaryLogicalNot
       end

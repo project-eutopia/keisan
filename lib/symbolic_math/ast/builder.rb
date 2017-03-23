@@ -64,6 +64,8 @@ module SymbolicMath
           SymbolicMath::AST::Number.new(component.value)
         when SymbolicMath::Parsing::Variable
           SymbolicMath::AST::Variable.new(component.name)
+        when SymbolicMath::Parsing::Boolean
+          SymbolicMath::AST::Boolean.new(component.value)
         when SymbolicMath::Parsing::Group
           Builder.new(components: component.components).node
         when SymbolicMath::Parsing::Function

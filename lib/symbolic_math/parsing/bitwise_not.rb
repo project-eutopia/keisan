@@ -1,6 +1,6 @@
 module SymbolicMath
   module Parsing
-    class BitwiseNot < BitwiseOperator
+    class BitwiseNot < UnaryOperator
       def node_class
         SymbolicMath::AST::UnaryBitwiseNot
       end
