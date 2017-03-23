@@ -134,13 +134,14 @@ RSpec.describe SymbolicMath::Tokenizer do
 
     context "mixed braces" do
       it "works as expected" do
-        tokenizer = described_class.new("1 + (x - [ 3+4 ] + 5) - [6,7]")
+        tokenizer = described_class.new("1 + (x - [ 3+4 ] + 5) - [6,7](8)")
 
         expect(tokenizer.tokens.map(&:class)).to match_array([
           SymbolicMath::Tokens::Number,
           SymbolicMath::Tokens::ArithmeticOperator,
           SymbolicMath::Tokens::Group,
           SymbolicMath::Tokens::ArithmeticOperator,
+          SymbolicMath::Tokens::Group,
           SymbolicMath::Tokens::Group
         ])
 
@@ -149,6 +150,7 @@ RSpec.describe SymbolicMath::Tokenizer do
         expect(tokenizer.tokens[2].string).to eq "(x-[3+4]+5)"
         expect(tokenizer.tokens[3].operator_type).to eq :-
         expect(tokenizer.tokens[4].string).to eq "[6,7]"
+        expect(tokenizer.tokens[5].string).to eq "(8)"
 
         group = tokenizer.tokens[2]
         expect(group.sub_tokens.map(&:class)).to match_array([
@@ -175,6 +177,12 @@ RSpec.describe SymbolicMath::Tokenizer do
         expect(group.sub_tokens[0].value).to eq 6
         expect(group.sub_tokens[1].string).to eq ","
         expect(group.sub_tokens[2].value).to eq 7
+
+        group = tokenizer.tokens[5]
+        expect(group.sub_tokens.map(&:class)).to match_array([
+          SymbolicMath::Tokens::Number
+        ])
+        expect(group.sub_tokens[0].value).to eq 8
       end
     end
 
