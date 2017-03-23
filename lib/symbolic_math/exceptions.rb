@@ -10,5 +10,6 @@ module SymbolicMath
     class ParseError < BaseError; end
     class ASTError < BaseError; end
     class InvalidFunctionError < BaseError; end
+    class UndefinedFunctionError < BaseError; end
   end
 end

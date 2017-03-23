@@ -8,7 +8,7 @@ RSpec.describe SymbolicMath::Functions::Registry do
 
   context "with no parent, and using defaults" do
     it "raises error when not present" do
-      expect{registry["not_exist"]}.to raise_error(SymbolicMath::Exceptions::InvalidFunctionError)
+      expect{registry["not_exist"]}.to raise_error(SymbolicMath::Exceptions::UndefinedFunctionError)
     end
 
     it "retrieves default methods" do
@@ -27,7 +27,7 @@ RSpec.describe SymbolicMath::Functions::Registry do
   context "when not using defaults" do
     let(:use_defaults) { false }
     it "raises error when getting a default function" do
-      expect{registry["sin"]}.to raise_error(SymbolicMath::Exceptions::InvalidFunctionError)
+      expect{registry["sin"]}.to raise_error(SymbolicMath::Exceptions::UndefinedFunctionError)
     end
   end
 
