@@ -84,6 +84,10 @@ module SymbolicMath
         @components << SymbolicMath::Parsing::BitwiseNot.new
       when :"~~"
         @components << SymbolicMath::Parsing::BitwiseNotNot.new
+      when :"!"
+        @components << SymbolicMath::Parsing::LogicalNot.new
+      when :"!!"
+        @components << SymbolicMath::Parsing::LogicalNotNot.new
       else
         raise SymbolicMath::Exceptions::ParseError.new("Unhandled unary operator type #{token.operator_type}")
       end
@@ -94,7 +98,14 @@ module SymbolicMath
       when SymbolicMath::Tokens::Number
         @components << SymbolicMath::Parsing::Number.new(token.value)
       when SymbolicMath::Tokens::Word
-        @components << SymbolicMath::Parsing::Variable.new(token.string)
+        case token.string.downcase
+        when "true"
+          @components << SymbolicMath::Parsing::Boolean.new(true)
+        when "false"
+          @components << SymbolicMath::Parsing::Boolean.new(false)
+        else
+          @components << SymbolicMath::Parsing::Variable.new(token.string)
+        end
       when SymbolicMath::Tokens::Group
         @components << SymbolicMath::Parsing::Group.new(token.sub_tokens)
       else
@@ -126,6 +137,23 @@ module SymbolicMath
         @components << SymbolicMath::Parsing::BitwiseNot.new
       when :"~~"
         @components << SymbolicMath::Parsing::BitwiseNotNot.new
+      # Logical
+      when :"&&"
+        @components << SymbolicMath::Parsing::LogicalAnd.new
+      when :"||"
+        @components << SymbolicMath::Parsing::LogicalOr.new
+      when :"!"
+        @components << SymbolicMath::Parsing::LogicalNot.new
+      when :"!!"
+        @components << SymbolicMath::Parsing::LogicalNotNot.new
+      when :">"
+        @components << SymbolicMath::Parsing::LogicalGreaterThan.new
+      when :"<"
+        @components << SymbolicMath::Parsing::LogicalLessThan.new
+      when :">="
+        @components << SymbolicMath::Parsing::LogicalGreaterThanOrEqualTo.new
+      when :"<="
+        @components << SymbolicMath::Parsing::LogicalLessThanOrEqualTo.new
       else
         raise SymbolicMath::Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
       end

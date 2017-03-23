@@ -136,9 +136,9 @@ RSpec.describe SymbolicMath::Parser do
       end
     end
 
-    context "bitwise" do
+    context "bitwise operators" do
       it "parses correctly" do
-        parser = described_class.new(string: "~~~~9 & 8 | ~16")
+        parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1)")
 
         expect(parser.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::BitwiseNotNot,
@@ -146,9 +146,60 @@ RSpec.describe SymbolicMath::Parser do
           SymbolicMath::Parsing::BitwiseAnd,
           SymbolicMath::Parsing::Number,
           SymbolicMath::Parsing::BitwiseOr,
+          SymbolicMath::Parsing::Group
+        ])
+
+        expect(parser.components[1].value).to eq 9
+        expect(parser.components[3].value).to eq 8
+
+        group = parser.components[5]
+        expect(group.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::BitwiseNot,
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::Plus,
           SymbolicMath::Parsing::Number
         ])
+
+        expect(group.components[1].value).to eq 16
+        expect(group.components[3].value).to eq 1
+      end
+    end
+
+    context "logical operators" do
+      it "parses correctly" do
+        parser = described_class.new(string: "true && !!!false || (!false || 2 > 0) && 5 >= 5")
+
+        expect(parser.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::Boolean,
+          SymbolicMath::Parsing::LogicalAnd,
+          SymbolicMath::Parsing::LogicalNot,
+          SymbolicMath::Parsing::Boolean,
+          SymbolicMath::Parsing::LogicalOr,
+          SymbolicMath::Parsing::Group,
+          SymbolicMath::Parsing::LogicalAnd,
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::LogicalGreaterThanOrEqualTo,
+          SymbolicMath::Parsing::Number
+        ])
+
+        expect(parser.components[0].value).to eq true
+        expect(parser.components[3].value).to eq false
+        expect(parser.components[7].value).to eq 5
+        expect(parser.components[9].value).to eq 5
+
+        group = parser.components[5]
+        expect(group.components.map(&:class)).to match_array([
+          SymbolicMath::Parsing::LogicalNot,
+          SymbolicMath::Parsing::Boolean,
+          SymbolicMath::Parsing::LogicalOr,
+          SymbolicMath::Parsing::Number,
+          SymbolicMath::Parsing::LogicalGreaterThan,
+          SymbolicMath::Parsing::Number
+        ])
+
+        expect(group.components[1].value).to eq false
+        expect(group.components[3].value).to eq 2
+        expect(group.components[5].value).to eq 0
       end
     end
 
