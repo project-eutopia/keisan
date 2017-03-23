@@ -11,5 +11,6 @@ module SymbolicMath
     class ASTError < BaseError; end
     class InvalidFunctionError < BaseError; end
     class UndefinedFunctionError < BaseError; end
+    class UndefinedVariableError < BaseError; end
   end
 end

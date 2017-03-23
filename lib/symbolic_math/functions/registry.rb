@@ -15,7 +15,7 @@ module SymbolicMath
         return @hash[name] if @hash.has_key?(name)
         return @parent[name] if @parent.present? && @parent.has_name?(name)
         return default_registry[name] if @use_defaults && default_registry.has_name?(name)
-        raise SymbolicMath::Exceptions::InvalidFunctionError.new "Undefined function #{name}"
+        raise SymbolicMath::Exceptions::UndefinedFunctionError.new name
       end
 
       def has_name?(name)
