@@ -5,6 +5,12 @@ module SymbolicMath
       @variable_registry = variable_registry || Variables::Registry.new
     end
 
+    def spawn_child
+      function_registry = Functions::Registry.new(parent: @function_registry)
+      variable_registry = Variables::Registry.new(parent: @variable_registry)
+      self.class.new(function_registry: function_registry, variable_registry: variable_registry)
+    end
+
     def function(name)
       @function_registry[name.to_s]
     end
