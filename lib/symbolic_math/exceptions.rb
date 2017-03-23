@@ -9,5 +9,6 @@ module SymbolicMath
     class TokenizingError < BaseError; end
     class ParseError < BaseError; end
     class ASTError < BaseError; end
+    class InvalidFunctionError < BaseError; end
   end
 end

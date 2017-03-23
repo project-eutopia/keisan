@@ -4,6 +4,9 @@ require "active_support/core_ext"
 require "symbolic_math/version"
 require "symbolic_math/exceptions"
 
+require "symbolic_math/function"
+require "symbolic_math/functions/registry"
+require "symbolic_math/functions/default_registry"
 require "symbolic_math/ast/node"
 
 require "symbolic_math/ast/literal"
@@ -19,6 +22,7 @@ require "symbolic_math/ast/operator"
 require "symbolic_math/ast/plus"
 require "symbolic_math/ast/times"
 require "symbolic_math/ast/exponent"
+require "symbolic_math/ast/function"
 
 require "symbolic_math/ast/builder"
 

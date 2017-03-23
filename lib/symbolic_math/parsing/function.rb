@@ -6,8 +6,6 @@ module SymbolicMath
       def initialize(name, arguments)
         @name = name
         @arguments = arguments
-        # TODO
-        # binding.pry
       end
     end
   end
