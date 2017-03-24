@@ -7,7 +7,7 @@ module Keisan
         raise Keisan::Exceptions::InternalError.new("Invalid arguments")
       end
 
-      if string.present?
+      if !string.nil?
         @tokens = Tokenizer.new(string).tokens
       else
         raise Keisan::Exceptions::InternalError.new("Invalid argument: tokens = #{tokens}") if tokens.nil? || !tokens.is_a?(Array)

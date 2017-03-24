@@ -7,9 +7,9 @@ module Keisan
           raise Keisan::Exceptions::InternalError.new("Require parser or components")
         end
 
-        if string.present?
+        if !string.nil?
           @components = Keisan::Parser.new(string: string).components
-        elsif parser.present?
+        elsif !parser.nil?
           @components = parser.components
         else
           @components = Array.wrap(components)
@@ -120,7 +120,9 @@ module Keisan
       def consume_operators_with_priority!(priority)
         # Treat back-to-back operators with same priority as one single call (e.g. 1 + 2 + 3 is add(1,2,3))
         while @operators.any? {|operator| operator.priority == priority}
-          next_operator_group = @operators.each.with_index.to_a.split {|operator,i| operator.priority != priority}.select(&:present?).first
+          next_operator_group = @operators.each.with_index.to_a.split {|operator,i|
+            operator.priority != priority
+          }.select {|ops| !ops.empty?}.first
           operator_group_indexes = next_operator_group.map(&:last)
 
           first_index = operator_group_indexes.first
