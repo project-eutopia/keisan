@@ -68,28 +68,9 @@ module SymbolicMath
 
       elsif @components[-1].is_a?(Parsing::Element)
         if @components[-1].is_a?(Parsing::Variable) && token.type == :group && token.group_type == :round
-          # Have a function actually, not a variable
-          if token.sub_tokens.empty?
-            @components[-1] = Parsing::Function.new(@components[-1].name, [])
-          else
-            @components[-1] = Parsing::Function.new(
-              @components[-1].name,
-              token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|
-                Parsing::Argument.new(sub_tokens)
-              end
-            )
-          end
+          add_function_to_components!(token)
         elsif token.type == :group && token.group_type == :square
-          # Have an indexing
-          @components << if token.sub_tokens.empty?
-                           Parsing::Indexing.new([])
-                         else
-                           Parsing::Indexing.new(
-                             token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|
-                               Parsing::Argument.new(sub_tokens)
-                             end
-                           )
-                         end
+          add_indexing_to_components!(token)
         else
           # Expect an operator
           raise SymbolicMath::Exceptions::ParseError.new("Expected an operator, received #{token.string}") unless token.type == :operator
@@ -201,6 +182,33 @@ module SymbolicMath
       else
         raise SymbolicMath::Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
       end
+    end
+
+    def add_function_to_components!(token)
+      # Have a function actually, not a variable
+      if token.sub_tokens.empty?
+        @components[-1] = Parsing::Function.new(@components[-1].name, [])
+      else
+        @components[-1] = Parsing::Function.new(
+          @components[-1].name,
+          token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|
+            Parsing::Argument.new(sub_tokens)
+          end
+        )
+      end
+    end
+
+    def add_indexing_to_components!(token)
+      # Have an indexing
+      @components << if token.sub_tokens.empty?
+                       Parsing::Indexing.new([])
+                     else
+                       Parsing::Indexing.new(
+                         token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|
+                           Parsing::Argument.new(sub_tokens)
+                         end
+                       )
+                     end
     end
   end
 end
