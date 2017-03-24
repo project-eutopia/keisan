@@ -46,16 +46,36 @@ module SymbolicMath
       private
 
       def node_from_components(components)
-        if components.count == 2
-          unless components.first.is_a?(SymbolicMath::Parsing::UnaryOperator)
-            raise SymbolicMath::Exceptions::ASTError.new("Expected a unary operator, received #{components.first}")
-          end
-          components.first.node_class.new(node_of_component(components.last))
-        elsif components.count == 1
-          node_of_component(components.first)
-        else
-          raise SymbolicMath::Exceptions::InternalError.new("Invalid number of components")
+        index_of_unary_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(SymbolicMath::Parsing::UnaryOperator)}.map(&:last)
+        # Must be all in the front
+        unless index_of_unary_components.map.with_index.all? {|i,j| i == j}
+          raise SymbolicMath::Exceptions::ASTError.new("unary operators must be in front")
         end
+
+        index_of_indexing_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(SymbolicMath::Parsing::Indexing)}.map(&:last)
+        unless index_of_indexing_components.reverse.map.with_index.all? {|i,j| i + j == index_of_indexing_components.size - 1 }
+          raise SymbolicMath::Exceptions::ASTError.new("indexing components must be in back")
+        end
+
+        num_unary    = index_of_unary_components.size
+        num_indexing = index_of_indexing_components.size
+
+        unless num_unary + 1 + num_indexing == components.size
+          raise SymbolicMath::Exceptions::ASTError.new("have too many components")
+        end
+
+        unary_components = index_of_unary_components.map {|i| components[i]}
+        indexing_components = index_of_indexing_components.map {|i| components[i]}
+
+        node = node_of_component(components[unary_components.size])
+
+        # TODO append indexing elements
+
+        unary_components.reverse.each do |unary_component|
+          node = unary_component.node_class.new(node)
+        end
+
+        node
       end
 
       def node_of_component(component)
