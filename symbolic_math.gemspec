@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'symbolic_math/version'
+require 'compute/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "symbolic_math"
-  spec.version       = SymbolicMath::VERSION
+  spec.name          = "compute"
+  spec.version       = Compute::VERSION
   spec.authors       = ["Christopher Locke"]
   spec.email         = ["project.eutopia@gmail.com"]
 

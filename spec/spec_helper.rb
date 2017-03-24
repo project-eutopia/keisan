@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "symbolic_math"
+require "compute"
 require "pry"
 
 RSpec.configure do |config|
