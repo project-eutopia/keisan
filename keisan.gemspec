@@ -9,28 +9,19 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Christopher Locke"]
   spec.email         = ["project.eutopia@gmail.com"]
 
-  spec.summary       = %q{Math computing library for Ruby.}
-  spec.description   = %q{Math computing library for Ruby.}
-  spec.homepage      = ""
+  spec.summary       = %q{An equation parser and evaluator}
+  spec.description   = %q{A library for parsing equations into an abstract syntax tree for evaluation}
+  spec.homepage      = "https://github.com/project-eutopia/keisan"
   spec.licenses      = %w(MIT)
 
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against " \
-      "public gem pushes."
-  end
-
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+  spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activesupport", "~> 5.0.2"
+  spec.required_ruby_version = '>= 2.4.0'
+
+  spec.add_dependency "activesupport", ">= 4.0.0"
 
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"
