@@ -14,7 +14,7 @@ RSpec.describe Compute::Context do
     my_context = described_class.new
 
     expect(my_context.variable("pi")).to eq Math::PI
-    expect(my_context.function("sin")).to be_a(Compute::Functions::Sin)
+    expect(my_context.function("sin")).to be_a(Compute::Function)
   end
 
   describe "spawn_child" do

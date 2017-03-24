@@ -2,18 +2,24 @@ require_relative "sin"
 
 module Compute
   module Functions
-    class DefaultRegistry < Registry
-      def initialize
-        @hash = {}
-        @parent = self.class.registry
+    class DefaultRegistry
+      def self.registry
+        @registry ||= Registry.new.tap do |r|
+          register_defaults!(r)
+        end.freeze
       end
 
-      FUNCTIONS = {
-        "sin" => Sin.new
-      }
+      private
 
-      def self.registry
-        @registry ||= Registry.new(functions: FUNCTIONS, parent: nil)
+      def self.register_defaults!(registry)
+        Math.methods(false).each do |method|
+          registry.register!(
+            method,
+            Proc.new do |*args|
+              Math.send(method, *args)
+            end
+          )
+        end
       end
     end
   end

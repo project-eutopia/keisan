@@ -23,7 +23,8 @@ module Compute
       end
 
       def register!(name, value)
-        self[name] = value
+        raise Compute::Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
+        self[name.to_s] = value
       end
 
       private

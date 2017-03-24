@@ -12,5 +12,6 @@ module Compute
     class InvalidFunctionError < BaseError; end
     class UndefinedFunctionError < BaseError; end
     class UndefinedVariableError < BaseError; end
+    class UnmodifiableError < BaseError; end
   end
 end

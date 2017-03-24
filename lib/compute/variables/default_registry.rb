@@ -15,7 +15,7 @@ module Compute
       }
 
       def self.registry
-        @registry ||= Registry.new(variables: VARIABLES, parent: nil)
+        @registry ||= Registry.new(variables: VARIABLES, parent: nil).freeze
       end
     end
   end

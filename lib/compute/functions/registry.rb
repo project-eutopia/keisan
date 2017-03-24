@@ -23,6 +23,9 @@ module Compute
       end
 
       def register!(name, function)
+        raise Compute::Exceptions::UnmodifiableError.new("Cannot modify frozen functions registry") if frozen?
+        name = name.to_s
+
         case function
         when Proc
           self[name] = Compute::Function.new(name, function)
