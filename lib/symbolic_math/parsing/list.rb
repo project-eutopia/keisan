@@ -1,9 +1,9 @@
 module SymbolicMath
   module Parsing
     class List < SquareGroup
-      attr_reader :elements
-      def initialize(elements)
-        @elements = elements
+      attr_reader :arguments
+      def initialize(arguments)
+        @arguments = arguments
       end
     end
   end
