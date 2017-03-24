@@ -12,6 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Math computing library for Ruby.}
   spec.description   = %q{Math computing library for Ruby.}
   spec.homepage      = ""
+  spec.licenses      = %w(MIT)
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
