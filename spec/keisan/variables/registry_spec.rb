@@ -12,8 +12,6 @@ RSpec.describe Keisan::Variables::Registry do
     end
 
     it "retrieves default variables" do
-      expect(registry["true"]).to eq true
-      expect(registry["false"]).to eq false
       expect(registry["pi"]).to eq Math::PI
       expect(registry["e"]).to eq Math::E
       expect(registry["i"]).to eq Complex(0,1)

@@ -4,6 +4,7 @@ module Keisan
       Tokens::Group,
       Tokens::String,
       Tokens::Null,
+      Tokens::Boolean,
       Tokens::Word,
       Tokens::Number,
       Tokens::ArithmeticOperator,

@@ -242,9 +242,9 @@ RSpec.describe Keisan::Tokenizer do
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         Keisan::Tokens::LogicalOperator,
-        Keisan::Tokens::Word,
+        Keisan::Tokens::Boolean,
         Keisan::Tokens::LogicalOperator,
-        Keisan::Tokens::Word,
+        Keisan::Tokens::Boolean,
         Keisan::Tokens::LogicalOperator,
         Keisan::Tokens::Group
       ])

@@ -60,7 +60,7 @@ module Keisan
       elsif @components[-1].is_a?(Parsing::UnaryOperator)
         # Expect an element
         case token.type
-        when :number, :string, :word, :group
+        when :number, :string, :word, :group, :null, :boolean
           add_element_to_components!(token)
         else
           raise Keisan::Exceptions::ParseError.new("Expected an element, received #{token.string}")
@@ -110,14 +110,9 @@ module Keisan
       when Keisan::Tokens::Null
         @components << Keisan::Parsing::Null.new
       when Keisan::Tokens::Word
-        case token.string.downcase
-        when "true"
-          @components << Keisan::Parsing::Boolean.new(true)
-        when "false"
-          @components << Keisan::Parsing::Boolean.new(false)
-        else
-          @components << Keisan::Parsing::Variable.new(token.string)
-        end
+        @components << Keisan::Parsing::Variable.new(token.string)
+      when Keisan::Tokens::Boolean
+        @components << Keisan::Parsing::Boolean.new(token.value)
       when Keisan::Tokens::Group
         case token.group_type
         when :round

@@ -7,8 +7,6 @@ module Keisan
       end
 
       VARIABLES = {
-        "true" => true,
-        "false" => false,
         "pi" => Math::PI,
         "e" => Math::E,
         "i" => Complex(0,1)
