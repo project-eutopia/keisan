@@ -1,8 +1,11 @@
 module Compute
   class Context
-    def initialize(function_registry: nil, variable_registry: nil)
+    attr_reader :random
+
+    def initialize(function_registry: nil, variable_registry: nil, random: nil)
       @function_registry = function_registry || Functions::Registry.new
       @variable_registry = variable_registry || Variables::Registry.new
+      @random            = random            || Random.new
     end
 
     def spawn_child

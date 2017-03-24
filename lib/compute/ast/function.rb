@@ -12,7 +12,7 @@ module Compute
         context = Compute::Context.new if context.nil?
         argument_values = children.map {|child| child.value(context)}
         function = context.function(name)
-        function.call(*argument_values)
+        function.call(context, *argument_values)
       end
     end
   end

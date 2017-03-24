@@ -7,7 +7,7 @@ RSpec.describe Compute::Context do
     my_context.register_variable!("x", 2)
     my_context.register_function!("f", Proc.new {|x| x**2})
     expect(my_context.variable("x")).to eq 2
-    expect(my_context.function("f").call(3)).to eq 9
+    expect(my_context.function("f").call(nil, 3)).to eq 9
   end
 
   it "has default variables and functions" do
@@ -26,7 +26,7 @@ RSpec.describe Compute::Context do
 
       child_context = my_context.spawn_child
       expect(child_context.variable("x")).to eq 2
-      expect(child_context.function("f").call(3)).to eq 9
+      expect(child_context.function("f").call(nil, 3)).to eq 9
     end
 
     it "can shadow parent" do
@@ -43,8 +43,8 @@ RSpec.describe Compute::Context do
 
       expect(child_context.variable("x")).to eq 5
       expect(child_context.variable("y")).to eq 7
-      expect(child_context.function("f").call(2)).to eq 8
-      expect(child_context.function("g").call(2)).to eq 1
+      expect(child_context.function("f").call(nil, 2)).to eq 8
+      expect(child_context.function("g").call(nil, 2)).to eq 1
     end
   end
 end

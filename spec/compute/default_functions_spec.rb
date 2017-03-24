@@ -4,7 +4,7 @@ RSpec.describe Compute::Functions::DefaultRegistry do
   let(:registry) { described_class.registry }
   it "contains correct functions" do
     expect(registry["sin"].name).to eq "sin"
-    expect(registry["sin"].call(1)).to eq Math.sin(1)
+    expect(registry["sin"].call(nil, 1)).to eq Math.sin(1)
   end
 
   it "is unmodifiable" do
@@ -14,7 +14,7 @@ RSpec.describe Compute::Functions::DefaultRegistry do
   context "if" do
     it "works as expected" do
       expect(registry["if"].name).to eq "if"
-      expect(registry["if"].call(false, 2, 3)).to eq 3
+      expect(registry["if"].call(nil, false, 2, 3)).to eq 3
 
       expect(Compute::Calculator.new.evaluate("if(true, 2)")).to eq 2
       expect(Compute::Calculator.new.evaluate("if(false, 2)")).to eq nil
@@ -28,15 +28,27 @@ RSpec.describe Compute::Functions::DefaultRegistry do
   context "array methods" do
     it "works as expected" do
       expect(registry["min"].name).to eq "min"
-      expect(registry["min"].call([-4, -1, 1, 2])).to eq -4
+      expect(registry["min"].call(nil, [-4, -1, 1, 2])).to eq -4
 
       expect(registry["max"].name).to eq "max"
-      expect(registry["max"].call([-4, -1, 1, 2])).to eq 2
+      expect(registry["max"].call(nil, [-4, -1, 1, 2])).to eq 2
 
       expect(registry["size"].name).to eq "size"
-      expect(registry["size"].call([-4, -1, 1, 2])).to eq 4
+      expect(registry["size"].call(nil, [-4, -1, 1, 2])).to eq 4
 
       expect(Compute::Calculator.new.evaluate("a[size(a)-1]", a: [1, 3, 5, 7])).to eq 7
+    end
+  end
+
+  context "random methods" do
+    it "works as expected" do
+      a = [2, 3, 6, 7]
+
+      20.times do
+        expect(0...4).to cover Compute::Calculator.new.evaluate("rand(4)")
+        expect(3...8).to cover Compute::Calculator.new.evaluate("rand(3, 8)")
+        expect(a).to include Compute::Calculator.new.evaluate("sample(#{a})")
+      end
     end
   end
 end

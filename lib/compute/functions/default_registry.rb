@@ -1,4 +1,5 @@
-require_relative "sin"
+require_relative "rand"
+require_relative "sample"
 
 module Compute
   module Functions
@@ -15,6 +16,7 @@ module Compute
         register_builtin_math!(registry)
         register_branch_methods!(registry)
         register_array_methods!(registry)
+        register_random_methods!(registry)
       end
 
       def self.register_builtin_math!(registry)
@@ -36,6 +38,11 @@ module Compute
         %i(min max size).each do |method|
           registry.register!(method, Proc.new {|a| a.send(method)})
         end
+      end
+
+      def self.register_random_methods!(registry)
+        registry.register!(:rand, Compute::Functions::Rand.new)
+        registry.register!(:sample, Compute::Functions::Sample.new)
       end
     end
   end

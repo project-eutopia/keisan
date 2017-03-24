@@ -8,7 +8,7 @@ module Compute
       @function_proc = function_proc
     end
 
-    def call(*args)
+    def call(context, *args)
       @function_proc.call(*args)
     end
   end

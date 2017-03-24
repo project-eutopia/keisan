@@ -14,13 +14,13 @@ RSpec.describe Compute::Functions::Registry do
     it "retrieves default methods" do
       expect{registry["sin"]}.not_to raise_error
       expect(registry["sin"].name).to eq "sin"
-      expect(registry["sin"].call(0)).to eq 0
+      expect(registry["sin"].call(nil, 0)).to eq 0
     end
 
     it "can store and retrieve methods" do
       registry.register!("test", Proc.new {|x,y| 2*x + y})
       expect(registry["test"].name).to eq "test"
-      expect(registry["test"].call(3,5)).to eq 2*3 + 5
+      expect(registry["test"].call(nil, 3,5)).to eq 2*3 + 5
     end
   end
 
@@ -42,17 +42,17 @@ RSpec.describe Compute::Functions::Registry do
 
     it "gets function from the parent" do
       expect(registry["parent_function"].name).to eq "parent_function"
-      expect(registry["parent_function"].call).to eq 5
+      expect(registry["parent_function"].call(nil)).to eq 5
     end
 
     it "can shadow parent functions" do
       registry.register!("parent_function", Proc.new { 11 })
 
       expect(registry["parent_function"].name).to eq "parent_function"
-      expect(registry["parent_function"].call).to eq 11
+      expect(registry["parent_function"].call(nil)).to eq 11
 
       expect(parent_registry["parent_function"].name).to eq "parent_function"
-      expect(parent_registry["parent_function"].call).to eq 5
+      expect(parent_registry["parent_function"].call(nil)).to eq 5
     end
   end
 end
