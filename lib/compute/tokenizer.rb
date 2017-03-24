@@ -3,6 +3,7 @@ module Compute
     TOKEN_CLASSES = [
       Tokens::Group,
       Tokens::String,
+      Tokens::Null,
       Tokens::Word,
       Tokens::Number,
       Tokens::ArithmeticOperator,

@@ -91,6 +91,8 @@ module Compute
           Compute::AST::Number.new(component.value)
         when Compute::Parsing::String
           Compute::AST::String.new(component.value)
+        when Compute::Parsing::Null
+          Compute::AST::Null.new
         when Compute::Parsing::Variable
           Compute::AST::Variable.new(component.name)
         when Compute::Parsing::Boolean

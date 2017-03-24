@@ -107,6 +107,8 @@ module Compute
         @components << Compute::Parsing::Number.new(token.value)
       when Compute::Tokens::String
         @components << Compute::Parsing::String.new(token.value)
+      when Compute::Tokens::Null
+        @components << Compute::Parsing::Null.new
       when Compute::Tokens::Word
         case token.string.downcase
         when "true"
