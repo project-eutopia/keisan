@@ -27,6 +27,9 @@ module Keisan
         # Special case of string concatenation
         if children_values.all? {|child| child.is_a?(::String)}
           children_values.join
+        # Special case of array concatenation
+        elsif children_values.all? {|child| child.is_a?(::Array)}
+          children_values.inject([], &:+)
         else
           children_values.inject(0, &:+)
         end
