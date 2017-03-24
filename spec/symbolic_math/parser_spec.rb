@@ -50,7 +50,7 @@ RSpec.describe SymbolicMath::Parser do
         expect(parser.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::Number,
           SymbolicMath::Parsing::Times,
-          SymbolicMath::Parsing::Group
+          SymbolicMath::Parsing::RoundGroup
         ])
 
         expect(parser.components[0].value).to eq 2
@@ -65,6 +65,95 @@ RSpec.describe SymbolicMath::Parser do
         expect(group.components[0].value).to eq 3
         expect(group.components[2].value).to eq 5
       end
+
+      context "square bracket indexing" do
+        it "handles simple array" do
+          parser = described_class.new(string: "[1,2]")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::List
+          ])
+
+          arguments = parser.components[0].arguments
+          expect(arguments.count).to eq 2
+          expect(arguments[0].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+        end
+
+        it "handles indexing an array" do
+          parser = described_class.new(string: "[1,2,x][1+y]")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::List,
+            SymbolicMath::Parsing::Indexing
+          ])
+
+          arguments = parser.components[0].arguments
+          expect(arguments.count).to eq 3
+          expect(arguments[0].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+          expect(arguments[2].components.map(&:class)).to match_array([SymbolicMath::Parsing::Variable])
+          expect(arguments[2].components[0].name).to eq "x"
+
+          arguments = parser.components[1].arguments
+          expect(arguments.count).to eq 1
+          expect(arguments[0].components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Number,
+            SymbolicMath::Parsing::Plus,
+            SymbolicMath::Parsing::Variable
+          ])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[0].components[2].name).to eq "y"
+        end
+
+        it "handles indexing a variable" do
+          parser = described_class.new(string: "~a[1,2]")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::BitwiseNot,
+            SymbolicMath::Parsing::Variable,
+            SymbolicMath::Parsing::Indexing
+          ])
+
+          expect(parser.components[1].name).to eq "a"
+          arguments = parser.components[2].arguments
+          expect(arguments[0].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+        end
+
+        it "handles indexing a function call" do
+          parser = described_class.new(string: "a(x)[1,2]")
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::Function,
+            SymbolicMath::Parsing::Indexing
+          ])
+
+          expect(parser.components[0].name).to eq "a"
+          expect(parser.components[0].arguments.count).to eq 1
+          expect(parser.components[0].arguments[0].components.map(&:class)).to match_array([SymbolicMath::Parsing::Variable])
+          expect(parser.components[0].arguments[0].components[0].name).to eq "x"
+
+          arguments = parser.components[1].arguments
+          expect(arguments[0].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([SymbolicMath::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+        end
+
+        it "handles complicated case" do
+          parser = described_class.new(string: "~func(x,y)[2][n-1,m+1]")
+
+          expect(parser.components.map(&:class)).to match_array([
+            SymbolicMath::Parsing::BitwiseNot,
+            SymbolicMath::Parsing::Function,
+            SymbolicMath::Parsing::Indexing,
+            SymbolicMath::Parsing::Indexing
+          ])
+        end
+      end
     end
 
     context "has nested brackets" do
@@ -74,7 +163,7 @@ RSpec.describe SymbolicMath::Parser do
         expect(parser.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::Variable,
           SymbolicMath::Parsing::Exponent,
-          SymbolicMath::Parsing::Group
+          SymbolicMath::Parsing::RoundGroup
         ])
 
         expect(parser.components[0].name).to eq "x"
@@ -83,7 +172,7 @@ RSpec.describe SymbolicMath::Parser do
         expect(group.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::Variable,
           SymbolicMath::Parsing::Times,
-          SymbolicMath::Parsing::Group
+          SymbolicMath::Parsing::RoundGroup
         ])
 
         expect(group.components[0].name).to eq "y"
@@ -206,7 +295,7 @@ RSpec.describe SymbolicMath::Parser do
           SymbolicMath::Parsing::BitwiseAnd,
           SymbolicMath::Parsing::Number,
           SymbolicMath::Parsing::BitwiseOr,
-          SymbolicMath::Parsing::Group,
+          SymbolicMath::Parsing::RoundGroup,
           SymbolicMath::Parsing::BitwiseXor,
           SymbolicMath::Parsing::Number
         ])
@@ -238,7 +327,7 @@ RSpec.describe SymbolicMath::Parser do
           SymbolicMath::Parsing::LogicalNot,
           SymbolicMath::Parsing::Boolean,
           SymbolicMath::Parsing::LogicalOr,
-          SymbolicMath::Parsing::Group,
+          SymbolicMath::Parsing::RoundGroup,
           SymbolicMath::Parsing::LogicalAnd,
           SymbolicMath::Parsing::Number,
           SymbolicMath::Parsing::LogicalGreaterThanOrEqualTo,
@@ -274,9 +363,9 @@ RSpec.describe SymbolicMath::Parser do
           SymbolicMath::Parsing::UnaryMinus,
           SymbolicMath::Parsing::Function,
           SymbolicMath::Parsing::Plus,
-          SymbolicMath::Parsing::Group,
+          SymbolicMath::Parsing::RoundGroup,
           SymbolicMath::Parsing::Divide,
-          SymbolicMath::Parsing::Group
+          SymbolicMath::Parsing::RoundGroup
         ])
 
         function = parser.components[1]
@@ -287,7 +376,7 @@ RSpec.describe SymbolicMath::Parser do
         expect(argument.components.map(&:class)).to match_array([
           SymbolicMath::Parsing::Variable,
           SymbolicMath::Parsing::Exponent,
-          SymbolicMath::Parsing::Group
+          SymbolicMath::Parsing::RoundGroup
         ])
 
         expect(argument.components[0].name).to eq "x"

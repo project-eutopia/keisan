@@ -36,6 +36,16 @@ module SymbolicMath
       end
     end
 
+    # Elements are groups of tokens separated by (non-unary) operators
+    # The following are basic elements:
+    # number
+    # variable
+    # function (word + round group)
+    # list (square group)
+    #
+    # Additionally these can be modified by having any number of unary operators in front,
+    # and any number of indexing groups (square groups) at the back
+    #
     def add_token_to_components!(token)
       if @components.empty? || @components[-1].is_a?(Parsing::Operator)
         # Expect an element or a unary operator
@@ -57,7 +67,7 @@ module SymbolicMath
         end
 
       elsif @components[-1].is_a?(Parsing::Element)
-        if @components[-1].is_a?(Parsing::Variable) && token.type == :group
+        if @components[-1].is_a?(Parsing::Variable) && token.type == :group && token.group_type == :round
           # Have a function actually, not a variable
           if token.sub_tokens.empty?
             @components[-1] = Parsing::Function.new(@components[-1].name, [])
@@ -69,6 +79,17 @@ module SymbolicMath
               end
             )
           end
+        elsif token.type == :group && token.group_type == :square
+          # Have an indexing
+          @components << if token.sub_tokens.empty?
+                           Parsing::Indexing.new([])
+                         else
+                           Parsing::Indexing.new(
+                             token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|
+                               Parsing::Argument.new(sub_tokens)
+                             end
+                           )
+                         end
         else
           # Expect an operator
           raise SymbolicMath::Exceptions::ParseError.new("Expected an operator, received #{token.string}") unless token.type == :operator
@@ -115,7 +136,22 @@ module SymbolicMath
           @components << SymbolicMath::Parsing::Variable.new(token.string)
         end
       when SymbolicMath::Tokens::Group
-        @components << SymbolicMath::Parsing::Group.new(token.sub_tokens)
+        case token.group_type
+        when :round
+          @components << SymbolicMath::Parsing::RoundGroup.new(token.sub_tokens)
+        when :square
+          @components << if token.sub_tokens.empty?
+                           Parsing::List.new([])
+                         else
+                           Parsing::List.new(
+                             token.sub_tokens.split {|sub_token| sub_token.is_a?(SymbolicMath::Tokens::Comma)}.map do |sub_tokens|
+                               Parsing::Argument.new(sub_tokens)
+                             end
+                           )
+                         end
+        else
+          raise SymbolicMath::Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
+        end
       else
         raise SymbolicMath::Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
       end
