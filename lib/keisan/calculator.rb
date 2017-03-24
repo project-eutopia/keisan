@@ -18,5 +18,13 @@ module Keisan
       end
       Keisan::AST::Builder.new(string: expression).ast.value(local_context)
     end
+
+    def define_variable!(name, value)
+      context.register_variable!(name, value)
+    end
+
+    def define_function!(name, function)
+      context.register_function!(name, function)
+    end
   end
 end

@@ -26,4 +26,18 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("[3, 5] + [10, 11]")).to eq [3, 5, 10, 11]
     end
   end
+
+  describe "defining variables and functions" do
+    it "saves them in the calculators context" do
+      calculator.define_variable!("x", 5)
+      expect(calculator.evaluate("x + 1")).to eq 6
+      expect(calculator.evaluate("x + 1", x: 10)).to eq 11
+      expect(calculator.evaluate("x + 1")).to eq 6
+
+      calculator.define_function!("f", Proc.new {|x| 3*x})
+      expect(calculator.evaluate("f(2)")).to eq 6
+      expect(calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})).to eq 20
+      expect(calculator.evaluate("f(2)")).to eq 6
+    end
+  end
 end

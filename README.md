@@ -116,7 +116,7 @@ calculator.evaluate("2 + 12 & 7")
 `keisan` also can parse in strings, and access the characters by index
 
 ```ruby
-calculator.evaluate("'hello'[1]")                                                               
+calculator.evaluate("'hello'[1]")
 #=> "e"
 ```
 
@@ -145,6 +145,34 @@ This allows for simple calculations like
 ```ruby
 calculator.evaluate("e**(i*pi)+1")
 => (0.0+0.0i)
+```
+
+### Adding custom variables and functions
+
+The `Keisan::Calculator` class has a single `Keisan::Context` object in its `context` attribute.  This class is used to store local variables and functions.  As an example of pre-defining some variables and functions, see the following
+
+```ruby
+calculator.define_variable!("x", 5)
+#=> 5
+calculator.evaluate("x + 1")
+#=> 6
+calculator.evaluate("x + 1", x: 10)
+#=> 11
+calculator.evaluate("x + 1")
+#=> 6
+```
+
+Notice how when passing variable values directly to the `evaluate` method, it only shadows the value of 5 for that specific calculation.  The same thing works for functions
+
+```ruby
+calculator.define_function!("f", Proc.new {|x| 3*x})
+#=> #<Keisan::Function:0x005570f935ecc8 @function_proc=#<Proc:0x005570f935ecf0@(pry):6>, @name="f">
+calculator.evaluate("f(2)")
+#=> 6
+calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})
+#=> 20
+calculator.evaluate("f(2)")
+#=> 6
 ```
 
 ## Development
