@@ -88,7 +88,7 @@ calculator.evaluate("[3, 5] + [x, x+1]", x: 10)
 
 `keisan` understands basic boolean logic operators, like `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, so calculations like the following are possible
 
-```
+```ruby
 calculator.evaluate("1 > 0")
 #=> true
 calculator.evaluate("!!!true")
