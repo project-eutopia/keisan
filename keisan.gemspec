@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'compute/version'
+require 'keisan/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "compute"
-  spec.version       = Compute::VERSION
+  spec.name          = "keisan"
+  spec.version       = Keisan::VERSION
   spec.authors       = ["Christopher Locke"]
   spec.email         = ["project.eutopia@gmail.com"]
 
