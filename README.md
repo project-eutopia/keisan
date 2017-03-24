@@ -1,5 +1,6 @@
 # Keisan
 
+[![Gem Version](https://badge.fury.io/rb/keisan.svg)](https://badge.fury.io/rb/keisan)
 [![Build Status](https://travis-ci.org/project-eutopia/keisan.png?branch=master)](https://travis-ci.org/project-eutopia/keisan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hakiri](https://hakiri.io/github/project-eutopia/keisan/master.svg)](https://hakiri.io/github/project-eutopia/keisan)
