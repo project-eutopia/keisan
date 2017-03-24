@@ -46,7 +46,10 @@ RSpec.describe SymbolicMath::AST::Builder do
       "false && true"        => false,
       "true  && false"       => false,
       "false && false"       => false,
-      "'hello ' + \"world\"" => "hello world"
+      "'hello ' + \"world\"" => "hello world",
+      "[1,2,3]"              => [1,2,3],
+      "[2,4,6,8][1]"         => 4,
+      "[[1,3],[5,7]][1][0]"  => 5
     }
 
     operations.each do |operation, value|
@@ -61,6 +64,14 @@ RSpec.describe SymbolicMath::AST::Builder do
       expect(described_class.new(string: "sin(pi)").ast.value).to be_within(1e-10).of(0)
       my_context.register_function!("my_func", Proc.new { 11 })
       expect(described_class.new(string: "5 + my_func()").ast.value(my_context)).to eq 16
+    end
+  end
+
+  context "list" do
+    it "properly parses" do
+      my_context.register_function!("f", Proc.new { [3,5,7] })
+      expect(described_class.new(string: "f()").ast.value(my_context)).to eq [3,5,7]
+      expect(described_class.new(string: "f()[1]").ast.value(my_context)).to eq 5
     end
   end
 

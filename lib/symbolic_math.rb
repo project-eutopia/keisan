@@ -45,6 +45,8 @@ require "symbolic_math/ast/logical_greater_than"
 require "symbolic_math/ast/logical_less_than_or_equal_to"
 require "symbolic_math/ast/logical_greater_than_or_equal_to"
 require "symbolic_math/ast/function"
+require "symbolic_math/ast/list"
+require "symbolic_math/ast/indexing"
 
 require "symbolic_math/ast/builder"
 

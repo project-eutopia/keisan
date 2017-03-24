@@ -5,6 +5,10 @@ module SymbolicMath
       def initialize(arguments)
         @arguments = arguments
       end
+
+      def node_class
+        SymbolicMath::AST::Indexing
+      end
     end
   end
 end

@@ -53,7 +53,7 @@ module SymbolicMath
         end
 
         index_of_indexing_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(SymbolicMath::Parsing::Indexing)}.map(&:last)
-        unless index_of_indexing_components.reverse.map.with_index.all? {|i,j| i + j == index_of_indexing_components.size - 1 }
+        unless index_of_indexing_components.reverse.map.with_index.all? {|i,j| i + j == components.size - 1 }
           raise SymbolicMath::Exceptions::ASTError.new("indexing components must be in back")
         end
 
@@ -69,7 +69,14 @@ module SymbolicMath
 
         node = node_of_component(components[unary_components.size])
 
-        # TODO append indexing elements
+        indexing_components.each do |indexing_component|
+          node = indexing_component.node_class.new(
+            node,
+            indexing_component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            }
+          )
+        end
 
         unary_components.reverse.each do |unary_component|
           node = unary_component.node_class.new(node)
@@ -88,6 +95,12 @@ module SymbolicMath
           SymbolicMath::AST::Variable.new(component.name)
         when SymbolicMath::Parsing::Boolean
           SymbolicMath::AST::Boolean.new(component.value)
+        when SymbolicMath::Parsing::List
+          SymbolicMath::AST::List.new(
+            component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            }
+          )
         when SymbolicMath::Parsing::Group
           Builder.new(components: component.components).node
         when SymbolicMath::Parsing::Function
