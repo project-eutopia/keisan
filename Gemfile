@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in symbolic_math.gemspec
+# Specify your gem's dependencies in compute.gemspec
 gemspec

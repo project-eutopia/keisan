@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Christopher Locke"]
   spec.email         = ["project.eutopia@gmail.com"]
 
-  spec.summary       = %q{Symbolic math library for Ruby.}
-  spec.description   = %q{Symbolic math library for Ruby.}
+  spec.summary       = %q{Math computing library for Ruby.}
+  spec.description   = %q{Math computing library for Ruby.}
   spec.homepage      = ""
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
