@@ -6,10 +6,15 @@ module Keisan
       @context = context || Context.new
     end
 
-    def evaluate(expression, variables = {})
+    def evaluate(expression, definitions = {})
       local_context = context.spawn_child
-      variables.each do |name, value|
-        local_context.register_variable!(name, value)
+      definitions.each do |name, value|
+        case value
+        when Proc
+          local_context.register_function!(name, value)
+        else
+          local_context.register_variable!(name, value)
+        end
       end
       Keisan::AST::Builder.new(string: expression).ast.value(local_context)
     end
