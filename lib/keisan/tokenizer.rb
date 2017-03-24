@@ -23,7 +23,6 @@ module Keisan
 
       @scan = @expression.scan(TOKEN_REGEX)
 
-      binding.pry
       tokenizing_check = ""
 
       @tokens = @scan.map do |scan_result|
@@ -33,7 +32,6 @@ module Keisan
         token_class = TOKEN_CLASSES[i].new(token_string)
       end
 
-      # binding.pry
       unless tokenizing_check == @expression
         raise Keisan::Exceptions::TokenizingError.new("Expected \"#{@expression}\", tokenized \"#{tokenizing_check}\"")
       end
