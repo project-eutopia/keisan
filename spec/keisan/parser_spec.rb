@@ -1,0 +1,436 @@
+require "spec_helper"
+
+RSpec.describe Keisan::Parser do
+  describe "components" do
+    context "simple operations" do
+      it "has correct components" do
+        parser = described_class.new(string: "1 + 2 - 3 * 4 / x")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Minus,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Times,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Divide,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(parser.components[0].value).to eq 1
+        expect(parser.components[2].value).to eq 2
+        expect(parser.components[4].value).to eq 3
+        expect(parser.components[6].value).to eq 4
+        expect(parser.components[8].name).to eq "x"
+      end
+    end
+
+    context "has unary operators" do
+      it "correctly picks them up" do
+        parser = described_class.new(string: "+2 * -x")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::UnaryPlus,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Times,
+          Keisan::Parsing::UnaryMinus,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(parser.components[1].value).to eq 2
+        expect(parser.components[4].name).to eq "x"
+      end
+    end
+
+    context "has brackets" do
+      it "uses Parsing::Group to contain the element" do
+        parser = described_class.new(string: "2 * (3 + 5)")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Times,
+          Keisan::Parsing::RoundGroup
+        ])
+
+        expect(parser.components[0].value).to eq 2
+
+        group = parser.components[2]
+        expect(group.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Number
+        ])
+
+        expect(group.components[0].value).to eq 3
+        expect(group.components[2].value).to eq 5
+      end
+
+      context "square bracket indexing" do
+        it "handles simple array" do
+          parser = described_class.new(string: "[1,2]")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::List
+          ])
+
+          arguments = parser.components[0].arguments
+          expect(arguments.count).to eq 2
+          expect(arguments[0].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+        end
+
+        it "handles indexing an array" do
+          parser = described_class.new(string: "[1,2,x][1+y]")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::List,
+            Keisan::Parsing::Indexing
+          ])
+
+          arguments = parser.components[0].arguments
+          expect(arguments.count).to eq 3
+          expect(arguments[0].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+          expect(arguments[2].components.map(&:class)).to match_array([Keisan::Parsing::Variable])
+          expect(arguments[2].components[0].name).to eq "x"
+
+          arguments = parser.components[1].arguments
+          expect(arguments.count).to eq 1
+          expect(arguments[0].components.map(&:class)).to match_array([
+            Keisan::Parsing::Number,
+            Keisan::Parsing::Plus,
+            Keisan::Parsing::Variable
+          ])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[0].components[2].name).to eq "y"
+        end
+
+        it "handles indexing a variable" do
+          parser = described_class.new(string: "~a[1,2]")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::BitwiseNot,
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::Indexing
+          ])
+
+          expect(parser.components[1].name).to eq "a"
+          arguments = parser.components[2].arguments
+          expect(arguments[0].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+        end
+
+        it "handles indexing a function call" do
+          parser = described_class.new(string: "a(x)[1,2]")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Function,
+            Keisan::Parsing::Indexing
+          ])
+
+          expect(parser.components[0].name).to eq "a"
+          expect(parser.components[0].arguments.count).to eq 1
+          expect(parser.components[0].arguments[0].components.map(&:class)).to match_array([Keisan::Parsing::Variable])
+          expect(parser.components[0].arguments[0].components[0].name).to eq "x"
+
+          arguments = parser.components[1].arguments
+          expect(arguments[0].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[0].components[0].value).to eq 1
+          expect(arguments[1].components.map(&:class)).to match_array([Keisan::Parsing::Number])
+          expect(arguments[1].components[0].value).to eq 2
+        end
+
+        it "handles complicated case" do
+          parser = described_class.new(string: "~func(x,y)[2][n-1,m+1]")
+
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::BitwiseNot,
+            Keisan::Parsing::Function,
+            Keisan::Parsing::Indexing,
+            Keisan::Parsing::Indexing
+          ])
+        end
+      end
+    end
+
+    context "has nested brackets" do
+      it "uses Parsing::Group to contain the element" do
+        parser = described_class.new(string: "x ** (y * (1 + z))")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Exponent,
+          Keisan::Parsing::RoundGroup
+        ])
+
+        expect(parser.components[0].name).to eq "x"
+
+        group = parser.components[2]
+        expect(group.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Times,
+          Keisan::Parsing::RoundGroup
+        ])
+
+        expect(group.components[0].name).to eq "y"
+
+        group = group.components[2]
+        expect(group.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(group.components[0].value).to eq 1
+        expect(group.components[2].name).to eq "z"
+      end
+    end
+
+    context "has function call" do
+      describe "no arguments" do
+        it "has no arguments" do
+          parser = described_class.new(string: "f()")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Function
+          ])
+
+          fn = parser.components.first
+          expect(fn.arguments).to match_array([])
+        end
+      end
+
+      describe "one argument" do
+        it "has one argument" do
+          parser = described_class.new(string: "f(x+1)")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Function
+          ])
+
+          fn = parser.components.first
+          expect(fn.arguments.count).to eq 1
+
+          expect(fn.arguments.first.components.map(&:class)).to match_array([
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::Plus,
+            Keisan::Parsing::Number
+          ])
+          expect(fn.arguments.first.components[0].name).to eq "x"
+          expect(fn.arguments.first.components[2].value).to eq 1
+        end
+      end
+
+      describe "two arguments" do
+        it "has two arguments" do
+          parser = described_class.new(string: "f(x+1, y-1)")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Function
+          ])
+
+          fn = parser.components.first
+          expect(fn.arguments.count).to eq 2
+
+          expect(fn.arguments.first.components.map(&:class)).to match_array([
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::Plus,
+            Keisan::Parsing::Number
+          ])
+          expect(fn.arguments.first.components[0].name).to eq "x"
+          expect(fn.arguments.first.components[2].value).to eq 1
+
+          expect(fn.arguments.last.components.map(&:class)).to match_array([
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::Minus,
+            Keisan::Parsing::Number
+          ])
+          expect(fn.arguments.last.components[0].name).to eq "y"
+          expect(fn.arguments.last.components[2].value).to eq 1
+        end
+      end
+
+      it "contains the correct arguments" do
+        parser = described_class.new(string: "1 + atan2(x + 1, y - 1)")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Function
+        ])
+
+        expect(parser.components[0].value).to eq 1
+        expect(parser.components[2].name).to eq "atan2"
+
+        arguments = parser.components[2].arguments
+        expect(arguments.count).to eq 2
+
+        expect(arguments.all? {|argument| argument.is_a?(Keisan::Parsing::Argument)}).to be true
+
+        expect(arguments.first.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Number
+        ])
+        expect(arguments.first.components[0].name).to eq "x"
+        expect(arguments.first.components[2].value).to eq 1
+
+        expect(arguments.last.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Minus,
+          Keisan::Parsing::Number
+        ])
+        expect(arguments.last.components[0].name).to eq "y"
+        expect(arguments.last.components[2].value).to eq 1
+      end
+    end
+
+    context "bitwise operators" do
+      it "parses correctly" do
+        parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1) ^ 4")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::BitwiseNotNot,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::BitwiseAnd,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::BitwiseOr,
+          Keisan::Parsing::RoundGroup,
+          Keisan::Parsing::BitwiseXor,
+          Keisan::Parsing::Number
+        ])
+
+        expect(parser.components[1].value).to eq 9
+        expect(parser.components[3].value).to eq 8
+        expect(parser.components[7].value).to eq 4
+
+        group = parser.components[5]
+        expect(group.components.map(&:class)).to match_array([
+          Keisan::Parsing::BitwiseNot,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Number
+        ])
+
+        expect(group.components[1].value).to eq 16
+        expect(group.components[3].value).to eq 1
+      end
+    end
+
+    context "logical operators" do
+      it "parses correctly" do
+        parser = described_class.new(string: "true && !!!false || (!false || 2 > 0) && 5 >= 5")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Boolean,
+          Keisan::Parsing::LogicalAnd,
+          Keisan::Parsing::LogicalNot,
+          Keisan::Parsing::Boolean,
+          Keisan::Parsing::LogicalOr,
+          Keisan::Parsing::RoundGroup,
+          Keisan::Parsing::LogicalAnd,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LogicalGreaterThanOrEqualTo,
+          Keisan::Parsing::Number
+        ])
+
+        expect(parser.components[0].value).to eq true
+        expect(parser.components[3].value).to eq false
+        expect(parser.components[7].value).to eq 5
+        expect(parser.components[9].value).to eq 5
+
+        group = parser.components[5]
+        expect(group.components.map(&:class)).to match_array([
+          Keisan::Parsing::LogicalNot,
+          Keisan::Parsing::Boolean,
+          Keisan::Parsing::LogicalOr,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LogicalGreaterThan,
+          Keisan::Parsing::Number
+        ])
+
+        expect(group.components[1].value).to eq false
+        expect(group.components[3].value).to eq 2
+        expect(group.components[5].value).to eq 0
+      end
+    end
+
+    context "combination" do
+      it "parses correctly" do
+        parser = described_class.new(string: "-sin(x ** (2+1)) + (a + b*z) / (c + d*z)")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::UnaryMinus,
+          Keisan::Parsing::Function,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::RoundGroup,
+          Keisan::Parsing::Divide,
+          Keisan::Parsing::RoundGroup
+        ])
+
+        function = parser.components[1]
+        expect(function.name).to eq "sin"
+        expect(function.arguments.count).to eq 1
+        argument = function.arguments.first
+
+        expect(argument.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Exponent,
+          Keisan::Parsing::RoundGroup
+        ])
+
+        expect(argument.components[0].name).to eq "x"
+        group = argument.components[2]
+
+        expect(group.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Number
+        ])
+
+        expect(group.components[0].value).to eq 2
+        expect(group.components[2].value).to eq 1
+
+        numerator = parser.components[3]
+        denominator = parser.components[5]
+
+        expect(numerator.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Times,
+          Keisan::Parsing::Variable
+        ])
+        expect(denominator.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Times,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(numerator.components[0].name).to eq "a"
+        expect(numerator.components[2].name).to eq "b"
+        expect(numerator.components[4].name).to eq "z"
+        expect(denominator.components[0].name).to eq "c"
+        expect(denominator.components[2].name).to eq "d"
+        expect(denominator.components[4].name).to eq "z"
+      end
+    end
+
+    context "string" do
+      it "parses correctly" do
+        parser = described_class.new(string: "'this is a ' + \"test\"")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::String,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::String
+        ])
+
+        expect(parser.components[0].value).to eq "this is a "
+        expect(parser.components[2].value).to eq "test"
+      end
+    end
+  end
+end

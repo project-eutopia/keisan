@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "compute"
+require "keisan"
 require "pry"
 
 RSpec.configure do |config|
