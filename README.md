@@ -123,6 +123,28 @@ calculator.evaluate("'hello'[1]")
 #=> "e"
 ```
 
+##### Random numbers
+
+`keisan` has a couple methods for doing random operations, `rand` and `sample`.  For example,
+
+```ruby
+calculator.evaluate("rand(10)")
+#=> 3
+calculator.evaluate("sample([2, 4, 6, 8])")
+#=> 8
+```
+
+If you want reproducibility, you can pass in your own `Random` object to the calculator's context.
+
+```ruby
+calculator1 = Keisan::Calculator.new(Keisan::Context.new(random: Random.new(1234)))
+calculator2 = Keisan::Calculator.new(Keisan::Context.new(random: Random.new(1234)))
+5.times.map {calculator1.evaluate("rand(1000)")}
+#=> [815, 723, 294, 53, 204]
+5.times.map {calculator2.evaluate("rand(1000)")}
+#=> [815, 723, 294, 53, 204]
+```
+
 ##### Builtin variables and functions
 
 `keisan` includes all standard methods given by the Ruby `Math` class.
