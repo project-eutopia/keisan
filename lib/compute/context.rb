@@ -1,17 +1,16 @@
 module Compute
   class Context
-    attr_reader :random
+    attr_reader :function_registry, :variable_registry
 
-    def initialize(function_registry: nil, variable_registry: nil, random: nil)
-      @function_registry = function_registry || Functions::Registry.new
-      @variable_registry = variable_registry || Variables::Registry.new
-      @random            = random            || Random.new
+    def initialize(parent: nil, random: nil)
+      @parent = parent
+      @function_registry = Functions::Registry.new(parent: @parent.try(:function_registry))
+      @variable_registry = Variables::Registry.new(parent: @parent.try(:variable_registry))
+      @random            = random
     end
 
     def spawn_child
-      function_registry = Functions::Registry.new(parent: @function_registry)
-      variable_registry = Variables::Registry.new(parent: @variable_registry)
-      self.class.new(function_registry: function_registry, variable_registry: variable_registry)
+      self.class.new(parent: self)
     end
 
     def function(name)
@@ -28,6 +27,10 @@ module Compute
 
     def register_variable!(name, value)
       @variable_registry.register!(name.to_s, value)
+    end
+
+    def random
+      @random || @parent.try(:random) || Random.new
     end
   end
 end

@@ -50,5 +50,17 @@ RSpec.describe Compute::Functions::DefaultRegistry do
         expect(a).to include Compute::Calculator.new.evaluate("sample(#{a})")
       end
     end
+
+    it "uses correct Random object" do
+      context1 = Compute::Context.new(random: Random.new(1234))
+      context2 = Compute::Context.new(random: Random.new(1234))
+
+      calc1 = Compute::Calculator.new(context1)
+      calc2 = Compute::Calculator.new(context2)
+
+      20.times do
+        expect(calc1.evaluate("rand(100)")).to eq calc2.evaluate("rand(100)")
+      end
+    end
   end
 end

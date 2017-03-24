@@ -47,4 +47,42 @@ RSpec.describe Compute::Context do
       expect(child_context.function("g").call(nil, 2)).to eq 1
     end
   end
+
+  describe "random" do
+    it "uses given Random object" do
+      context1 = Compute::Context.new(random: Random.new(1234))
+      context2 = Compute::Context.new(random: Random.new(1234))
+
+      20.times do
+        expect(context1.random.rand(100)).to eq context2.random.rand(100)
+      end
+    end
+
+    it "uses parent random if does not have one" do
+      rand1 = Random.new(2244)
+      rand2 = Random.new(2244)
+
+      parent = Compute::Context.new(random: rand1)
+      child  = Compute::Context.new(parent: parent)
+
+      20.times do
+        expect(child.random.rand(100)).to eq rand2.rand(100)
+      end
+    end
+
+    it "it shadows the parent random" do
+      rand1 = Random.new(5151)
+      rand1_copy = Random.new(5151)
+      rand2 = Random.new(5959)
+
+      parent = Compute::Context.new(random: rand1)
+      child  = Compute::Context.new(parent: parent, random: rand2)
+
+      matches = 20.times.map do |_|
+        child.random.rand(100) == rand1_copy.rand(100)
+      end
+
+      expect(matches.any? {|bool| bool == false}).to be true
+    end
+  end
 end
