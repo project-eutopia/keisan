@@ -26,7 +26,7 @@ module Keisan
       end
 
       def function_from_context(context)
-        @override || context.function(name)
+        context.function(name)
       end
     end
 
