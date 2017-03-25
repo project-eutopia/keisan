@@ -460,6 +460,20 @@ RSpec.describe Keisan::Parser do
         expect(arg2.components[0].value).to eq 1
         expect(arg2.components[2].value).to eq 2
       end
+
+      it "back-to-back without braces" do
+        parser = described_class.new(string: "a.b.c")
+
+        expect(parser.components.map(&:class)).to eq [Keisan::Parsing::DotWord]
+        dot_word = parser.components[0]
+        expect(dot_word.name).to eq "c"
+        expect(dot_word.target.class).to eq Keisan::Parsing::DotWord
+
+        dot_word = dot_word.target
+        expect(dot_word.name).to eq "b"
+        expect(dot_word.target.class).to eq Keisan::Parsing::Variable
+        expect(dot_word.target.name).to eq "a"
+      end
     end
   end
 end
