@@ -179,6 +179,10 @@ module Keisan
       when :"~~"
         @components << Keisan::Parsing::BitwiseNotNot.new
       # Logical
+      when :"=="
+        @components << Keisan::Parsing::LogicalEqual.new
+      when :"!="
+        @components << Keisan::Parsing::LogicalNotEqual.new
       when :"&&"
         @components << Keisan::Parsing::LogicalAnd.new
       when :"||"

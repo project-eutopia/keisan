@@ -353,6 +353,25 @@ RSpec.describe Keisan::Parser do
         expect(group.components[3].value).to eq 2
         expect(group.components[5].value).to eq 0
       end
+
+      it "handles equality operators" do
+        parser = described_class.new(string: "4 == 5 && x != y")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LogicalEqual,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LogicalAnd,
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::LogicalNotEqual,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(parser.components[0].value).to eq 4
+        expect(parser.components[2].value).to eq 5
+        expect(parser.components[4].name).to eq "x"
+        expect(parser.components[6].name).to eq "y"
+      end
     end
 
     context "combination" do
