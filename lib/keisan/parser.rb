@@ -67,8 +67,10 @@ module Keisan
         end
 
       elsif @components[-1].is_a?(Parsing::Element)
+        # A word followed by a "round group" is actually a function: e.g. sin(x)
         if @components[-1].is_a?(Parsing::Variable) && token.type == :group && token.group_type == :round
           add_function_to_components!(token)
+        # Here it is a postfix Indexing (access elements by index)
         elsif token.type == :group && token.group_type == :square
           add_indexing_to_components!(token)
         else
@@ -78,7 +80,7 @@ module Keisan
         end
 
       else
-        raise Keisan::Exceptions::InternalError.new("Invalid parsing!")
+        raise Keisan::Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
       end
     end
 

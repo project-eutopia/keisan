@@ -10,7 +10,11 @@ module Keisan
     end
 
     def spawn_child
-      self.class.new(parent: self)
+      if block_given?
+        yield self.class.new(parent: self)
+      else
+        self.class.new(parent: self)
+      end
     end
 
     def function(name)

@@ -3,7 +3,7 @@ module Keisan
     class Number < Token
       INTEGER_REGEX = /\d+/
       FLOATING_POINT_REGEX = /\d+\.\d+/
-      SCIENTIFC_NOTATION_REGEX = /\d+(?:\.\d+)e(?:\+|\-)?\d+/
+      SCIENTIFIC_NOTATION_REGEX = /\d+(?:\.\d+)?e(?:\+|\-)?\d+/
 
       REGEX = /(\d+(?:\.\d+)?(?:e(?:\+|\-)?\d+)?)/
 
@@ -13,9 +13,9 @@ module Keisan
 
       def value
         case string
-        when SCIENTIFC_NOTATION_REGEX, FLOATING_POINT_REGEX
+        when /\A#{SCIENTIFIC_NOTATION_REGEX}\z/, /\A#{FLOATING_POINT_REGEX}\z/
           Float(string)
-        when INTEGER_REGEX
+        when /\A#{INTEGER_REGEX}\z/
           Integer(string)
         end
       end
