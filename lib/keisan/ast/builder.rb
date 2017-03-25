@@ -15,20 +15,10 @@ module Keisan
           @components = Array.wrap(components)
         end
 
-        @nodes = @components.split {|component|
-          component.is_a?(Keisan::Parsing::Operator)
-        }.map {|group_of_components|
-          node_from_components(group_of_components)
-        }
+        @nodes = nodes_split_by_operators(@components)
         @operators = @components.select {|component| component.is_a?(Keisan::Parsing::Operator)}
 
-        @priorities = @operators.map(&:priority)
-
-        while @operators.count > 0
-          priorities = @operators.map(&:priority)
-          max_priority = priorities.uniq.max
-          consume_operators_with_priority!(max_priority)
-        end
+        consume_operators!
 
         unless @nodes.count == 1
           raise Keisan::Exceptions::ASTError.new("Should end up with a single node")
@@ -45,7 +35,41 @@ module Keisan
 
       private
 
+      def nodes_split_by_operators(components)
+        components.split {|component|
+          component.is_a?(Keisan::Parsing::Operator)
+        }.map {|group_of_components|
+          node_from_components(group_of_components)
+        }
+      end
+
       def node_from_components(components)
+        unary_components, node, indexing_components = *unarys_node_indexings(components)
+
+        # Apply postfix indexing operators
+        indexing_components.each do |indexing_component|
+          node = indexing_component.node_class.new(
+            node,
+            indexing_component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            }
+          )
+        end
+
+        # Apply prefix unary operators
+        unary_components.reverse.each do |unary_component|
+          node = unary_component.node_class.new(node)
+        end
+
+        node
+      end
+
+      # Returns an array of the form
+      # [unary_operators, middle_node, postfix_indexings]
+      # unary_operators is an array of Keisan::Parsing::UnaryOperator objects
+      # middle_node is the main node which will be modified by prefix and postfix operators
+      # postfix_indexings is an array of Keisan::Parsing::Indexing objects
+      def unarys_node_indexings(components)
         index_of_unary_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(Keisan::Parsing::UnaryOperator)}.map(&:last)
         # Must be all in the front
         unless index_of_unary_components.map.with_index.all? {|i,j| i == j}
@@ -64,25 +88,11 @@ module Keisan
           raise Keisan::Exceptions::ASTError.new("have too many components")
         end
 
-        unary_components = index_of_unary_components.map {|i| components[i]}
-        indexing_components = index_of_indexing_components.map {|i| components[i]}
-
-        node = node_of_component(components[unary_components.size])
-
-        indexing_components.each do |indexing_component|
-          node = indexing_component.node_class.new(
-            node,
-            indexing_component.arguments.map {|parsing_argument|
-              Builder.new(components: parsing_argument.components).node
-            }
-          )
-        end
-
-        unary_components.reverse.each do |unary_component|
-          node = unary_component.node_class.new(node)
-        end
-
-        node
+        [
+          index_of_unary_components.map {|i| components[i]},
+          node_of_component(components[index_of_unary_components.size]),
+          index_of_indexing_components.map {|i| components[i]}
+        ]
       end
 
       def node_of_component(component)
@@ -114,6 +124,14 @@ module Keisan
           )
         else
           raise Keisan::Exceptions::ASTError.new("Unhandled component, #{component}")
+        end
+      end
+
+      def consume_operators!
+        while @operators.count > 0
+          priorities = @operators.map(&:priority)
+          max_priority = priorities.uniq.max
+          consume_operators_with_priority!(max_priority)
         end
       end
 
