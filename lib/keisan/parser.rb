@@ -97,6 +97,8 @@ module Keisan
           @components[-1] = Parsing::DotOperator.new(name, arguments_from_group(token))
         elsif token.type == :dot
           @components << Keisan::Parsing::Dot.new
+        elsif token.type == :group && token.group_type == :square
+          add_indexing_to_components!(token)
         else
           raise Keisan::Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
         end
