@@ -88,5 +88,15 @@ RSpec.describe Keisan::AST::Node do
         expect(ast_simple.children[2].name).to eq "y"
       end
     end
+
+    context "function of just numbers" do
+      it "evaluates the function" do
+        ast = Keisan::AST::Builder.new(string: "12 + 2 * (sin(0) + 1)").ast
+        ast_simple = ast.simplified
+        expect(ast_simple).not_to eq(ast)
+        expect(ast_simple).to be_a(Keisan::AST::Number)
+        expect(ast_simple.value).to eq 14
+      end
+    end
   end
 end

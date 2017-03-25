@@ -2,7 +2,12 @@ module Keisan
   module AST
     class Literal < Node
       def ==(other)
-        value == other.value
+        case other
+        when Literal
+          value == other.value
+        else
+          false
+        end
       end
     end
   end
