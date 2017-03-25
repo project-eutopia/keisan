@@ -16,9 +16,16 @@ module Keisan
         @parsing_operators = parsing_operators
       end
 
-
       def arity
         raise Keisan::Exceptions::NotImplementedError.new
+      end
+
+      def priority
+        self.class.priority
+      end
+
+      def self.priority
+        Keisan::AST::Priorities.priorities[symbol]
       end
 
       def associativity
@@ -26,7 +33,7 @@ module Keisan
       end
 
       def symbol
-        raise Keisan::Exceptions::NotImplementedError.new
+        self.class.symbol
       end
 
       def blank_value

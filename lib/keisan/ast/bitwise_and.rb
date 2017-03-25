@@ -1,15 +1,11 @@
 module Keisan
   module AST
     class BitwiseAnd < BitwiseOperator
-      def self.priority
-        31
-      end
-
       def arity
         2..Float::INFINITY
       end
 
-      def symbol
+      def self.symbol
         :"&"
       end
 

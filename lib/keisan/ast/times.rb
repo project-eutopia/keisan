@@ -6,15 +6,11 @@ module Keisan
         convert_divide_to_inverse!
       end
 
-      def self.priority
-        20
-      end
-
       def arity
         2..Float::INFINITY
       end
 
-      def symbol
+      def self.symbol
         :*
       end
 

@@ -6,15 +6,11 @@ module Keisan
         convert_minus_to_plus!
       end
 
-      def self.priority
-        10
-      end
-
       def arity
         2..Float::INFINITY
       end
 
-      def symbol
+      def self.symbol
         :+
       end
 

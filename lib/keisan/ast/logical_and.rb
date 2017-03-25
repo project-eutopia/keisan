@@ -1,15 +1,11 @@
 module Keisan
   module AST
     class LogicalAnd < LogicalOperator
-      def self.priority
-        22
-      end
-
       def arity
         2..Float::INFINITY
       end
 
-      def symbol
+      def self.symbol
         :"&"
       end
 

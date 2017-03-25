@@ -1,12 +1,12 @@
 module Keisan
   module AST
     class LogicalLessThanOrEqualTo < LogicalOperator
-      def self.priority
-        52
-      end
-
       def arity
         2..2
+      end
+
+      def self.symbol
+        :"<="
       end
 
       def value(context = nil)

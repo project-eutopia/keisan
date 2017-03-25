@@ -1,15 +1,11 @@
 module Keisan
   module AST
     class Modulo < ArithmeticOperator
-      def self.priority
-        25
-      end
-
       def arity
         2..Float::INFINITY
       end
 
-      def symbol
+      def self.symbol
         :%
       end
 

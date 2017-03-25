@@ -11,6 +11,7 @@ require "keisan/variables/registry"
 require "keisan/variables/default_registry"
 require "keisan/context"
 
+require "keisan/ast/priorities"
 require "keisan/ast/node"
 
 require "keisan/ast/literal"
