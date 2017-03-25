@@ -51,6 +51,14 @@ calculator.evaluate("x + 1")
 #=> Keisan::Exceptions::UndefinedVariableError: x
 ```
 
+It is also possible to define variables in the string expression itself
+
+```ruby
+calculator.evaluate("x = 10*n", n: 2)
+calculator.evaluate("3*x + 1")
+#=> 61
+```
+
 ##### Specifying functions
 
 Just like variables, functions can be defined by passing a `Proc` object as follows
@@ -90,6 +98,14 @@ calculator.evaluate("4.f[1]")
 #=> [2,4,6]
 calculator.evaluate("4.f[1].size")
 #=> 3
+```
+
+Like variables, it is also possible to define functions in the string expression itself
+
+```ruby
+calculator.evaluate("f(x) = n*x", n: 10)
+calculator.evaluate("f(3)")
+#=> 30
 ```
 
 ##### Lists
