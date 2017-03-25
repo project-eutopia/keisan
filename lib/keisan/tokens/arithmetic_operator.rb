@@ -4,8 +4,9 @@ module Keisan
       EXPONENT = /(?:\*\*)/
       TIMES = /(?:\*)/
       DIVIDE = /(?:\/)/
+      MODULO = /(?:\%)/
       PLUS_OR_MINUS = /(?:[\+\-]+)/
-      REGEX = /(#{EXPONENT}|#{TIMES}|#{DIVIDE}|#{PLUS_OR_MINUS})/
+      REGEX = /(#{EXPONENT}|#{TIMES}|#{DIVIDE}|#{MODULO}|#{PLUS_OR_MINUS})/
 
       def self.regex
         REGEX
@@ -20,6 +21,8 @@ module Keisan
           :*
         when DIVIDE
           :/
+        when MODULO
+          :%
         when PLUS_OR_MINUS
           string.count("-").even? ? :+ : :-
         end
