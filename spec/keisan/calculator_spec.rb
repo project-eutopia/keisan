@@ -103,5 +103,14 @@ RSpec.describe Keisan::Calculator do
         expect(calculator.evaluate("f(3)")).to eq 30
       end
     end
+
+    context "recursive" do
+      it "can define factorial" do
+        calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
+        expect(calculator.evaluate("my_fact(0)")).to eq 1
+        expect(calculator.evaluate("my_fact(1)")).to eq 1
+        expect(calculator.evaluate("my_fact(5)")).to eq 120
+      end
+    end
   end
 end

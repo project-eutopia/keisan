@@ -100,12 +100,21 @@ calculator.evaluate("4.f[1].size")
 #=> 3
 ```
 
-Like variables, it is also possible to define functions in the string expression itself
+Like variables, it is also possible to define functions in the string expression itself.  This form even supports recursion!
 
 ```ruby
 calculator.evaluate("f(x) = n*x", n: 10)
 calculator.evaluate("f(3)")
 #=> 30
+calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
+calculator.evaluate("my_fact(0)")
+#=> 1
+calculator.evaluate("my_fact(1)")
+#=> 1
+calculator.evaluate("my_fact(2)")
+#=> 2
+calculator.evaluate("my_fact(5)")
+#=> 120
 ```
 
 ##### Lists

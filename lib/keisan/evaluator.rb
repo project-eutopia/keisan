@@ -49,24 +49,28 @@ module Keisan
       unbound_variables = ast.unbound_variables(context)
       unbound_functions = ast.unbound_functions(context)
       # Ensure the variables are contained within the arguments
-      unless unbound_variables <= Set.new(args) && unbound_functions.empty?
+      unless unbound_variables <= Set.new(args) && unbound_functions <= Set.new([name])
         raise Keisan::Exceptions::InvalidExpression.new("Unbound variables found in function definition")
+      end
+
+      function = lambda do |*received_args|
+        unless args.count == received_args.count
+          raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
+        end
+
+        local = calculator.context.spawn_child(definitions)
+        args.each.with_index do |arg, i|
+          local.register_variable!(arg, received_args[i])
+        end
+
+        ast.fill_unbound_function(name, function)
+
+        ast.value(local)
       end
 
       calculator.context.register_function!(
         name,
-        Proc.new do |*received_args|
-          unless args.count == received_args.count
-            raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
-          end
-
-          local = calculator.context.spawn_child(definitions)
-          args.each.with_index do |arg, i|
-            local.register_variable!(arg, received_args[i])
-          end
-
-          ast.value(local)
-        end
+        Keisan::Function.new(name, function)
       )
     end
 

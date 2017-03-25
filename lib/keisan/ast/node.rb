@@ -30,6 +30,17 @@ module Keisan
           Set.new
         end
       end
+
+      def fill_unbound_function(name, function)
+        case self
+        when Parent
+          children.each do |child|
+            child.fill_unbound_function(name, function)
+          end
+        when Function
+          self.fill_unbound_function(name, function)
+        end
+      end
     end
   end
 end
