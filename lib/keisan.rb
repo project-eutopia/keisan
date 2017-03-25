@@ -53,6 +53,7 @@ require "keisan/ast/builder"
 
 require "keisan/token"
 require "keisan/tokens/comma"
+require "keisan/tokens/dot"
 require "keisan/tokens/group"
 require "keisan/tokens/number"
 require "keisan/tokens/operator"

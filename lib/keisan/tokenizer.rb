@@ -10,7 +10,8 @@ module Keisan
       Tokens::ArithmeticOperator,
       Tokens::LogicalOperator,
       Tokens::BitwiseOperator,
-      Tokens::Comma
+      Tokens::Comma,
+      Tokens::Dot
     ]
 
     TOKEN_REGEX = Regexp::new(
