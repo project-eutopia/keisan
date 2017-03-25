@@ -4,7 +4,7 @@ module Keisan
       INTEGER_REGEX = /\d+/
       BINARY_REGEX = /0b[0-1]+/
       OCTAL_REGEX = /0o[0-7]+/
-      HEX_REGEX = /0x[0-9a-f]+/
+      HEX_REGEX = /0x[0-9a-fA-F]+/
       FLOATING_POINT_REGEX = /\d+\.\d+/
       SCIENTIFIC_NOTATION_REGEX = /\d+(?:\.\d+)?e(?:\+|\-)?\d+/
 
