@@ -73,15 +73,41 @@ module Keisan
         # Here it is a postfix Indexing (access elements by index)
         elsif token.type == :group && token.group_type == :square
           add_indexing_to_components!(token)
+        elsif token.type == :dot
+          @components << Keisan::Parsing::Dot.new
         else
           # Expect an operator
           raise Keisan::Exceptions::ParseError.new("Expected an operator, received #{token.string}") unless token.type == :operator
           add_operator_to_components!(token)
         end
 
+      elsif @components[-1].is_a?(Parsing::Dot)
+        # Expect a word
+        case token.type
+        when :word
+          @components[-1] = Parsing::DotWord.new(token.string)
+        else
+          raise Keisan::Exceptions::ParseError.new("A word must follow a dot, received #{token.string}")
+        end
+
+      elsif @components[-1].is_a?(Parsing::DotWord)
+        # Expect a round group
+        if token.type == :group && token.group_type == :round
+          add_dot_operator!(token)
+        else
+          raise Keisan::Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
+        end
       else
         raise Keisan::Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
       end
+    end
+
+    def add_dot_operator!(token)
+      target = @components[-2]
+      name = @components[-1].name
+      arguments = arguments_from_group(token)
+      @components.pop
+      @components[-1] = Parsing::DotOperator.new(name, target, arguments)
     end
 
     def add_unary_operator_to_components!(token)
@@ -120,15 +146,7 @@ module Keisan
         when :round
           @components << Keisan::Parsing::RoundGroup.new(token.sub_tokens)
         when :square
-          @components << if token.sub_tokens.empty?
-                           Parsing::List.new([])
-                         else
-                           Parsing::List.new(
-                             token.sub_tokens.split {|sub_token| sub_token.is_a?(Keisan::Tokens::Comma)}.map do |sub_tokens|
-                               Parsing::Argument.new(sub_tokens)
-                             end
-                           )
-                         end
+          @components << Parsing::List.new(arguments_from_group(token))
         else
           raise Keisan::Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
         end
@@ -184,30 +202,22 @@ module Keisan
     end
 
     def add_function_to_components!(token)
-      # Have a function actually, not a variable
-      if token.sub_tokens.empty?
-        @components[-1] = Parsing::Function.new(@components[-1].name, [])
-      else
-        @components[-1] = Parsing::Function.new(
-          @components[-1].name,
-          token.sub_tokens.split {|sub_token| sub_token.is_a?(Keisan::Tokens::Comma)}.map do |sub_tokens|
-            Parsing::Argument.new(sub_tokens)
-          end
-        )
-      end
+      @components[-1] = Parsing::Function.new(@components[-1].name, arguments_from_group(token))
     end
 
     def add_indexing_to_components!(token)
       # Have an indexing
-      @components << if token.sub_tokens.empty?
-                       Parsing::Indexing.new([])
-                     else
-                       Parsing::Indexing.new(
-                         token.sub_tokens.split {|sub_token| sub_token.is_a?(Keisan::Tokens::Comma)}.map do |sub_tokens|
-                           Parsing::Argument.new(sub_tokens)
-                         end
-                       )
-                     end
+      @components << Parsing::Indexing.new(arguments_from_group(token))
+    end
+
+    def arguments_from_group(token)
+      if token.sub_tokens.empty?
+        []
+      else
+        token.sub_tokens.split {|sub_token| sub_token.is_a?(Keisan::Tokens::Comma)}.map do |sub_tokens|
+          Parsing::Argument.new(sub_tokens)
+        end
+      end
     end
   end
 end
