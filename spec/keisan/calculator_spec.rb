@@ -38,6 +38,8 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("f(2)")).to eq 6
       expect(calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})).to eq 20
       expect(calculator.evaluate("f(2)")).to eq 6
+      expect(calculator.evaluate("2.f")).to eq 6
+      expect(calculator.evaluate("2.f()")).to eq 6
     end
   end
 end
