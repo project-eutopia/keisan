@@ -18,6 +18,13 @@ module Keisan
         raise Keisan::Exceptions::UndefinedFunctionError.new name
       end
 
+      def has?(name)
+        !!self[name]
+      rescue Keisan::Exceptions::UndefinedFunctionError
+        false
+      end
+
+      # For checking if locally defined
       def has_name?(name)
         @hash.has_key?(name)
       end

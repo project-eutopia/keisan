@@ -11,6 +11,11 @@ module Keisan
         context = Keisan::Context.new if context.nil?
         context.variable(name)
       end
+
+      def unbound_variables(context = nil)
+        context ||= Keisan::Context.new
+        context.has_variable?(name) ? Set.new : Set.new([name])
+      end
     end
   end
 end
