@@ -80,7 +80,7 @@ module Keisan
         end
 
       else
-        raise Keisan::Exceptions::InternalError.new("Invalid parsing!")
+        raise Keisan::Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
       end
     end
 
