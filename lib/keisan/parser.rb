@@ -165,6 +165,8 @@ module Keisan
         @components << Keisan::Parsing::Divide.new
       when :**
         @components << Keisan::Parsing::Exponent.new
+      when :%
+        @components << Keisan::Parsing::Modulo.new
       # Bitwise
       when :"&"
         @components << Keisan::Parsing::BitwiseAnd.new

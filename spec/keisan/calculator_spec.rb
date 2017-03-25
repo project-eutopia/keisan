@@ -53,4 +53,12 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("4.f[1].size")).to eq 3
     end
   end
+
+  context "modulo operator" do
+    it "works as expected" do
+      expect(calculator.evaluate("95 % 7 % 5")).to eq 4
+      expect(calculator.evaluate("(95 % 7) % 5")).to eq 4
+      expect(calculator.evaluate("95 % (7 % 5)")).to eq 1
+    end
+  end
 end
