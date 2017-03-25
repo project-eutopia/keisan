@@ -63,8 +63,6 @@ module Keisan
           local.register_variable!(arg, received_args[i])
         end
 
-        ast.fill_unbound_function(name, function)
-
         ast.value(local)
       end
 

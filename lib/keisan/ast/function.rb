@@ -28,14 +28,6 @@ module Keisan
       def function_from_context(context)
         @override || context.function(name)
       end
-
-      def fill_unbound_function(override_name, function)
-        if name == override_name
-          @override = Keisan::Function.new(name, function)
-        else
-          children.each {|child| child.fill_unbound_function(override_name, function)}
-        end
-      end
     end
 
     class If < Function
