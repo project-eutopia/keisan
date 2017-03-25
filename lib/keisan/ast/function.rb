@@ -28,6 +28,10 @@ module Keisan
       def function_from_context(context)
         context.function(name)
       end
+
+      def ==(other)
+        name == other.name && super
+      end
     end
 
     class If < Function

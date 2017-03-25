@@ -16,6 +16,10 @@ module Keisan
         context ||= Keisan::Context.new
         context.has_variable?(name) ? Set.new : Set.new([name])
       end
+
+      def ==(other)
+        name == other.name
+      end
     end
   end
 end

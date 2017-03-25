@@ -34,4 +34,29 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.unbound_functions(context)).to eq Set.new(["f", "h"])
     end
   end
+
+
+  describe "==" do
+    it "is true if the AST have the same structure and nodes" do
+      s = "3 * (2 + f(sin(x), g(x)))"
+      s_same = "3*(2+f(sin(x),g(x)))"
+      s_diff_var = "3 * (2 + f(sin(x), g(y)))"
+      s_diff_expr = "3 * (1 + 1 + f(sin(x), g(y)))"
+
+      expect(Keisan::AST::Builder.new(string: s_same).ast).to eq(Keisan::AST::Builder.new(string: s).ast)
+      expect(Keisan::AST::Builder.new(string: s_diff_var).ast).not_to eq(Keisan::AST::Builder.new(string: s).ast)
+      expect(Keisan::AST::Builder.new(string: s_diff_expr).ast).not_to eq(Keisan::AST::Builder.new(string: s).ast)
+
+      expect(Keisan::AST::Builder.new(string: "1+2+3").ast).not_to eq(Keisan::AST::Builder.new(string: "1+(2+3)").ast)
+    end
+  end
+
+  describe "deep_dup" do
+    it "duplicates an AST recursively" do
+      ast = Keisan::AST::Builder.new(string: "2 * (1 + f(sin(x), g(x)))").ast
+      ast_dup = ast.deep_dup
+      expect(ast_dup).not_to equal(ast)
+      expect(ast_dup).to eq(ast)
+    end
+  end
 end
