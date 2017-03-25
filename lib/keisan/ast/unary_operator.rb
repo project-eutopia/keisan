@@ -16,6 +16,10 @@ module Keisan
       def symbol
         self.class.symbol
       end
+
+      def to_s
+        "#{symbol.to_s}#{child.to_s}"
+      end
     end
   end
 end

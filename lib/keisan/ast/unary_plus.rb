@@ -6,7 +6,7 @@ module Keisan
       end
 
       def to_s
-        child.to_s
+        :"+"
       end
     end
   end

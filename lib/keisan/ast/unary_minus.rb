@@ -5,8 +5,8 @@ module Keisan
         return -1 * child.value(context)
       end
 
-      def to_s
-        "-#{child.to_s}"
+      def self.symbol
+        :"-"
       end
     end
   end

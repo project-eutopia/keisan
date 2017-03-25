@@ -101,10 +101,28 @@ RSpec.describe Keisan::AST::Node do
   end
 
   describe "to_s" do
-    it "prints out the AST as a string expression, wrapping operators in brackets" do
-      ast = Keisan::AST.parse("-15 + x**4 * 3 + sin(y)*(1+(-1))+f(z+1,w+1)[2]")
-      expect(ast.to_s).to eq "-15+((x**4)*3)+(sin(y)*(1+-1))+f(z+1,w+1)[2]"
-      expect(Keisan::AST.parse(ast.to_s)).to eq ast
+    context "arithmetic operations" do
+      it "prints out the AST as a string expression, wrapping operators in brackets" do
+        ast = Keisan::AST.parse("-15 + x**4 * 3 + sin(y)*(1+(-1))+f(z+1,w+1)[2]")
+        expect(ast.to_s).to eq "-15+((x**4)*3)+(sin(y)*(1+-1))+f(z+1,w+1)[2]"
+        expect(Keisan::AST.parse(ast.to_s)).to eq ast
+      end
+    end
+
+    context "logical operations" do
+      it "prints out the AST as a string expression, wrapping operators in brackets" do
+        ast = Keisan::AST.parse("tan(x+2) < sin(y) || 3 == 5*2")
+        expect(ast.to_s).to eq "(tan(x+2)<sin(y))||(3==(5*2))"
+        expect(Keisan::AST.parse(ast.to_s)).to eq ast
+      end
+    end
+
+    context "bitwise operations" do
+      it "prints out the AST as a string expression, wrapping operators in brackets" do
+        ast = Keisan::AST.parse("~2 & 3 | 5 ^ (6+8|9)")
+        expect(ast.to_s).to eq "(~2&3)|(5^((6+8)|9))"
+        expect(Keisan::AST.parse(ast.to_s)).to eq ast
+      end
     end
   end
 end
