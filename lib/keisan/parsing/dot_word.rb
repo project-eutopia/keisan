@@ -1,10 +1,13 @@
 module Keisan
   module Parsing
     class DotWord < Component
-      attr_reader :name, :target
-      def initialize(name, target)
+      attr_reader :name
+      def initialize(name)
         @name = name
-        @target = target
+      end
+
+      def arguments
+        []
       end
     end
   end

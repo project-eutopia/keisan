@@ -1,15 +1,10 @@
 module Keisan
   module Parsing
     class DotOperator < Element
-      attr_reader :name, :target, :arguments
+      attr_reader :name, :arguments
 
-      # Given a.size(i):
-      # name = "size"
-      # target = a
-      # arguments = [i]
-      def initialize(name, target, arguments)
+      def initialize(name, arguments)
         @name = name
-        @target = target
         @arguments = arguments
       end
     end
