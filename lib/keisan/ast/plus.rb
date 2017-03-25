@@ -31,6 +31,19 @@ module Keisan
         end
       end
 
+      def simplify(context = nil)
+        super
+        constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
+        constant = constants.inject(0, &:+)
+
+        if non_constants.empty?
+          constant
+        else
+          @children = [constant] + non_constants
+          self
+        end
+      end
+
       private
 
       def convert_minus_to_plus!

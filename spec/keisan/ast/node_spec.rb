@@ -59,4 +59,34 @@ RSpec.describe Keisan::AST::Node do
       expect(ast_dup).to eq(ast)
     end
   end
+
+  describe "simplify" do
+    context "just numbers and arithmetic" do
+      it "simplifies the expression" do
+        ast = Keisan::AST::Builder.new(string: "1 + 3 + 5").ast
+        ast_simple = ast.simplified
+        expect(ast_simple).not_to eq(ast)
+        expect(ast_simple).to be_a(Keisan::AST::Number)
+        expect(ast_simple.value).to eq 9
+
+        ast = Keisan::AST::Builder.new(string: "3 * (2+5)").ast
+        ast_simple = ast.simplified
+        expect(ast_simple).not_to eq(ast)
+        expect(ast_simple).to be_a(Keisan::AST::Number)
+        expect(ast_simple.value).to eq 21
+      end
+    end
+
+    context "numbers and variables" do
+      it "simplifies the expression, leaving the varible alone" do
+        ast = Keisan::AST::Builder.new(string: "10 + x + 5 + y").ast
+        ast_simple = ast.simplified
+        expect(ast_simple).not_to eq(ast)
+        expect(ast_simple).to be_a(Keisan::AST::Plus)
+        expect(ast_simple.children[0].value).to eq 15
+        expect(ast_simple.children[1].name).to eq "x"
+        expect(ast_simple.children[2].name).to eq "y"
+      end
+    end
+  end
 end

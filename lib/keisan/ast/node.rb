@@ -13,6 +13,14 @@ module Keisan
         Set.new
       end
 
+      def simplified(context = nil)
+        deep_dup.simplify(context)
+      end
+
+      def simplify(context = nil)
+        self
+      end
+
       def deep_dup
         dup
       end

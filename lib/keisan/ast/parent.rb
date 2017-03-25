@@ -41,6 +41,11 @@ module Keisan
         )
         dupped
       end
+
+      def simplify(context = nil)
+        @children = @children.map {|child| child.simplify(context)}
+        self
+      end
     end
   end
 end
