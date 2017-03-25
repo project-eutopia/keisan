@@ -20,13 +20,23 @@ module Keisan
     attr_reader :expression, :tokens
 
     def initialize(expression)
-      @expression = expression.split(Keisan::Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, "") : s}.join
-
+      @expression = self.class.strip_whitespace(expression)
       @scan = @expression.scan(TOKEN_REGEX)
+      @tokens = tokenize!
+    end
 
+    def self.strip_whitespace(expression)
+      # Only strip whitespace outside of strings, e.g.
+      # "1 + 2 + 'hello world'" => "1+2+'hello world'"
+      expression.split(Keisan::Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, "") : s}.join
+    end
+
+    private
+
+    def tokenize!
       tokenizing_check = ""
 
-      @tokens = @scan.map do |scan_result|
+      tokens = @scan.map do |scan_result|
         i = scan_result.find_index {|token| !token.nil?}
         token_string = scan_result[i]
         tokenizing_check << token_string
@@ -36,6 +46,8 @@ module Keisan
       unless tokenizing_check == @expression
         raise Keisan::Exceptions::TokenizingError.new("Expected \"#{@expression}\", tokenized \"#{tokenizing_check}\"")
       end
+
+      tokens
     end
   end
 end
