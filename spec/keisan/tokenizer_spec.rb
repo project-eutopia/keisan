@@ -40,16 +40,32 @@ RSpec.describe Keisan::Tokenizer do
     end
 
     context "scientific notation" do
-      it "gets scientific notation numbers correctly" do
-        tokenizer = described_class.new("6.001e-3")
+      context "positive exponent" do
+        it "gets scientific notation numbers correctly" do
+          tokenizer = described_class.new("6.001e-3")
 
-        expect(tokenizer.tokens.map(&:class)).to match_array([
-          Keisan::Tokens::Number
-        ])
+          expect(tokenizer.tokens.map(&:class)).to match_array([
+            Keisan::Tokens::Number
+          ])
 
-        expect(tokenizer.tokens[0].string).to eq "6.001e-3"
-        expect(tokenizer.tokens[0].value).to be_a Float
-        expect(tokenizer.tokens[0].value).to eq 0.006001
+          expect(tokenizer.tokens[0].string).to eq "6.001e-3"
+          expect(tokenizer.tokens[0].value).to be_a Float
+          expect(tokenizer.tokens[0].value).to eq 0.006001
+        end
+      end
+
+      context "negative exponent" do
+        it "gets scientific notation numbers correctly" do
+          tokenizer = described_class.new("1234e2")
+
+          expect(tokenizer.tokens.map(&:class)).to match_array([
+            Keisan::Tokens::Number
+          ])
+
+          expect(tokenizer.tokens[0].string).to eq "1234e2"
+          expect(tokenizer.tokens[0].value).to be_a Float
+          expect(tokenizer.tokens[0].value).to eq 123400.0
+        end
       end
     end
   end

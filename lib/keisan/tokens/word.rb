@@ -1,7 +1,7 @@
 module Keisan
   module Tokens
     class Word < Token
-      REGEX = /([a-zA-Z0-9_]*[a-zA-Z][a-zA-Z0-9_]*)/
+      REGEX = /([a-zA-Z_]\w*)/
 
       def self.regex
         REGEX
