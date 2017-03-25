@@ -16,6 +16,15 @@ module Keisan
       def blank_value
         1
       end
+
+      def simplify(context = nil)
+        super
+        if children.all? {|child| child.is_a?(ConstantLiteral)}
+          children[0] ** children[1]
+        else
+          self
+        end
+      end
     end
   end
 end

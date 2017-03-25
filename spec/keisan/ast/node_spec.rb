@@ -69,7 +69,7 @@ RSpec.describe Keisan::AST::Node do
         expect(ast_simple).to be_a(Keisan::AST::Number)
         expect(ast_simple.value).to eq 9
 
-        ast = Keisan::AST.parse("3 * (2+5)")
+        ast = Keisan::AST.parse("3 * (2**2+5)")
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Number)

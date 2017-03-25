@@ -30,6 +30,15 @@ module Keisan
           raise TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
+
+      def **(other)
+        case other
+        when AST::Number
+          AST::Number.new(value ** other.value)
+        else
+          raise TypeError.new("#{other}'s type is invalid, #{other.class}")
+        end
+      end
     end
   end
 end
