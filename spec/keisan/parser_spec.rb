@@ -435,15 +435,14 @@ RSpec.describe Keisan::Parser do
 
     context "dot operator" do
       it "parses correctly" do
-        parser = described_class.new(string: "[1,2,3].apply(i,1+2).abs()")
+        parser = described_class.new(string: "[1,2,3].apply(i,1+2).abs")
 
-        expect(parser.components.map(&:class)).to match_array([ Keisan::Parsing::DotOperator ])
+        expect(parser.components.map(&:class)).to match_array([ Keisan::Parsing::DotWord ])
 
         # Outer DotOperator
         dot_operator = parser.components[0]
         expect(dot_operator.name).to eq "abs"
         expect(dot_operator.target.class).to eq Keisan::Parsing::DotOperator
-        expect(dot_operator.arguments.count).to eq 0
 
         # Nested DotOperator
         dot_operator = dot_operator.target

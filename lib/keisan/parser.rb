@@ -85,7 +85,8 @@ module Keisan
         # Expect a word
         case token.type
         when :word
-          @components[-1] = Parsing::DotWord.new(token.string)
+          @components.pop
+          @components[-1] = Parsing::DotWord.new(token.string, @components[-1])
         else
           raise Keisan::Exceptions::ParseError.new("A word must follow a dot, received #{token.string}")
         end
@@ -93,21 +94,15 @@ module Keisan
       elsif @components[-1].is_a?(Parsing::DotWord)
         # Expect a round group
         if token.type == :group && token.group_type == :round
-          add_dot_operator!(token)
+          target = @components[-1].target
+          name = @components[-1].name
+          @components[-1] = Parsing::DotOperator.new(name, target, arguments_from_group(token))
         else
           raise Keisan::Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
         end
       else
         raise Keisan::Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
       end
-    end
-
-    def add_dot_operator!(token)
-      target = @components[-2]
-      name = @components[-1].name
-      arguments = arguments_from_group(token)
-      @components.pop
-      @components[-1] = Parsing::DotOperator.new(name, target, arguments)
     end
 
     def add_unary_operator_to_components!(token)
