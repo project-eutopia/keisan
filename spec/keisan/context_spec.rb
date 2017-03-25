@@ -50,8 +50,8 @@ RSpec.describe Keisan::Context do
 
   describe "random" do
     it "uses given Random object" do
-      context1 = Keisan::Context.new(random: Random.new(1234))
-      context2 = Keisan::Context.new(random: Random.new(1234))
+      context1 = described_class.new(random: Random.new(1234))
+      context2 = described_class.new(random: Random.new(1234))
 
       20.times do
         expect(context1.random.rand(100)).to eq context2.random.rand(100)
@@ -62,8 +62,8 @@ RSpec.describe Keisan::Context do
       rand1 = Random.new(2244)
       rand2 = Random.new(2244)
 
-      parent = Keisan::Context.new(random: rand1)
-      child  = Keisan::Context.new(parent: parent)
+      parent = described_class.new(random: rand1)
+      child  = described_class.new(parent: parent)
 
       20.times do
         expect(child.random.rand(100)).to eq rand2.rand(100)
@@ -75,14 +75,36 @@ RSpec.describe Keisan::Context do
       rand1_copy = Random.new(5151)
       rand2 = Random.new(5959)
 
-      parent = Keisan::Context.new(random: rand1)
-      child  = Keisan::Context.new(parent: parent, random: rand2)
+      parent = described_class.new(random: rand1)
+      child  = described_class.new(parent: parent, random: rand2)
 
       matches = 20.times.map do |_|
         child.random.rand(100) == rand1_copy.rand(100)
       end
 
       expect(matches.any? {|bool| bool == false}).to be true
+    end
+  end
+
+  describe "has_variable?" do
+    let(:context) { described_class.new }
+
+    it "returns true of variable is defined" do
+      expect(context.has_variable?("pi")).to eq true
+      expect(context.has_variable?("not_exist")).to eq false
+      context.register_variable!("not_exist", 5)
+      expect(context.has_variable?("not_exist")).to eq true
+    end
+  end
+
+  describe "has_function?" do
+    let(:context) { described_class.new }
+
+    it "returns true of function is defined" do
+      expect(context.has_function?("sin")).to eq true
+      expect(context.has_function?("not_exist")).to eq false
+      context.register_function!("not_exist", Proc.new { nil })
+      expect(context.has_function?("not_exist")).to eq true
     end
   end
 end

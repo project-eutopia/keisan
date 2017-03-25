@@ -21,12 +21,20 @@ module Keisan
       @function_registry[name.to_s]
     end
 
+    def has_function?(name)
+      @function_registry.has?(name)
+    end
+
     def register_function!(name, function)
       @function_registry.register!(name.to_s, function)
     end
 
     def variable(name)
       @variable_registry[name.to_s]
+    end
+
+    def has_variable?(name)
+      @variable_registry.has?(name)
     end
 
     def register_variable!(name, value)
