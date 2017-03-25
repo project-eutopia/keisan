@@ -61,4 +61,28 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("95 % (7 % 5)")).to eq 1
     end
   end
+
+  describe "defining variables" do
+    it "raises an error if there is an undefined variable" do
+      expect{calculator.evaluate("x = y")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      expect(calculator.evaluate("y = 2")).to eq 2
+      expect(calculator.evaluate("y")).to eq 2
+
+      expect(calculator.evaluate("x = 2*y")).to eq 4
+      expect(calculator.evaluate("3*x + y**2")).to eq 12 + 4
+    end
+  end
+
+  describe "defining functions" do
+    it "raises an error if there is an undefined variable" do
+      expect{calculator.evaluate("f(x) = n*x")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      calculator.evaluate("f(x) = 4*x")
+      expect(calculator.evaluate("f(3)")).to eq 12
+
+      calculator.evaluate("g(x,y) = -2*x + f(y)")
+      expect(calculator.evaluate("g(7, 5)")).to eq -2*7 + 4*5
+    end
+  end
 end

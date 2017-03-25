@@ -15,5 +15,6 @@ module Keisan
     class UndefinedFunctionError < StandardError; end
     class UndefinedVariableError < StandardError; end
     class UnmodifiableError < StandardError; end
+    class InvalidExpression < StandardError; end
   end
 end

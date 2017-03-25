@@ -118,6 +118,7 @@ require "keisan/parsing/logical_not_not"
 require "keisan/parser"
 
 require "keisan/calculator"
+require "keisan/evaluator"
 
 module Keisan
 end
