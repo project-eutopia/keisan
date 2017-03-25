@@ -1,7 +1,7 @@
 module Keisan
   module Tokens
     class Group < Token
-      REGEX = /(\((?:[^\[\]\(\)]*\g<0>*)*\)|\[(?:[^\[\]\(\)]*\g<0>*)*\])/
+      REGEX = /(\((?:[^\[\]\(\)]*\g<1>*)*\)|\[(?:[^\[\]\(\)]*\g<1>*)*\])/
 
       attr_reader :sub_tokens
 
