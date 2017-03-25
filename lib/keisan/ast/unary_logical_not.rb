@@ -2,7 +2,11 @@ module Keisan
   module AST
     class UnaryLogicalNot < UnaryOperator
       def value(context = nil)
-        return !children.first.value(context)
+        return !child.value(context)
+      end
+
+      def self.symbol
+        :"!"
       end
     end
   end

@@ -52,6 +52,17 @@ module Keisan
           end
         end
       end
+
+      def to_s
+        children.map do |child|
+          case child
+          when AST::Operator
+            "(#{child.to_s})"
+          else
+            "#{child.to_s}"
+          end
+        end.join(symbol.to_s)
+      end
     end
   end
 end

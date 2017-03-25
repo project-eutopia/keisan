@@ -18,6 +18,19 @@ module Keisan
         1
       end
 
+      def simplify(context = nil)
+        super
+        constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
+        constant = constants.inject(1, &:*)
+
+        if non_constants.empty?
+          constant
+        else
+          @children = [constant] + non_constants
+          self
+        end
+      end
+
       private
 
       def convert_divide_to_inverse!

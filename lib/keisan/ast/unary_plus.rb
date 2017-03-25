@@ -4,6 +4,10 @@ module Keisan
       def value(context = nil)
         return children.first.value(context)
       end
+
+      def to_s
+        :"+"
+      end
     end
   end
 end

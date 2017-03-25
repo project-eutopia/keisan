@@ -1,6 +1,6 @@
 module Keisan
   module AST
-    class Null < Literal
+    class Null < ConstantLiteral
       def initialize
       end
 

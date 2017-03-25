@@ -6,29 +6,23 @@ module Keisan
       end
 
       def unbound_variables(context = nil)
-        context ||= Keisan::Context.new
-
-        case self
-        when Parent
-          children.inject(Set.new) do |vars, child|
-            vars | child.unbound_variables(context)
-          end
-        else
-          Set.new
-        end
+        Set.new
       end
 
       def unbound_functions(context = nil)
-        context ||= Keisan::Context.new
+        Set.new
+      end
 
-        case self
-        when Parent
-          children.inject(Set.new) do |fns, child|
-            fns | child.unbound_functions(context)
-          end
-        else
-          Set.new
-        end
+      def simplified(context = nil)
+        deep_dup.simplify(context)
+      end
+
+      def simplify(context = nil)
+        self
+      end
+
+      def deep_dup
+        dup
       end
     end
   end

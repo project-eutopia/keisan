@@ -25,8 +25,35 @@ module Keisan
         context.has_function?(name) ? functions : functions | Set.new([name])
       end
 
+      def function_defined?(context = nil)
+        context ||= Keisan::Context.new
+        context.has_function?(name)
+      end
+
       def function_from_context(context)
-        @override || context.function(name)
+        context.function(name)
+      end
+
+      def ==(other)
+        case other
+        when AST::Function
+          name == other.name && super
+        else
+          false
+        end
+      end
+
+      def simplify(context = nil)
+        super
+        if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
+          ConstantLiteral.from_value(value)
+        else
+          self
+        end
+      end
+
+      def to_s
+        "#{name}(#{children.map(&:to_s).join(',')})"
       end
     end
 

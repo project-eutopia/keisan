@@ -1,6 +1,6 @@
 module Keisan
   module AST
-    class String < Literal
+    class String < ConstantLiteral
       attr_reader :content
 
       def initialize(content)
@@ -9,6 +9,15 @@ module Keisan
 
       def value(context = nil)
         content
+      end
+
+      def +(other)
+        case other
+        when AST::String
+          AST::String.new(value + other.value)
+        else
+          raise TypeError.new("#{other}'s type is invalid, #{other.class}")
+        end
       end
     end
   end

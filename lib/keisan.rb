@@ -15,11 +15,12 @@ require "keisan/ast/priorities"
 require "keisan/ast/node"
 
 require "keisan/ast/literal"
+require "keisan/ast/variable"
+require "keisan/ast/constant_literal"
 require "keisan/ast/number"
 require "keisan/ast/string"
 require "keisan/ast/null"
 require "keisan/ast/boolean"
-require "keisan/ast/variable"
 
 require "keisan/ast/parent"
 require "keisan/ast/unary_operator"
@@ -54,6 +55,7 @@ require "keisan/ast/list"
 require "keisan/ast/indexing"
 
 require "keisan/ast/builder"
+require "keisan/ast"
 
 require "keisan/token"
 require "keisan/tokens/comma"
