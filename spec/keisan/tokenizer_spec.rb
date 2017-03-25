@@ -40,7 +40,7 @@ RSpec.describe Keisan::Tokenizer do
     end
 
     context "scientific notation" do
-      context "positive exponent" do
+      context "negative exponent" do
         it "gets scientific notation numbers correctly" do
           tokenizer = described_class.new("6.001e-3")
 
@@ -54,7 +54,7 @@ RSpec.describe Keisan::Tokenizer do
         end
       end
 
-      context "negative exponent" do
+      context "positive exponent" do
         it "gets scientific notation numbers correctly" do
           tokenizer = described_class.new("1234e2")
 
