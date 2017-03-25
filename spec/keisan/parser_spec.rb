@@ -432,5 +432,59 @@ RSpec.describe Keisan::Parser do
         expect(parser.components[2].value).to eq "test"
       end
     end
+
+    context "dot operator" do
+      it "parses correctly" do
+        parser = described_class.new(string: "[1,2,3].apply(i,1+2).abs")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::List,
+          Keisan::Parsing::DotOperator,
+          Keisan::Parsing::DotWord
+        ])
+
+        # list
+        list_args = parser.components[0].arguments
+        expect(list_args[0].components.count).to eq 1
+        expect(list_args[0].components[0].value).to eq 1
+        expect(list_args[1].components.count).to eq 1
+        expect(list_args[1].components[0].value).to eq 2
+        expect(list_args[2].components.count).to eq 1
+        expect(list_args[2].components[0].value).to eq 3
+
+        # apply operator
+        dot_operator = parser.components[1]
+        expect(dot_operator.name).to eq "apply"
+        expect(dot_operator.arguments.count).to eq 2
+
+        arg1 = dot_operator.arguments[0]
+        arg2 = dot_operator.arguments[1]
+
+        expect(arg1.components.count).to eq 1
+        expect(arg1.components[0].name).to eq "i"
+
+        expect(arg2.components.count).to eq 3
+        expect(arg2.components[0].value).to eq 1
+        expect(arg2.components[2].value).to eq 2
+
+        # abs operator
+        dot_operator = parser.components[2]
+        expect(dot_operator.name).to eq "abs"
+      end
+
+      it "back-to-back without braces" do
+        parser = described_class.new(string: "a.b.c")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::DotWord,
+          Keisan::Parsing::DotWord
+        ])
+
+        expect(parser.components[0].name).to eq "a"
+        expect(parser.components[1].name).to eq "b"
+        expect(parser.components[2].name).to eq "c"
+      end
+    end
   end
 end

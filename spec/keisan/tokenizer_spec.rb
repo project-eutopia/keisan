@@ -365,4 +365,36 @@ RSpec.describe Keisan::Tokenizer do
       expect(tokenizer.tokens[2].value).to eq " foo bar "
     end
   end
+
+  context "dot operator" do
+    it "parses correctly" do
+      tokenizer = described_class.new("[1,2,3].size()")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Group,
+        Keisan::Tokens::Dot,
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Group
+      ])
+
+      group = tokenizer.tokens[0]
+      expect(group.string).to eq "[1,2,3]"
+      expect(group.group_type).to eq :square
+      expect(group.sub_tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Number,
+        Keisan::Tokens::Comma,
+        Keisan::Tokens::Number,
+        Keisan::Tokens::Comma,
+        Keisan::Tokens::Number
+      ])
+      expect(group.sub_tokens[0].value).to eq 1
+      expect(group.sub_tokens[2].value).to eq 2
+      expect(group.sub_tokens[4].value).to eq 3
+
+      expect(tokenizer.tokens[2].string).to eq "size"
+
+      group = tokenizer.tokens[3]
+      expect(group.sub_tokens).to be_empty
+    end
+  end
 end

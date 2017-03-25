@@ -88,4 +88,11 @@ RSpec.describe Keisan::AST::Builder do
       expect(ast.value(my_context)).to eq 4
     end
   end
+
+  context "dot operators" do
+    it "parses it correctly" do
+      ast = described_class.new(string: "[1,3,5,7].size").ast
+      expect(ast.value).to eq 4
+    end
+  end
 end

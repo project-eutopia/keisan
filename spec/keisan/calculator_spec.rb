@@ -38,6 +38,19 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("f(2)")).to eq 6
       expect(calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})).to eq 20
       expect(calculator.evaluate("f(2)")).to eq 6
+      expect(calculator.evaluate("2.f")).to eq 6
+      expect(calculator.evaluate("2.f()")).to eq 6
+    end
+  end
+
+  context "dot operators mixed with list indexings" do
+    it "parses in correct order" do
+      calculator.define_function!("f", Proc.new {|x| [[x-1,x+1], [x-2,x,x+2]]})
+      expect(calculator.evaluate("4.f")).to eq [[3,5], [2,4,6]]
+      expect(calculator.evaluate("4.f[0]")).to eq [3,5]
+      expect(calculator.evaluate("4.f[0].size")).to eq 2
+      expect(calculator.evaluate("4.f[1]")).to eq [2,4,6]
+      expect(calculator.evaluate("4.f[1].size")).to eq 3
     end
   end
 end

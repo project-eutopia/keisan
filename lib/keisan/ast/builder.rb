@@ -44,16 +44,11 @@ module Keisan
       end
 
       def node_from_components(components)
-        unary_components, node, indexing_components = *unarys_node_indexings(components)
+        unary_components, node, postfix_components = *unarys_node_postfixes(components)
 
-        # Apply postfix indexing operators
-        indexing_components.each do |indexing_component|
-          node = indexing_component.node_class.new(
-            node,
-            indexing_component.arguments.map {|parsing_argument|
-              Builder.new(components: parsing_argument.components).node
-            }
-          )
+        # Apply postfix operators
+        postfix_components.each do |postfix_component|
+          node = apply_postfix_component_to_node(postfix_component, node)
         end
 
         # Apply prefix unary operators
@@ -64,34 +59,62 @@ module Keisan
         node
       end
 
+      def apply_postfix_component_to_node(postfix_component, node)
+        case postfix_component
+        when Keisan::Parsing::Indexing
+          postfix_component.node_class.new(
+            node,
+            postfix_component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            }
+          )
+        when Keisan::Parsing::DotWord
+          Keisan::AST::Function.new(
+            [node],
+            postfix_component.name
+          )
+        when Keisan::Parsing::DotOperator
+          Keisan::AST::Function.new(
+            [node] + postfix_component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            },
+            postfix_component.name
+          )
+        else
+          raise Keisan::Exceptions::ASTError.new("Invalid postfix component #{postfix_component}")
+        end
+      end
+
       # Returns an array of the form
-      # [unary_operators, middle_node, postfix_indexings]
+      # [unary_operators, middle_node, postfix_operators]
       # unary_operators is an array of Keisan::Parsing::UnaryOperator objects
       # middle_node is the main node which will be modified by prefix and postfix operators
-      # postfix_indexings is an array of Keisan::Parsing::Indexing objects
-      def unarys_node_indexings(components)
+      # postfix_operators is an array of Keisan::Parsing::Indexing, DotWord, and DotOperator objects
+      def unarys_node_postfixes(components)
         index_of_unary_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(Keisan::Parsing::UnaryOperator)}.map(&:last)
         # Must be all in the front
         unless index_of_unary_components.map.with_index.all? {|i,j| i == j}
           raise Keisan::Exceptions::ASTError.new("unary operators must be in front")
         end
 
-        index_of_indexing_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(Keisan::Parsing::Indexing)}.map(&:last)
-        unless index_of_indexing_components.reverse.map.with_index.all? {|i,j| i + j == components.size - 1 }
-          raise Keisan::Exceptions::ASTError.new("indexing components must be in back")
+        index_of_postfix_components = components.map.with_index {|c,i| [c,i]}.select {|c,i|
+          c.is_a?(Keisan::Parsing::Indexing) || c.is_a?(Keisan::Parsing::DotWord) || c.is_a?(Keisan::Parsing::DotOperator)
+        }.map(&:last)
+        unless index_of_postfix_components.reverse.map.with_index.all? {|i,j| i + j == components.size - 1 }
+          raise Keisan::Exceptions::ASTError.new("postfix components must be in back")
         end
 
-        num_unary    = index_of_unary_components.size
-        num_indexing = index_of_indexing_components.size
+        num_unary   = index_of_unary_components.size
+        num_postfix = index_of_postfix_components.size
 
-        unless num_unary + 1 + num_indexing == components.size
+        unless num_unary + 1 + num_postfix == components.size
           raise Keisan::Exceptions::ASTError.new("have too many components")
         end
 
         [
           index_of_unary_components.map {|i| components[i]},
           node_of_component(components[index_of_unary_components.size]),
-          index_of_indexing_components.map {|i| components[i]}
+          index_of_postfix_components.map {|i| components[i]}
         ]
       end
 
@@ -118,6 +141,18 @@ module Keisan
         when Keisan::Parsing::Function
           Keisan::AST::Function.new(
             component.arguments.map {|parsing_argument|
+              Builder.new(components: parsing_argument.components).node
+            },
+            component.name
+          )
+        when Keisan::Parsing::DotWord
+          Keisan::AST::Function.new(
+            [node_of_component(component.target)],
+            component.name
+          )
+        when Keisan::Parsing::DotOperator
+          Keisan::AST::Function.new(
+            [node_of_component(component.target)] + component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
             },
             component.name
