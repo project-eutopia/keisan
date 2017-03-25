@@ -11,20 +11,6 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
     expect { registry.register!(:bad, Proc.new { false }) }.to raise_error(Keisan::Exceptions::UnmodifiableError)
   end
 
-  context "if" do
-    it "works as expected" do
-      expect(registry["if"].name).to eq "if"
-      expect(registry["if"].call(nil, false, 2, 3)).to eq 3
-
-      expect(Keisan::Calculator.new.evaluate("if(true, 2)")).to eq 2
-      expect(Keisan::Calculator.new.evaluate("if(false, 2)")).to eq nil
-      expect(Keisan::Calculator.new.evaluate("if(true, 2, 4)")).to eq 2
-      expect(Keisan::Calculator.new.evaluate("if(false, 2, 4)")).to eq 4
-      expect(Keisan::Calculator.new.evaluate("if(true, nil, 4)")).to eq nil
-      expect(Keisan::Calculator.new.evaluate("if(false, nil, 4)")).to eq 4
-    end
-  end
-
   context "array methods" do
     it "works as expected" do
       expect(registry["min"].name).to eq "min"

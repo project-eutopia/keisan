@@ -14,7 +14,6 @@ module Keisan
 
       def self.register_defaults!(registry)
         register_builtin_math!(registry)
-        register_branch_methods!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
       end
@@ -28,10 +27,6 @@ module Keisan
             end
           )
         end
-      end
-
-      def self.register_branch_methods!(registry)
-        registry.register!(:if, Proc.new {|bool, a, b=nil| bool ? a : b })
       end
 
       def self.register_array_methods!(registry)
