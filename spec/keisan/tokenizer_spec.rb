@@ -4,6 +4,7 @@ RSpec.describe Keisan::Tokenizer do
   context "invalid symbols" do
     it "raises a TokenizingError" do
       expect { described_class.new("2%3") }.to raise_error(Keisan::Exceptions::TokenizingError)
+      expect { described_class.new("1 1") }.to raise_error(Keisan::Exceptions::TokenizingError)
     end
   end
 

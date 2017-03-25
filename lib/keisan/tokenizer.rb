@@ -26,6 +26,9 @@ module Keisan
     end
 
     def self.strip_whitespace(expression)
+      # Do not allow whitespace between variables, numbers, and the like; they must be joined by operators
+      raise Keisan::Exceptions::TokenizingError.new if expression.gsub(Tokens::String.regex, "").match /\w\s+\w/
+
       # Only strip whitespace outside of strings, e.g.
       # "1 + 2 + 'hello world'" => "1+2+'hello world'"
       expression.split(Keisan::Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, "") : s}.join
