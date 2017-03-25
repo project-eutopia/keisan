@@ -281,6 +281,24 @@ RSpec.describe Keisan::Tokenizer do
   end
 
   context "logical operators" do
+    it "handles equal and not-equal operators" do
+      tokenizer = described_class.new("50 == 30 + 20")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Number,
+        Keisan::Tokens::LogicalOperator,
+        Keisan::Tokens::Number,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::Number
+      ])
+
+      expect(tokenizer.tokens[0].value).to eq 50
+      expect(tokenizer.tokens[1].operator_type).to eq :"=="
+      expect(tokenizer.tokens[2].value).to eq 30
+      expect(tokenizer.tokens[3].operator_type).to eq :+
+      expect(tokenizer.tokens[4].value).to eq 20
+    end
+
     it "gets correct operators" do
       tokenizer = described_class.new("!false || true && (1 < 2)")
 

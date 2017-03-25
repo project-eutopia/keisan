@@ -7,9 +7,11 @@ module Keisan
       GREATER_THAN = /(?:\>)/
       AND = /(?:\&\&)/
       OR = /(?:\|\|)/
+      EQUAL = /(?:\=\=)/
+      NOT_EQUAL = /(?:\!\=)/
       NOT = /(?:\!+)/
 
-      REGEX = /(#{LESS_THAN_OR_EQUAL_TO}|#{GREATER_THAN_OR_EQUAL_TO}|#{LESS_THAN}|#{GREATER_THAN}|#{AND}|#{OR}|#{NOT})/
+      REGEX = /(#{LESS_THAN_OR_EQUAL_TO}|#{GREATER_THAN_OR_EQUAL_TO}|#{LESS_THAN}|#{GREATER_THAN}|#{AND}|#{OR}|#{EQUAL}|#{NOT_EQUAL}|#{NOT})/
 
       def self.regex
         REGEX
@@ -29,6 +31,10 @@ module Keisan
           :"&&"
         when OR
           :"||"
+        when EQUAL
+          :"=="
+        when NOT_EQUAL
+          :"!="
         when NOT
           string.count("!").even? ? :"!!" : :"!"
         end
