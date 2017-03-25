@@ -99,4 +99,12 @@ RSpec.describe Keisan::AST::Node do
       end
     end
   end
+
+  describe "to_s" do
+    it "prints out the AST as a string expression, wrapping operators in brackets" do
+      ast = Keisan::AST.parse("-15 + x**4 * 3 + sin(y)*(1+(-1))+f(z+1,w+1)[2]")
+      expect(ast.to_s).to eq "-15+((x**4)*3)+(sin(y)*(1+-1))+f(z+1,w+1)[2]"
+      expect(Keisan::AST.parse(ast.to_s)).to eq ast
+    end
+  end
 end

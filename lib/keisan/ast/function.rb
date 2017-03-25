@@ -51,6 +51,10 @@ module Keisan
           self
         end
       end
+
+      def to_s
+        "#{name}(#{children.map(&:to_s).join(',')})"
+      end
     end
 
     class If < Function

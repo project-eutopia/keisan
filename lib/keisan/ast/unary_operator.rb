@@ -8,6 +8,14 @@ module Keisan
           raise Keisan::Exceptions::ASTError.new("Unary operator takes has a single child")
         end
       end
+
+      def child
+        children.first
+      end
+
+      def symbol
+        self.class.symbol
+      end
     end
   end
 end
