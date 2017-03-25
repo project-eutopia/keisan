@@ -45,10 +45,10 @@ RSpec.describe Keisan::Tokenizer do
 
     context "hexadecimal" do
       it "parses correctly" do
-        tokenizer = described_class.new("0x1f0")
+        tokenizer = described_class.new("0x1fA")
         expect(tokenizer.tokens.map(&:class)).to match_array([Keisan::Tokens::Number])
-        expect(tokenizer.tokens[0].string).to eq "0x1f0"
-        expect(tokenizer.tokens[0].value).to eq 256 + 15*16
+        expect(tokenizer.tokens[0].string).to eq "0x1fA"
+        expect(tokenizer.tokens[0].value).to eq 256 + 15*16 + 10
       end
     end
 
