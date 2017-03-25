@@ -123,6 +123,19 @@ calculator.evaluate("'hello'[1]")
 #=> "e"
 ```
 
+##### Binary, octal, and hexadecimal numbers
+
+Using the prefixes `0b`, `0o`, and `0x` (standard in Ruby) indicates binary, octal, and hexadecimal numbers respectively.
+
+```ruby
+calculator.evaluate("0b1100")
+#=> 12
+calculator.evaluate("0o775")
+#=> 504
+calculator.evaluate("0x1f0")
+#=> 496
+```
+
 ##### Random numbers
 
 `keisan` has a couple methods for doing random operations, `rand` and `sample`.  For example,
