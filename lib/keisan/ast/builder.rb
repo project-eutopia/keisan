@@ -3,8 +3,8 @@ module Keisan
     class Builder
       # Build from parser
       def initialize(string: nil, parser: nil, components: nil)
-        if string.nil? && parser.nil? && components.nil?
-          raise Keisan::Exceptions::InternalError.new("Require parser or components")
+        if [string, parser, components].select(&:nil?).size != 2
+          raise Keisan::Exceptions::InternalError.new("Require one of string, parser or components")
         end
 
         if !string.nil?
