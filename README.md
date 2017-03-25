@@ -100,12 +100,21 @@ calculator.evaluate("4.f[1].size")
 #=> 3
 ```
 
-Like variables, it is also possible to define functions in the string expression itself.  This form even supports recursion!
+Like variables, it is also possible to define functions in the string expression itself.
 
 ```ruby
-calculator.evaluate("f(x) = n*x", n: 10)
+calculator.evaluate("f(x) = n*x", n: 10) # n is local to this definition only
 calculator.evaluate("f(3)")
 #=> 30
+calculator.evaluate("f(0-a)", a: 2)
+#=> -20
+calculator.evaluate("n") # n only exists in the definition of f(x)
+#=> Keisan::Exceptions::UndefinedVariableError: n
+```
+
+This form even supports recursion!
+
+```ruby
 calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
 calculator.evaluate("my_fact(0)")
 #=> 1
@@ -262,6 +271,39 @@ calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})
 calculator.evaluate("f(2)")
 #=> 6
 ```
+
+## Supported elements/operators
+
+`keisan` supports the following operators and elements.
+
+#### Numbers, variables, functions, lists
+- `150`, `-5.67`, `6e-5`: regular numbers
+- `x`, `_myvar1`: variables
+- `(` and `)`: round brackets for grouping parts to evaluate first
+- `[0, 3, 6, 9]`: square brackets with comma separated values to denote lists
+- `f(x,y,z)`, `my_function(max([2.5, 5.5]))`, `[2,4,6,8].size`: functions using `(` `)` brackets (optional if using postfix notation and only takes a single argument)
+
+#### Arithmetic operators
+- `+`, `-`, `*`, `/`: regular arithmetic operators
+- `**`: Ruby style exponent notation (to avoid conflict with bitwise xor `^`)
+- `%`: Ruby modulo operator, sign of `a % b` is same as sign of `b`
+- `+`, `-`: Unary plus and minus
+
+#### Logical operators
+- `<`, `>`, `<=`, `>=`: comparison operators
+- `==` and `!=`: logical equality check operators
+- `&&` and `||`: logical operators, **and** and **or**
+- `!`: unary logical not
+
+#### Bitwise operators
+- `&`, `|`, `^`: bitwise **and**, **or**, **xor** operators
+- `~`: unary bitwise not
+
+#### Indexing of arrays
+- `list[i]`: for accessing elements in an array
+
+#### Assignment
+- `=`: can be used to define variables and functions
 
 ## Development
 

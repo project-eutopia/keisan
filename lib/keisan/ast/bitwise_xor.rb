@@ -1,15 +1,11 @@
 module Keisan
   module AST
     class BitwiseXor < BitwiseOperator
-      def self.priority
-        21
-      end
-
       def arity
         2..Float::INFINITY
       end
 
-      def symbol
+      def self.symbol
         :"^"
       end
 

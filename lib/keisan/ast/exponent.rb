@@ -1,10 +1,6 @@
 module Keisan
   module AST
     class Exponent < ArithmeticOperator
-      def self.priority
-        30
-      end
-
       def arity
         (2..2)
       end
@@ -13,7 +9,7 @@ module Keisan
         :right
       end
 
-      def symbol
+      def self.symbol
         :**
       end
 
