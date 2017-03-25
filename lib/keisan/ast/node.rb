@@ -23,8 +23,8 @@ module Keisan
 
         case self
         when Parent
-          children.inject(Set.new) do |vars, child|
-            vars | child.unbound_functions(context)
+          children.inject(Set.new) do |fns, child|
+            fns | child.unbound_functions(context)
           end
         else
           Set.new
