@@ -50,6 +50,7 @@ RSpec.describe Keisan::AST::Builder do
       "1 == 1"               => true,
       "0 != 1"               => true,
       "1 != 1"               => false,
+      "1 + 2 == 9 / 3"       => true,
       "'hello ' + \"world\"" => "hello world",
       "[1,2,3]"              => [1,2,3],
       "[2,4,6,8][1]"         => 4,
