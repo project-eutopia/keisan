@@ -67,6 +67,31 @@ calculator.evaluate("f(2) + 1")
 #=> Keisan::Exceptions::UndefinedFunctionError: f
 ```
 
+Note that functions work in both regular (`f(x)`) and postfix (`x.f()`) notation.  The postfix notation requires the function to take at least one argument.  In the case of `a.f(b,c)`, this is translated internally to `f(a,b,c)`.  If there is only a single argument to the function, the braces can be left off: `x.f`.
+
+```ruby
+calculator.evaluate("[1,3,5,7].size()")
+#=> 4
+calculator.evaluate("[1,3,5,7].size")
+#=> 4
+```
+
+It is even possible to do more complicated things like follows
+
+```ruby
+calculator.define_function!("f", Proc.new {|x| [[x-1,x+1], [x-2,x,x+2]]})
+calculator.evaluate("4.f")
+#=> [[3,5], [2,4,6]]
+calculator.evaluate("4.f[0]")
+#=> [3,5]
+calculator.evaluate("4.f[0].size")
+#=> 2
+calculator.evaluate("4.f[1]")
+#=> [2,4,6]
+calculator.evaluate("4.f[1].size")
+#=> 3
+```
+
 ##### Lists
 
 Just like in Ruby, lists can be defined using square brackets, and indexed using square brackets
