@@ -276,10 +276,17 @@ calculator.evaluate("f(2)")
 
 `keisan` supports the following operators and elements.
 
+#### Numbers, variables, functions, lists
+- `150`, `-5.67`, `6e-5`: regular numbers
+- `x`, `_myvar1`: variables
+- `(` and `)`: round brackets for grouping parts to evaluate first
+- `[0, 3, 6, 9]`: square brackets with comma separated values to denote lists
+- `f(x,y,z)`, `my_function(max([2.5, 5.5]))`, `[2,4,6,8].size`: functions using `(` `)` brackets (optional if using postfix notation and only takes a single argument)
+
 #### Arithmetic operators
 - `+`, `-`, `*`, `/`: regular arithmetic operators
 - `**`: Ruby style exponent notation (to avoid conflict with bitwise xor `^`)
-- `%`: Ruby modulo operator, sign of a % b is same as sign of b
+- `%`: Ruby modulo operator, sign of `a % b` is same as sign of `b`
 - `+`, `-`: Unary plus and minus
 
 #### Logical operators
@@ -294,6 +301,9 @@ calculator.evaluate("f(2)")
 
 #### Indexing of arrays
 - `list[i]`: for accessing elements in an array
+
+#### Assignment
+- `=`: can be used to define variables and functions
 
 ## Development
 
