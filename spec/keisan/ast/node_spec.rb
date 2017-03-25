@@ -3,13 +3,13 @@ require "spec_helper"
 RSpec.describe Keisan::AST::Node do
   describe "unbound_variables" do
     it "returns a Set of the undefined variable names" do
-      ast = Keisan::AST::Builder.new(string: "pi").ast
+      ast = Keisan::AST.parse("pi")
       expect(ast.unbound_variables).to eq Set.new
 
-      ast = Keisan::AST::Builder.new(string: "x").ast
+      ast = Keisan::AST.parse("x")
       expect(ast.unbound_variables).to eq Set.new(["x"])
 
-      ast = Keisan::AST::Builder.new(string: "x + y").ast
+      ast = Keisan::AST.parse("x + y")
       expect(ast.unbound_variables).to eq Set.new(["x", "y"])
 
       context = Keisan::Context.new
@@ -20,13 +20,13 @@ RSpec.describe Keisan::AST::Node do
 
   describe "unbound_functions" do
     it "returns a Set of the undefined functions names" do
-      ast = Keisan::AST::Builder.new(string: "sin").ast
+      ast = Keisan::AST.parse("sin")
       expect(ast.unbound_functions).to eq Set.new
 
-      ast = Keisan::AST::Builder.new(string: "f(0)").ast
+      ast = Keisan::AST.parse("f(0)")
       expect(ast.unbound_functions).to eq Set.new(["f"])
 
-      ast = Keisan::AST::Builder.new(string: "f(g(0), h())").ast
+      ast = Keisan::AST.parse("f(g(0), h())")
       expect(ast.unbound_functions).to eq Set.new(["f", "g", "h"])
 
       context = Keisan::Context.new
@@ -43,17 +43,17 @@ RSpec.describe Keisan::AST::Node do
       s_diff_var = "3 * (2 + f(sin(x), g(y)))"
       s_diff_expr = "3 * (1 + 1 + f(sin(x), g(y)))"
 
-      expect(Keisan::AST::Builder.new(string: s_same).ast).to eq(Keisan::AST::Builder.new(string: s).ast)
-      expect(Keisan::AST::Builder.new(string: s_diff_var).ast).not_to eq(Keisan::AST::Builder.new(string: s).ast)
-      expect(Keisan::AST::Builder.new(string: s_diff_expr).ast).not_to eq(Keisan::AST::Builder.new(string: s).ast)
+      expect(Keisan::AST.parse(s_same)).to eq(Keisan::AST.parse(s))
+      expect(Keisan::AST.parse(s_diff_var)).not_to eq(Keisan::AST.parse(s))
+      expect(Keisan::AST.parse(s_diff_expr)).not_to eq(Keisan::AST.parse(s))
 
-      expect(Keisan::AST::Builder.new(string: "1+2+3").ast).not_to eq(Keisan::AST::Builder.new(string: "1+(2+3)").ast)
+      expect(Keisan::AST.parse("1+2+3")).not_to eq(Keisan::AST.parse("1+(2+3)"))
     end
   end
 
   describe "deep_dup" do
     it "duplicates an AST recursively" do
-      ast = Keisan::AST::Builder.new(string: "2 * (1 + f(sin(x), g(x)))").ast
+      ast = Keisan::AST.parse("2 * (1 + f(sin(x), g(x)))")
       ast_dup = ast.deep_dup
       expect(ast_dup).not_to equal(ast)
       expect(ast_dup).to eq(ast)
@@ -63,13 +63,13 @@ RSpec.describe Keisan::AST::Node do
   describe "simplify" do
     context "just numbers and arithmetic" do
       it "simplifies the expression" do
-        ast = Keisan::AST::Builder.new(string: "1 + 3 + 5").ast
+        ast = Keisan::AST.parse("1 + 3 + 5")
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Number)
         expect(ast_simple.value).to eq 9
 
-        ast = Keisan::AST::Builder.new(string: "3 * (2+5)").ast
+        ast = Keisan::AST.parse("3 * (2+5)")
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Number)
@@ -79,7 +79,7 @@ RSpec.describe Keisan::AST::Node do
 
     context "numbers and variables" do
       it "simplifies the expression, leaving the varible alone" do
-        ast = Keisan::AST::Builder.new(string: "10 + x + 5 + y").ast
+        ast = Keisan::AST.parse("10 + x + 5 + y")
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Plus)
@@ -91,7 +91,7 @@ RSpec.describe Keisan::AST::Node do
 
     context "function of just numbers" do
       it "evaluates the function" do
-        ast = Keisan::AST::Builder.new(string: "12 + 2 * (sin(0) + 1)").ast
+        ast = Keisan::AST.parse("12 + 2 * (sin(0) + 1)")
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Number)

@@ -55,6 +55,7 @@ require "keisan/ast/list"
 require "keisan/ast/indexing"
 
 require "keisan/ast/builder"
+require "keisan/ast"
 
 require "keisan/token"
 require "keisan/tokens/comma"
