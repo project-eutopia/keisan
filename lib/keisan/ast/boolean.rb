@@ -1,6 +1,6 @@
 module Keisan
   module AST
-    class Boolean < Literal
+    class Boolean < ConstantLiteral
       attr_reader :bool
 
       def initialize(bool)

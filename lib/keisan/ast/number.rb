@@ -1,6 +1,6 @@
 module Keisan
   module AST
-    class Number < Literal
+    class Number < ConstantLiteral
       attr_reader :number
 
       def initialize(number)

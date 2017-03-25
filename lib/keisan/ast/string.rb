@@ -1,6 +1,6 @@
 module Keisan
   module AST
-    class String < Literal
+    class String < ConstantLiteral
       attr_reader :content
 
       def initialize(content)
