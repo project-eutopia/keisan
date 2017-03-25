@@ -25,6 +25,33 @@ RSpec.describe Keisan::Tokenizer do
       end
     end
 
+    context "binary" do
+      it "parses correctly" do
+        tokenizer = described_class.new("0b1100")
+        expect(tokenizer.tokens.map(&:class)).to match_array([Keisan::Tokens::Number])
+        expect(tokenizer.tokens[0].string).to eq "0b1100"
+        expect(tokenizer.tokens[0].value).to eq 12
+      end
+    end
+
+    context "octal" do
+      it "parses correctly" do
+        tokenizer = described_class.new("0o775")
+        expect(tokenizer.tokens.map(&:class)).to match_array([Keisan::Tokens::Number])
+        expect(tokenizer.tokens[0].string).to eq "0o775"
+        expect(tokenizer.tokens[0].value).to eq 7*8**2 + 7*8 + 5
+      end
+    end
+
+    context "hexadecimal" do
+      it "parses correctly" do
+        tokenizer = described_class.new("0x1f0")
+        expect(tokenizer.tokens.map(&:class)).to match_array([Keisan::Tokens::Number])
+        expect(tokenizer.tokens[0].string).to eq "0x1f0"
+        expect(tokenizer.tokens[0].value).to eq 256 + 15*16
+      end
+    end
+
     context "floating point" do
       it "gets floating point numbers correctly" do
         tokenizer = described_class.new("56.09")
