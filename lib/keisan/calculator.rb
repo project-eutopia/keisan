@@ -7,18 +7,7 @@ module Keisan
     end
 
     def evaluate(expression, definitions = {})
-      context.spawn_child do |local|
-        definitions.each do |name, value|
-          case value
-          when Proc
-            local.register_function!(name, value)
-          else
-            local.register_variable!(name, value)
-          end
-        end
-
-        Keisan::AST::Builder.new(string: expression).ast.value(local)
-      end
+      Evaluator.new(self).evaluate(expression, definitions)
     end
 
     def define_variable!(name, value)

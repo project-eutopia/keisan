@@ -61,4 +61,56 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("95 % (7 % 5)")).to eq 1
     end
   end
+
+  describe "defining variables" do
+    it "raises an error if there is an undefined variable" do
+      expect{calculator.evaluate("x = y")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+    end
+
+    it "can define variables" do
+      expect(calculator.evaluate("y = 2")).to eq 2
+      expect(calculator.evaluate("y")).to eq 2
+
+      expect(calculator.evaluate("x = 2*y")).to eq 4
+      expect(calculator.evaluate("3*x + y**2")).to eq 12 + 4
+    end
+
+    context "with definitions" do
+      it "raises an error if there is an undefined variable" do
+        calculator.evaluate("x = n", n: 10)
+        expect{calculator.evaluate("n")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+        expect(calculator.evaluate("x")).to eq 10
+      end
+    end
+  end
+
+  describe "defining functions" do
+    it "raises an error if there is an undefined variable" do
+      expect{calculator.evaluate("f(x) = n*x")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+    end
+
+    it "can define functions" do
+      calculator.evaluate("f(x) = 4*x")
+      expect(calculator.evaluate("f(3)")).to eq 12
+
+      calculator.evaluate("g(x,y) = -2*x + f(y)")
+      expect(calculator.evaluate("g(7, 5)")).to eq -2*7 + 4*5
+    end
+
+    context "with definitions" do
+      it "raises an error if there is an undefined variable" do
+        calculator.evaluate("f(x) = n*x", n: 10)
+        expect(calculator.evaluate("f(3)")).to eq 30
+      end
+    end
+
+    context "recursive" do
+      it "can define factorial" do
+        calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
+        expect(calculator.evaluate("my_fact(0)")).to eq 1
+        expect(calculator.evaluate("my_fact(1)")).to eq 1
+        expect(calculator.evaluate("my_fact(5)")).to eq 120
+      end
+    end
+  end
 end

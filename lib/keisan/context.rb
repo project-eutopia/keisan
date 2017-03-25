@@ -9,12 +9,19 @@ module Keisan
       @random            = random
     end
 
-    def spawn_child
-      if block_given?
-        yield self.class.new(parent: self)
-      else
-        self.class.new(parent: self)
+    def spawn_child(definitions = {})
+      child = self.class.new(parent: self)
+
+      definitions.each do |name, value|
+        case value
+        when Proc
+          child.register_function!(name, value)
+        else
+          child.register_variable!(name, value)
+        end
       end
+
+      child
     end
 
     def function(name)
