@@ -8,6 +8,16 @@ module Keisan
       def to_s
         "(#{child.to_s})**(-1)"
       end
+
+      def simplify(context = nil)
+        @children = [child.simplify(context)]
+        case child
+        when AST::Number
+          AST::Number.new(Rational(1,child.value(context))).simplify(context)
+        else
+          super
+        end
+      end
     end
   end
 end

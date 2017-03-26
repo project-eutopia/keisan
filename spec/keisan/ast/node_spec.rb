@@ -69,11 +69,57 @@ RSpec.describe Keisan::AST::Node do
         expect(ast_simple).to be_a(Keisan::AST::Number)
         expect(ast_simple.value).to eq 9
 
-        ast = Keisan::AST.parse("3 * (2+5)")
+        ast = Keisan::AST.parse("3 * (2**2+5)")
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Number)
-        expect(ast_simple.value).to eq 21
+        expect(ast_simple.value).to eq 27
+      end
+    end
+
+    context "with prescribed variables" do
+      it "fills the values in" do
+        ast = Keisan::AST.parse("x**2 + y**2")
+        ast_simple = ast.simplified(Keisan::Context.new.tap {|c|
+          c.register_variable!("x", 3)
+        })
+        expect(ast_simple).to be_a(Keisan::AST::Plus)
+        expect(ast_simple.to_s).to eq "9+(y**2)"
+
+        ast_very_simple = ast.simplified(Keisan::Context.new.tap {|c|
+          c.register_variable!("x", 3)
+          c.register_variable!("y", 4)
+        })
+        expect(ast_very_simple).to be_a(Keisan::AST::Number)
+        expect(ast_very_simple.value).to eq 25
+      end
+    end
+
+    context "simplifying with zero" do
+      it "sets the term to 0" do
+        ast = Keisan::AST.parse("1 + 0*x")
+        expect(ast.simplified).to be_a(Keisan::AST::Number)
+        expect(ast.simplified.value).to eq 1
+
+        ast = Keisan::AST.parse("12*x + (1-1)*y")
+        expect(ast.simplified.to_s).to eq "12*x"
+      end
+    end
+
+    context "simplifying with 1" do
+      it "removes it from products" do
+        ast = Keisan::AST.parse("15 + 1*x*((5-3)/2)")
+        expect(ast.simplified.to_s).to eq "15+x"
+      end
+
+      it "is removed from top of exponents" do
+        ast = Keisan::AST.parse("x + sin(y)**(5+x*y*(2-1-1)-4)")
+        expect(ast.simplified.to_s).to eq "x+sin(y)"
+      end
+
+      it "removes from denominators" do
+        ast = Keisan::AST.parse("y/(0*x+1)")
+        expect(ast.simplified.to_s).to eq "y"
       end
     end
 

@@ -24,6 +24,15 @@ module Keisan
       def to_s
         name.to_s
       end
+
+      def simplify(context = nil)
+        context ||= Keisan::Context.new
+        if context.has_variable?(name)
+          ConstantLiteral.from_value(context.variable(name)).simplify(context)
+        else
+          self
+        end
+      end
     end
   end
 end

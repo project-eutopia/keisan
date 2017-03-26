@@ -21,12 +21,18 @@ module Keisan
       def simplify(context = nil)
         super
         constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
-        constant = constants.inject(1, &:*)
+        constant = constants.inject(AST::Number.new(1), &:*).simplify(context)
+
+        return Keisan::AST::Number.new(0) if constant.value(context) == 0
 
         if non_constants.empty?
           constant
         else
-          @children = [constant] + non_constants
+          @children = constant.value(context) == 1 ? [] : [constant]
+          @children += non_constants
+
+          return @children.first.simplify(context) if @children.size == 1
+
           self
         end
       end
