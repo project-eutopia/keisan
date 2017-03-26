@@ -12,7 +12,7 @@ module Keisan
         when NilClass
           AST::Null.new
         else
-          raise TypeError.new("#{value}'s type is invalid, #{value.class}")
+          raise Keisan::Exceptions::TypeError.new("#{value}'s type is invalid, #{value.class}")
         end
       end
 

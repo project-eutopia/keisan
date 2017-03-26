@@ -16,7 +16,7 @@ module Keisan
         when AST::Number
           AST::Number.new(value + other.value)
         else
-          raise TypeError.new("#{other}'s type is invalid, #{other.class}")
+          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
 
@@ -27,7 +27,7 @@ module Keisan
         when AST::String
           AST::String.new(other.value * value)
         else
-          raise TypeError.new("#{other}'s type is invalid, #{other.class}")
+          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
 
@@ -36,7 +36,7 @@ module Keisan
         when AST::Number
           AST::Number.new(value ** other.value)
         else
-          raise TypeError.new("#{other}'s type is invalid, #{other.class}")
+          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
     end
