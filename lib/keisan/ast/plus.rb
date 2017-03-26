@@ -39,7 +39,7 @@ module Keisan
         if non_constants.empty?
           constant
         else
-          @children = constant.value == 0 ? [] : [constant]
+          @children = constant.value(context) == 0 ? [] : [constant]
           @children += non_constants
 
           return @children.first.simplify(context) if @children.size == 1
