@@ -73,7 +73,25 @@ RSpec.describe Keisan::AST::Node do
         ast_simple = ast.simplified
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Number)
-        expect(ast_simple.value).to eq 21
+        expect(ast_simple.value).to eq 27
+      end
+    end
+
+    context "with prescribed variables" do
+      it "fills the values in" do
+        ast = Keisan::AST.parse("x**2 + y**2")
+        ast_simple = ast.simplified(Keisan::Context.new.tap {|c|
+          c.register_variable!("x", 3)
+        })
+        expect(ast_simple).to be_a(Keisan::AST::Plus)
+        expect(ast_simple.to_s).to eq "9+(y**2)"
+
+        ast_very_simple = ast.simplified(Keisan::Context.new.tap {|c|
+          c.register_variable!("x", 3)
+          c.register_variable!("y", 4)
+        })
+        expect(ast_very_simple).to be_a(Keisan::AST::Number)
+        expect(ast_very_simple.value).to eq 25
       end
     end
 
