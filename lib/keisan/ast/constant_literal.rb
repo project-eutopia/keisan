@@ -11,6 +11,8 @@ module Keisan
           AST::Boolean.new(value)
         when NilClass
           AST::Null.new
+        when Array
+          AST::List.new(value.map {|v| ConstantLiteral.from_value(v)})
         else
           raise Keisan::Exceptions::TypeError.new("#{value}'s type is invalid, #{value.class}")
         end

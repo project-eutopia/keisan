@@ -73,7 +73,8 @@ module Keisan
     end
 
     def pure_evaluate(expression, definitions = {})
-      Keisan::AST::Builder.new(string: expression).ast.value(calculator.context.spawn_child(definitions))
+      context = calculator.context.spawn_child(definitions)
+      Keisan::AST.parse(expression).simplified(context).value(context)
     end
   end
 end

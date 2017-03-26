@@ -123,6 +123,15 @@ RSpec.describe Keisan::AST::Node do
       end
     end
 
+    context "function returning a list" do
+      it "reduces correctly" do
+        context = Keisan::Context.new
+        context.register_function!("f", Proc.new {|x| [[x+1,x+2],[x,2*x,3*x]]})
+        ast = Keisan::AST.parse("f(3)[1]")
+        expect(ast.simplified(context).to_s).to eq "[3,6,9]"
+      end
+    end
+
     context "numbers and variables" do
       it "simplifies the expression, leaving the varible alone" do
         ast = Keisan::AST.parse("10 + x + 5 + y")
