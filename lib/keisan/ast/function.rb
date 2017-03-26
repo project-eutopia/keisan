@@ -97,13 +97,16 @@ module Keisan
     end
 
     class Function
+      BUILD_CLASSES = {
+        "if" => If
+      }.freeze
+
       def self.build(name, arguments = [])
-        case name.downcase
-        when "if"
-          If.new(arguments, name)
-        else
-          Function.new(arguments, name)
-        end
+        build_class(name.downcase).new(arguments, name)
+      end
+
+      def self.build_class(name)
+        BUILD_CLASSES[name] || Function
       end
     end
   end
