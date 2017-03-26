@@ -46,7 +46,7 @@ module Keisan
       def simplify(context = nil)
         super
         if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
-          ConstantLiteral.from_value(value(context))
+          ConstantLiteral.from_value(value(context)).simplify(context)
         else
           self
         end

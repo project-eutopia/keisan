@@ -25,7 +25,7 @@ module Keisan
         end
 
         if children.all? {|child| child.is_a?(ConstantLiteral)}
-          children[0] ** children[1]
+          (children[0] ** children[1]).simplify(context)
         else
           self
         end

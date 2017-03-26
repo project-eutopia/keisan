@@ -10,9 +10,10 @@ module Keisan
       end
 
       def simplify(context = nil)
+        @children = [child.simplify(context)]
         case child
         when AST::Number
-          AST::Number.new(Rational(1,child.value(context)))
+          AST::Number.new(Rational(1,child.value(context))).simplify(context)
         else
           super
         end

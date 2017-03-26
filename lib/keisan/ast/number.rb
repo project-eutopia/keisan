@@ -39,6 +39,17 @@ module Keisan
           raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
+
+      def simplify(context = nil)
+        case number
+        when Rational
+          if number.denominator == 1
+            @number = number.numerator
+          end
+        end
+
+        self
+      end
     end
   end
 end

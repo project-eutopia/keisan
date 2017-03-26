@@ -34,7 +34,7 @@ module Keisan
       def simplify(context = nil)
         super
         constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
-        constant = constants.inject(AST::Number.new(0), &:+)
+        constant = constants.inject(AST::Number.new(0), &:+).simplify(context)
 
         if non_constants.empty?
           constant
@@ -42,7 +42,7 @@ module Keisan
           @children = constant.value == 0 ? [] : [constant]
           @children += non_constants
 
-          return @children.first if @children.size == 1
+          return @children.first.simplify(context) if @children.size == 1
 
           self
         end

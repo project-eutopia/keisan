@@ -116,6 +116,11 @@ RSpec.describe Keisan::AST::Node do
         ast = Keisan::AST.parse("x + sin(y)**(5+x*y*(2-1-1)-4)")
         expect(ast.simplified.to_s).to eq "x+sin(y)"
       end
+
+      it "removes from denominators" do
+        ast = Keisan::AST.parse("y/(0*x+1)")
+        expect(ast.simplified.to_s).to eq "y"
+      end
     end
 
     context "numbers and variables" do
