@@ -17,7 +17,7 @@ module Keisan
       end
 
       def coerce(other)
-        [self.class.from_value(other), self]
+        [self, self.class.from_value(other)]
       end
 
       def to_s
