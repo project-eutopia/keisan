@@ -20,6 +20,10 @@ module Keisan
       def to_s
         "#{symbol.to_s}#{child.to_s}"
       end
+
+      def simplify(context = nil)
+        self
+      end
     end
   end
 end

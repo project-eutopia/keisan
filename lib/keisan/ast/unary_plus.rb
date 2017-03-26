@@ -8,6 +8,15 @@ module Keisan
       def to_s
         :"+"
       end
+
+      def simplify(context = nil)
+        case child
+        when AST::Number
+          AST::Number.new(child.value(context))
+        else
+          super
+        end
+      end
     end
   end
 end
