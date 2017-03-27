@@ -21,7 +21,7 @@ module Keisan
           end
 
           children[1..-1].inject(children.first) do |result, var|
-            result.differentiate(var)
+            result.differentiate(var, context)
           end
         end
       end

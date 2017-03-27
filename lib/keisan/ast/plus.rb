@@ -61,8 +61,8 @@ module Keisan
         end
       end
 
-      def differentiate(variable)
-        AST::Plus.new(children.map {|child| child.differentiate(variable)}).simplified
+      def differentiate(variable, context = nil)
+        AST::Plus.new(children.map {|child| child.differentiate(variable, context)}).simplified
       end
 
       private

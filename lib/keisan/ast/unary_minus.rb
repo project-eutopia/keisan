@@ -26,6 +26,12 @@ module Keisan
           ]).simplify(context)
         end
       end
+
+      def differentiate(variable, context = nil)
+        AST::UnaryMinus.new(
+          [child.differentiate(variable, context)]
+        )
+      end
     end
   end
 end

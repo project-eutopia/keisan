@@ -24,6 +24,19 @@ module Keisan
           super
         end
       end
+
+      def differentiate(variable, context = nil)
+        AST::Times.new(
+          [
+            AST::UnaryMinus.new(child.differentiate(variable, context)),
+            AST::UnaryInverse.new(
+              AST::Exponent.new([
+                child.deep_dup, AST::Number.new(2)
+              ])
+            )
+          ]
+        )
+      end
     end
   end
 end

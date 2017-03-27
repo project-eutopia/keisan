@@ -319,8 +319,22 @@ RSpec.describe Keisan::AST::Node do
       ast = Keisan::AST.parse("diff(x)")
       expect(ast.simplified.to_s).to eq "x"
 
+      ast = Keisan::AST.parse("diff(x, y)")
+      expect(ast.simplified.to_s).to eq "0"
+
+      ast = Keisan::AST.parse("diff(x,x)")
+      expect(ast.simplified(Keisan::Context.new.tap {|c|
+        c.register_variable!("x", 5)
+      }).to_s).to eq "0"
+
       ast = Keisan::AST.parse("diff(x,x)")
       expect(ast.simplified.to_s).to eq "1"
+
+      ast = Keisan::AST.parse("diff(-4*x**3, x)")
+      expect(ast.simplified.to_s).to eq "-4*(3*(x**2))"
+
+      ast = Keisan::AST.parse("diff(1 / alpha, alpha)")
+      expect(ast.simplified.to_s).to eq "-1*(alpha**2)**(-1)"
     end
   end
 end

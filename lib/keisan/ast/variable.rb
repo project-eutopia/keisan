@@ -43,12 +43,21 @@ module Keisan
         end
       end
 
-      def differentiate(variable)
-        if name == variable.name
+      def differentiate(variable, context = nil)
+        context ||= Keisan::Context.new
+
+        if name == variable.name && !context.has_variable?(name)
           AST::Number.new(1)
         else
-          self
+          AST::Number.new(0)
         end
+      end
+
+      def polynomial_signature(context = nil)
+        context ||= Keisan::Context.new
+        AST::PolynomialSignature.new(
+          context.has_variable?(name) ? {} : {name => 1}
+        )
       end
     end
   end

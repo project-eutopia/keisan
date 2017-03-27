@@ -42,6 +42,30 @@ module Keisan
       def evaluate(context = nil)
         children.reverse[1..-1].inject(children.last.evaluate(context)) {|total, child| child.evaluate(context) ** total}
       end
+
+      def differentiate(variable, context = nil)
+        base = children[0].simplified(context)
+        exponent = children[1].simplified(context)
+
+        raise Exceptions::NonDifferentiableError.new unless exponent.is_a?(AST::Number)
+
+        node = AST::Times.new(
+          [
+            exponent,
+            AST::Exponent.new([base.deep_dup, AST::Number.new(exponent.value(context) - 1)]),
+            base.differentiate(variable, context)
+          ]
+        ).simplified;
+      end
+
+      def polynomial_signature(context = nil)
+        base = children[0].simplified(context)
+        exponent = children[1].simplified(context)
+
+        return AST::PolynomialSignature.new unless exponent.is_a?(AST::Number)
+
+        base.polynomial_signature(context) ** exponent.value(context)
+      end
     end
   end
 end

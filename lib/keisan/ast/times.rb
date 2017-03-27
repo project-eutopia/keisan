@@ -50,15 +50,21 @@ module Keisan
         end
       end
 
-      def differentiate(variable)
+      def differentiate(variable, context = nil)
         # Product rule
         AST::Plus.new(
           children.map.with_index do |child,i|
             AST::Times.new(
-              children.slice(0,i) + [child.differentiate(variable)] + children.slice(i+1,children.size)
+              children.slice(0,i) + [child.differentiate(variable, context)] + children.slice(i+1,children.size)
             )
           end
         ).simplified
+      end
+
+      def polynomial_signature(context = nil)
+        children.inject(AST::PolynomialSignature.new) do |signature, child|
+          signature * child.polynomial_signature(context)
+        end
       end
 
       private

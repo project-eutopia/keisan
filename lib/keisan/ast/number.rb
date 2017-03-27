@@ -178,7 +178,7 @@ module Keisan
         self
       end
 
-      def differentiate(variable)
+      def differentiate(variable, context = nil)
         AST::Number.new(0)
       end
     end
