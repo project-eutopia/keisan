@@ -30,7 +30,12 @@ module Keisan
 
           while vars.size > 0
             begin
-              result = result.differentiate(vars.first, context)
+              var = vars.first
+              if result.unbound_variables(context).include?(var.name)
+                result = result.differentiate(var, context)
+              else
+                return AST::Number.new(0)
+              end
             rescue Keisan::Exceptions::NonDifferentiableError => e
               return AST::Functions::Diff.new(
                 [result] + vars,

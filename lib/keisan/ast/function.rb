@@ -70,6 +70,13 @@ module Keisan
       def to_s
         "#{name}(#{children.map(&:to_s).join(',')})"
       end
+
+      def differentiate(variable, context = nil)
+        unless unbound_variables(context).include?(variable.name)
+          return AST::Number.new(0)
+        end
+        super
+      end
     end
   end
 end

@@ -338,6 +338,12 @@ RSpec.describe Keisan::AST::Node do
 
       ast = Keisan::AST.parse("diff(f(x), x)")
       expect(ast.simplified.to_s).to eq "diff(f(x),x)"
+
+      ast = Keisan::AST.parse("diff(f(y), x)")
+      expect(ast.simplified.to_s).to eq "0"
+
+      ast = Keisan::AST.parse("diff(x*f(y), x, y)")
+      expect(ast.simplified.to_s).to eq "diff(f(y),y)"
     end
   end
 end
