@@ -52,7 +52,7 @@ module Keisan
         node = AST::Times.new(
           [
             exponent,
-            AST::Exponent.new([base.deep_dup, AST::Number.new(exponent.value(context) - 1)]),
+            AST::Exponent.new([base, AST::Number.new(exponent.value(context) - 1)]),
             base.differentiate(variable, context)
           ]
         ).simplified;

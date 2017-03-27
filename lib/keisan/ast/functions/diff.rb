@@ -20,9 +20,28 @@ module Keisan
             raise Keisan::Exceptions::InvalidFunctionError.new("Diff requires at least one argument")
           end
 
-          children[1..-1].inject(children.first) do |result, var|
-            result.differentiate(var, context)
+          vars = children[1..-1]
+
+          unless vars.all? {|var| var.is_a?(AST::Variable)}
+            raise Keisan::Exceptions::InvalidFunctionError.new("Diff must differentiate with respect to variables")
           end
+
+          result = children.first.simplify(context)
+
+          while vars.size > 0
+            begin
+              result = result.differentiate(vars.first, context)
+            rescue Keisan::Exceptions::NonDifferentiableError => e
+              return AST::Functions::Diff.new(
+                [result] + vars,
+                "diff"
+              )
+            end
+
+            vars.shift
+          end
+
+          result
         end
       end
     end
