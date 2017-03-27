@@ -50,6 +50,17 @@ module Keisan
         end
       end
 
+      def differentiate(variable)
+        # Product rule
+        AST::Plus.new(
+          children.map.with_index do |child,i|
+            AST::Times.new(
+              children.slice(0,i) + [child.differentiate(variable)] + children.slice(i+1,children.size)
+            )
+          end
+        ).simplified
+      end
+
       private
 
       def convert_divide_to_inverse!

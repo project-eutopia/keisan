@@ -75,12 +75,14 @@ module Keisan
 end
 
 require_relative "functions/if"
+require_relative "functions/diff"
 
 module Keisan
   module AST
     class Function
       BUILD_CLASSES = {
-        "if" => AST::Functions::If
+        "if"   => AST::Functions::If,
+        "diff" => AST::Functions::Diff
       }.freeze
 
       def self.build(name, arguments = [])

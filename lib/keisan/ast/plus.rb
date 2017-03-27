@@ -61,6 +61,10 @@ module Keisan
         end
       end
 
+      def differentiate(variable)
+        AST::Plus.new(children.map {|child| child.differentiate(variable)}).simplified
+      end
+
       private
 
       def convert_minus_to_plus!

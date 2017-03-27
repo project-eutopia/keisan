@@ -17,5 +17,6 @@ module Keisan
     class UnmodifiableError < StandardError; end
     class InvalidExpression < StandardError; end
     class TypeError < StandardError; end
+    class NonDifferentiableError < StandardError; end
   end
 end

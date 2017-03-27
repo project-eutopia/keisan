@@ -313,4 +313,14 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.to_s).to eq "x=(y=z)"
     end
   end
+
+  describe "diff" do
+    it "does differentiation under 'simplify'" do
+      ast = Keisan::AST.parse("diff(x)")
+      expect(ast.simplified.to_s).to eq "x"
+
+      ast = Keisan::AST.parse("diff(x,x)")
+      expect(ast.simplified.to_s).to eq "1"
+    end
+  end
 end

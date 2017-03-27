@@ -134,6 +134,10 @@ module Keisan
       def deep_dup
         dup
       end
+
+      def differentiate(variable)
+        raise Keisan::Exceptions::NonDifferentiableError.new
+      end
     end
   end
 end

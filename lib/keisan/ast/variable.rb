@@ -42,6 +42,14 @@ module Keisan
           self
         end
       end
+
+      def differentiate(variable)
+        if name == variable.name
+          AST::Number.new(1)
+        else
+          self
+        end
+      end
     end
   end
 end
