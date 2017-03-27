@@ -15,6 +15,8 @@ require "keisan/function_definition_context"
 
 require "keisan/ast/node"
 
+require "keisan/ast/polynomial_signature"
+
 require "keisan/ast/literal"
 require "keisan/ast/variable"
 require "keisan/ast/constant_literal"
