@@ -58,8 +58,10 @@ module Keisan
         end
 
       elsif @components[-1].is_a?(Parsing::UnaryOperator)
-        # Expect an element
+        # Expect an element or another unary operator
         case token.type
+        when :operator
+          add_unary_operator_to_components!(token)
         when :number, :string, :word, :group, :null, :boolean
           add_element_to_components!(token)
         else

@@ -41,6 +41,23 @@ RSpec.describe Keisan::Parser do
         expect(parser.components[1].value).to eq 2
         expect(parser.components[4].name).to eq "x"
       end
+
+      it "handles multiple unary operators" do
+        parser = described_class.new(string: "+15+!~-z")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::UnaryPlus,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::LogicalNot,
+          Keisan::Parsing::BitwiseNot,
+          Keisan::Parsing::UnaryMinus,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(parser.components[1].value).to eq 15
+        expect(parser.components[6].name).to eq "z"
+      end
     end
 
     context "has brackets" do
