@@ -317,11 +317,11 @@ RSpec.describe Keisan::Parser do
           Keisan::Parsing::Number
         ])
 
-        expect(parser.components[1].value).to eq 9
-        expect(parser.components[3].value).to eq 8
-        expect(parser.components[7].value).to eq 4
+        expect(parser.components[0].value).to eq 9
+        expect(parser.components[2].value).to eq 8
+        expect(parser.components[6].value).to eq 4
 
-        group = parser.components[5]
+        group = parser.components[4]
         expect(group.components.map(&:class)).to match_array([
           Keisan::Parsing::BitwiseNot,
           Keisan::Parsing::Number,

@@ -6,10 +6,6 @@ module Keisan
         convert_minus_to_plus!
       end
 
-      def arity
-        2..Float::INFINITY
-      end
-
       def self.symbol
         :+
       end

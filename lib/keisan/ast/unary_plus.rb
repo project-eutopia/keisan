@@ -5,7 +5,7 @@ module Keisan
         return children.first.value(context)
       end
 
-      def to_s
+      def self.symbol
         :"+"
       end
 

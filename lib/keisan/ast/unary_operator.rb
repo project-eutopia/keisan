@@ -1,6 +1,6 @@
 module Keisan
   module AST
-    class UnaryOperator < Parent
+    class UnaryOperator < Operator
       def initialize(children = [])
         children = Array.wrap(children)
         super
@@ -13,16 +13,16 @@ module Keisan
         children.first
       end
 
-      def symbol
-        self.class.symbol
-      end
-
-      def priority
-        self.class.priority
+      def self.arity
+        ARITIES[:"u#{symbol}"]
       end
 
       def self.priority
-        Keisan::AST::Priorities.priorities[:"u#{symbol}"]
+        PRIORITIES[:"u#{symbol}"]
+      end
+
+      def self.associativity
+        ASSOCIATIVITIES[:"u#{symbol}"]
       end
 
       def to_s

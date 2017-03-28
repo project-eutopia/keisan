@@ -6,10 +6,6 @@ module Keisan
         convert_divide_to_inverse!
       end
 
-      def arity
-        2..Float::INFINITY
-      end
-
       def self.symbol
         :*
       end
