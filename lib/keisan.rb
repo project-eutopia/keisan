@@ -92,11 +92,12 @@ require "keisan/parsing/list"
 require "keisan/parsing/indexing"
 require "keisan/parsing/argument"
 
+require "keisan/parsing/operator"
+
 require "keisan/parsing/unary_operator"
 require "keisan/parsing/unary_plus"
 require "keisan/parsing/unary_minus"
 
-require "keisan/parsing/operator"
 require "keisan/parsing/arithmetic_operator"
 require "keisan/parsing/plus"
 require "keisan/parsing/minus"

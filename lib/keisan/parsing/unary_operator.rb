@@ -1,6 +1,6 @@
 module Keisan
   module Parsing
-    class UnaryOperator < Component
+    class UnaryOperator < Operator
       def node_class
         raise Keisan::Exponent::NotImplementedError.new
       end

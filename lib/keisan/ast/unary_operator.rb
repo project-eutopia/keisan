@@ -17,6 +17,14 @@ module Keisan
         self.class.symbol
       end
 
+      def priority
+        self.class.priority
+      end
+
+      def self.priority
+        Keisan::AST::Priorities.priorities[:"u#{symbol}"]
+      end
+
       def to_s
         "#{symbol.to_s}#{child.to_s}"
       end
