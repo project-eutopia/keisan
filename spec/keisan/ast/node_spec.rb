@@ -1,6 +1,53 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Node do
+  describe "unary operators" do
+    it "parses correctly" do
+      ast = Keisan::AST.parse("--20")
+      expect(ast).to be_a(Keisan::AST::Number)
+      expect(ast.value).to eq 20
+
+      ast = Keisan::AST.parse("!~3*-x")
+      expect(ast).to be_a(Keisan::AST::Times)
+
+      expect(ast.children[0]).to be_a(Keisan::AST::UnaryLogicalNot)
+      expect(ast.children[0].child).to be_a(Keisan::AST::UnaryBitwiseNot)
+      expect(ast.children[0].child.child).to be_a(Keisan::AST::Number)
+      expect(ast.children[0].child.child.value).to eq 3
+
+      expect(ast.children[1]).to be_a(Keisan::AST::UnaryMinus)
+      expect(ast.children[1].child).to be_a(Keisan::AST::Variable)
+      expect(ast.children[1].child.name).to eq "x"
+
+      ast = Keisan::AST.parse("-(2+x)[0]")
+      expect(ast).to be_a(Keisan::AST::UnaryMinus)
+      expect(ast.child).to be_a(Keisan::AST::Indexing)
+      expect(ast.child.arguments.map(&:class)).to eq([Keisan::AST::Number])
+      expect(ast.child.child).to be_a(Keisan::AST::Plus)
+      expect(ast.child.child.children.map(&:class)).to eq([Keisan::AST::Number, Keisan::AST::Variable])
+      expect(ast.child.child.children[0].value).to eq 2
+      expect(ast.child.child.children[1].name).to eq "x"
+
+      ast = Keisan::AST.parse("-x**-(2+1)[0]/2+(-3)")
+      expect(ast).to be_a(Keisan::AST::Plus)
+      expect(ast.children.map(&:class)).to eq([Keisan::AST::Times, Keisan::AST::UnaryMinus])
+
+      expect(ast.children[0].children.map(&:class)).to eq([Keisan::AST::UnaryMinus, Keisan::AST::UnaryInverse])
+      expect(ast.children[0].children[0].child).to be_a(Keisan::AST::Exponent)
+      expect(ast.children[0].children[0].child.children[0].name).to eq "x"
+      expect(ast.children[0].children[0].child.children[1]).to be_a(Keisan::AST::UnaryMinus)
+      expect(ast.children[0].children[0].child.children[1].child).to be_a(Keisan::AST::Indexing)
+      expect(ast.children[0].children[0].child.children[1].child.arguments.map(&:class)).to eq([Keisan::AST::Number])
+      expect(ast.children[0].children[0].child.children[1].child.arguments[0].value).to eq 0
+      expect(ast.children[0].children[0].child.children[1].child.children.map(&:class)).to eq([Keisan::AST::Plus])
+      expect(ast.children[0].children[0].child.children[1].child.children[0].children.map(&:class)).to eq([Keisan::AST::Number, Keisan::AST::Number])
+      expect(ast.children[0].children[0].child.children[1].child.children[0].children[0].value).to eq 2
+      expect(ast.children[0].children[0].child.children[1].child.children[0].children[1].value).to eq 1
+
+      expect(ast.children[1].child.value).to eq 3
+    end
+  end
+
   describe "unbound_variables" do
     it "returns a Set of the undefined variable names" do
       ast = Keisan::AST.parse("pi")
