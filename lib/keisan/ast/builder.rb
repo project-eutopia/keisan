@@ -15,8 +15,36 @@ module Keisan
           @components = Array.wrap(components)
         end
 
-        @nodes = nodes_split_by_operators(@components)
-        @operators = @components.select {|component| component.is_a?(Keisan::Parsing::Operator)}
+        @nodes_components = []
+
+        @components.each do |component|
+          if @nodes_components.empty?
+            @nodes_components << [component]
+          else
+            is_operator = [@nodes_components.last.last.is_a?(Keisan::Parsing::Operator), component.is_a?(Keisan::Parsing::Operator)]
+
+            if is_operator.first == is_operator.last
+              @nodes_components.last << component
+            else
+              @nodes_components << [component]
+            end
+          end
+        end
+
+        @nodes = []
+
+        @nodes_components.each do |node_or_component_group|
+          if node_or_component_group.first.is_a?(Keisan::Parsing::Operator)
+            node_or_component_group.each do |component|
+              @nodes << component
+            end
+          else
+            @nodes << node_from_components(node_or_component_group)
+          end
+        end
+
+        # Negative means not an operator
+        @priorities = @nodes.map {|node| node.is_a?(Keisan::Parsing::Operator) ? node.priority : -1}
 
         consume_operators!
 
@@ -35,25 +63,11 @@ module Keisan
 
       private
 
-      def nodes_split_by_operators(components)
-        components.split {|component|
-          component.is_a?(Keisan::Parsing::Operator)
-        }.map {|group_of_components|
-          node_from_components(group_of_components)
-        }
-      end
-
       def node_from_components(components)
-        unary_components, node, postfix_components = *unarys_node_postfixes(components)
-
+        node, postfix_components = *node_postfixes(components)
         # Apply postfix operators
         postfix_components.each do |postfix_component|
           node = apply_postfix_component_to_node(postfix_component, node)
-        end
-
-        # Apply prefix unary operators
-        unary_components.reverse.each do |unary_component|
-          node = unary_component.node_class.new(node)
         end
 
         node
@@ -86,17 +100,10 @@ module Keisan
       end
 
       # Returns an array of the form
-      # [unary_operators, middle_node, postfix_operators]
-      # unary_operators is an array of Keisan::Parsing::UnaryOperator objects
+      # [node, postfix_operators]
       # middle_node is the main node which will be modified by prefix and postfix operators
       # postfix_operators is an array of Keisan::Parsing::Indexing, DotWord, and DotOperator objects
-      def unarys_node_postfixes(components)
-        index_of_unary_components = components.map.with_index {|c,i| [c,i]}.select {|c,i| c.is_a?(Keisan::Parsing::UnaryOperator)}.map(&:last)
-        # Must be all in the front
-        unless index_of_unary_components.map.with_index.all? {|i,j| i == j}
-          raise Keisan::Exceptions::ASTError.new("unary operators must be in front")
-        end
-
+      def node_postfixes(components)
         index_of_postfix_components = components.map.with_index {|c,i| [c,i]}.select {|c,i|
           c.is_a?(Keisan::Parsing::Indexing) || c.is_a?(Keisan::Parsing::DotWord) || c.is_a?(Keisan::Parsing::DotOperator)
         }.map(&:last)
@@ -104,16 +111,14 @@ module Keisan
           raise Keisan::Exceptions::ASTError.new("postfix components must be in back")
         end
 
-        num_unary   = index_of_unary_components.size
         num_postfix = index_of_postfix_components.size
 
-        unless num_unary + 1 + num_postfix == components.size
+        unless num_postfix + 1 == components.size
           raise Keisan::Exceptions::ASTError.new("have too many components")
         end
 
         [
-          index_of_unary_components.map {|i| components[i]},
-          node_of_component(components[index_of_unary_components.size]),
+          node_of_component(components[0]),
           index_of_postfix_components.map {|i| components[i]}
         ]
       end
@@ -163,32 +168,57 @@ module Keisan
       end
 
       def consume_operators!
-        while @operators.count > 0
-          priorities = @operators.map(&:priority)
-          max_priority = priorities.uniq.max
+        loop do
+          break if @priorities.empty?
+          max_priority = @priorities.max
+          break if max_priority < 0
+
           consume_operators_with_priority!(max_priority)
         end
       end
 
       def consume_operators_with_priority!(priority)
-        # Treat back-to-back operators with same priority as one single call (e.g. 1 + 2 + 3 is add(1,2,3))
-        while @operators.any? {|operator| operator.priority == priority}
-          next_operator_group = @operators.each.with_index.to_a.split {|operator,i|
-            operator.priority != priority
-          }.select {|ops| !ops.empty?}.first
-          operator_group_indexes = next_operator_group.map(&:last)
+        p_indexes = @priorities.map.with_index.select {|p,index| p == priority}
+        # :left, :right, or :none
+        associativity = AST::Operator.associativity_of_priority(priority)
 
-          first_index = operator_group_indexes.first
-          last_index  = operator_group_indexes.last
+        if associativity == :right
+          index = p_indexes[-1][1]
+        else
+          index = p_indexes[0][1]
+        end
 
-          replacement_node = next_operator_group.first.first.node_class.new(
-            children = @nodes[first_index..(last_index+1)],
-            parsing_operators = @operators[first_index..last_index]
+        operator = @nodes[index]
+
+        # If has unary operators after, must process those first
+        if @nodes[index+1].is_a?(Keisan::Parsing::UnaryOperator)
+          loop do
+            break if !@nodes[index+1].is_a?(Keisan::Parsing::UnaryOperator)
+            index += 1
+          end
+          operator = @nodes[index]
+        end
+
+        # operator is the current operator to process, and index is its index
+        if operator.is_a?(Keisan::Parsing::UnaryOperator)
+          replacement_node = operator.node_class.new(
+            children = [@nodes[index+1]]
           )
-
-          @nodes.delete_if.with_index {|node, i| i >= first_index && i <= last_index+1}
-          @operators.delete_if.with_index {|node, i| i >= first_index && i <= last_index}
-          @nodes.insert(first_index, replacement_node)
+          @nodes.delete_if.with_index {|node, i| i >= index && i <= index+1}
+          @priorities.delete_if.with_index {|node, i| i >= index && i <= index+1}
+          @nodes.insert(index, replacement_node)
+          @priorities.insert(index, -1)
+        elsif operator.is_a?(Keisan::Parsing::Operator)
+          replacement_node = operator.node_class.new(
+            children = [@nodes[index-1],@nodes[index+1]],
+            parsing_operators = [operator]
+          )
+          @nodes.delete_if.with_index {|node, i| i >= index-1 && i <= index+1}
+          @priorities.delete_if.with_index {|node, i| i >= index-1 && i <= index+1}
+          @nodes.insert(index-1, replacement_node)
+          @priorities.insert(index-1, -1)
+        else
+          raise Keisan::Exceptions::ASTError.new("Can only consume operators")
         end
       end
     end

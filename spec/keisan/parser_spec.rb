@@ -28,10 +28,10 @@ RSpec.describe Keisan::Parser do
 
     context "has unary operators" do
       it "correctly picks them up" do
-        parser = described_class.new(string: "+2 * -x")
+        parser = described_class.new(string: "!2 * -x")
 
         expect(parser.components.map(&:class)).to match_array([
-          Keisan::Parsing::UnaryPlus,
+          Keisan::Parsing::LogicalNot,
           Keisan::Parsing::Number,
           Keisan::Parsing::Times,
           Keisan::Parsing::UnaryMinus,
@@ -43,10 +43,10 @@ RSpec.describe Keisan::Parser do
       end
 
       it "handles multiple unary operators" do
-        parser = described_class.new(string: "+15+!~-z")
+        parser = described_class.new(string: "~15+!~-z")
 
         expect(parser.components.map(&:class)).to match_array([
-          Keisan::Parsing::UnaryPlus,
+          Keisan::Parsing::BitwiseNot,
           Keisan::Parsing::Number,
           Keisan::Parsing::Plus,
           Keisan::Parsing::LogicalNot,

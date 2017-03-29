@@ -39,7 +39,7 @@ module Keisan
 
     def remove_unary_identity!
       @components = @components.select do |component|
-        !component.is_a?(Keisan::Parsing::Operator) || component.node_class != Keisan::AST::UnaryIdentity
+        !component.is_a?(Keisan::Parsing::Operator) || !(component.node_class <= Keisan::AST::UnaryIdentity)
       end
     end
 
