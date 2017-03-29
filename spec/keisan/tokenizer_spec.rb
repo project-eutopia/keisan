@@ -415,4 +415,22 @@ RSpec.describe Keisan::Tokenizer do
       expect(group.sub_tokens).to be_empty
     end
   end
+
+  context "assignment" do
+    it "parses correctly" do
+      tokenizer = described_class.new("x = y = 5")
+
+      expect(tokenizer.tokens.map(&:class)).to eq([
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Assignment,
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Assignment,
+        Keisan::Tokens::Number
+      ])
+
+      expect(tokenizer.tokens[0].string).to eq "x"
+      expect(tokenizer.tokens[2].string).to eq "y"
+      expect(tokenizer.tokens[4].value).to eq 5
+    end
+  end
 end
