@@ -31,6 +31,11 @@ module Keisan
       PRIORITIES      = Hash[ARITY_PRIORITY_ASSOCIATIVITY.map {|sym, ary| [sym, ary[1]]}].freeze
       ASSOCIATIVITIES = Hash[ARITY_PRIORITY_ASSOCIATIVITY.map {|sym, ary| [sym, ary[2]]}].freeze
 
+      ASSOCIATIVITY_OF_PRIORITY = ARITY_PRIORITY_ASSOCIATIVITY.inject({}) do |h, (symbol,arity_priority_associativity)|
+        h[arity_priority_associativity[1]] = arity_priority_associativity[2]
+        h
+      end.freeze
+
       def initialize(children = [], parsing_operators = [])
         unless parsing_operators.empty? || children.count == parsing_operators.count + 1
           raise Keisan::Exceptions::ASTError.new("Mismatch of children and operators")
@@ -43,9 +48,7 @@ module Keisan
       end
 
       def self.associativity_of_priority(priority)
-        ARITY_PRIORITY_ASSOCIATIVITY.find { |symbol, arity_priority_associativity|
-          arity_priority_associativity[1] == priority
-        }[2]
+        ASSOCIATIVITY_OF_PRIORITY[priority]
       end
 
       def arity
