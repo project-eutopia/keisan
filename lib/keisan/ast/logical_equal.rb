@@ -1,10 +1,6 @@
 module Keisan
   module AST
     class LogicalEqual < LogicalOperator
-      def arity
-        2..2
-      end
-
       def self.symbol
         :"=="
       end

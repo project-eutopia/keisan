@@ -13,7 +13,7 @@ module Keisan
       end
 
       def to_s
-        "#{child.to_s}[#{arguments.map(&:to_s).join(',')}]"
+        "(#{child.to_s})[#{arguments.map(&:to_s).join(',')}]"
       end
 
       def simplify(context = nil)

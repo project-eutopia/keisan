@@ -8,6 +8,10 @@ module Keisan
       def self.symbol
         nil
       end
+
+      def simplify(context = nil)
+        child.simplify(context)
+      end
     end
   end
 end

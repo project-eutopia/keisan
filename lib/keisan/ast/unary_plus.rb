@@ -1,11 +1,11 @@
 module Keisan
   module AST
-    class UnaryPlus < UnaryOperator
+    class UnaryPlus < UnaryIdentity
       def value(context = nil)
         return children.first.value(context)
       end
 
-      def to_s
+      def self.symbol
         :"+"
       end
 

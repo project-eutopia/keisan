@@ -28,10 +28,10 @@ RSpec.describe Keisan::Parser do
 
     context "has unary operators" do
       it "correctly picks them up" do
-        parser = described_class.new(string: "+2 * -x")
+        parser = described_class.new(string: "!2 * -x")
 
         expect(parser.components.map(&:class)).to match_array([
-          Keisan::Parsing::UnaryPlus,
+          Keisan::Parsing::LogicalNot,
           Keisan::Parsing::Number,
           Keisan::Parsing::Times,
           Keisan::Parsing::UnaryMinus,
@@ -40,6 +40,23 @@ RSpec.describe Keisan::Parser do
 
         expect(parser.components[1].value).to eq 2
         expect(parser.components[4].name).to eq "x"
+      end
+
+      it "handles multiple unary operators" do
+        parser = described_class.new(string: "~15+!~-z")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::BitwiseNot,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::LogicalNot,
+          Keisan::Parsing::BitwiseNot,
+          Keisan::Parsing::UnaryMinus,
+          Keisan::Parsing::Variable
+        ])
+
+        expect(parser.components[1].value).to eq 15
+        expect(parser.components[6].name).to eq "z"
       end
     end
 
@@ -290,7 +307,6 @@ RSpec.describe Keisan::Parser do
         parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1) ^ 4")
 
         expect(parser.components.map(&:class)).to match_array([
-          Keisan::Parsing::BitwiseNotNot,
           Keisan::Parsing::Number,
           Keisan::Parsing::BitwiseAnd,
           Keisan::Parsing::Number,
@@ -300,11 +316,11 @@ RSpec.describe Keisan::Parser do
           Keisan::Parsing::Number
         ])
 
-        expect(parser.components[1].value).to eq 9
-        expect(parser.components[3].value).to eq 8
-        expect(parser.components[7].value).to eq 4
+        expect(parser.components[0].value).to eq 9
+        expect(parser.components[2].value).to eq 8
+        expect(parser.components[6].value).to eq 4
 
-        group = parser.components[5]
+        group = parser.components[4]
         expect(group.components.map(&:class)).to match_array([
           Keisan::Parsing::BitwiseNot,
           Keisan::Parsing::Number,

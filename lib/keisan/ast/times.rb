@@ -6,10 +6,6 @@ module Keisan
         convert_divide_to_inverse!
       end
 
-      def arity
-        2..Float::INFINITY
-      end
-
       def self.symbol
         :*
       end
@@ -20,6 +16,13 @@ module Keisan
 
       def simplify(context = nil)
         super
+
+        # Commutative, so pull in operands of any `Times` operators
+        times, others = *children.partition {|child| child.is_a?(AST::Times)}
+        @children = times.inject(others) do |res, time|
+          res + time.children
+        end
+
         constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
         constant = constants.inject(AST::Number.new(1), &:*).simplify(context)
 

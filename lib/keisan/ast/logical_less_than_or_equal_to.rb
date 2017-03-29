@@ -1,10 +1,6 @@
 module Keisan
   module AST
     class LogicalLessThanOrEqualTo < LogicalOperator
-      def arity
-        2..2
-      end
-
       def self.symbol
         :"<="
       end

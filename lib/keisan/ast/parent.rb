@@ -26,6 +26,8 @@ module Keisan
       end
 
       def ==(other)
+        return false unless self.class == other.class
+
         children.size == other.children.size && children.map.with_index {|_,i|
           children[i] == other.children[i]
         }.all? {|bool|

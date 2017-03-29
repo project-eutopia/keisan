@@ -1,10 +1,6 @@
 module Keisan
   module AST
     class LogicalOr < LogicalOperator
-      def arity
-        2..Float::INFINITY
-      end
-
       def self.symbol
         :"||"
       end
