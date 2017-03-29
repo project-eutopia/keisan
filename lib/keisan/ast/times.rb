@@ -15,6 +15,8 @@ module Keisan
       end
 
       def simplify(context = nil)
+        context ||= Context.new
+
         super
 
         # Commutative, so pull in operands of any `Times` operators

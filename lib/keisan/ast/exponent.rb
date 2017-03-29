@@ -10,6 +10,8 @@ module Keisan
       end
 
       def simplify(context = nil)
+        context ||= Context.new
+
         super
 
         if children[1].is_a?(AST::Number) && children[1].value(context) == 1

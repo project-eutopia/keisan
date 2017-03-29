@@ -10,6 +10,8 @@ module Keisan
       end
 
       def simplify(context = nil)
+        context ||= Context.new
+
         @children = [child.simplify(context)]
         case child
         when AST::Number

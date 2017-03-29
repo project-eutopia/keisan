@@ -17,6 +17,8 @@ module Keisan
       end
 
       def simplify(context = nil)
+        context ||= Context.new
+
         @arguments = arguments.map {|argument| argument.simplify(context)}
         @children = [child.simplify(context)]
 
