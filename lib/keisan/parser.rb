@@ -163,6 +163,9 @@ module Keisan
 
     def add_operator_to_components!(token)
       case token.operator_type
+      # Assignment
+      when :"="
+        @components << Keisan::Parsing::Assignment.new
       # Arithmetic
       when :+
         @components << Keisan::Parsing::Plus.new

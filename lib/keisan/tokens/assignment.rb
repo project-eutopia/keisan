@@ -6,6 +6,10 @@ module Keisan
       def self.regex
         REGEX
       end
+
+      def operator_type
+        :"="
+      end
     end
   end
 end

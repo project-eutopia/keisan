@@ -23,6 +23,7 @@ require "keisan/ast/boolean"
 
 require "keisan/ast/parent"
 require "keisan/ast/operator"
+require "keisan/ast/assignment"
 require "keisan/ast/unary_operator"
 require "keisan/ast/unary_identity"
 require "keisan/ast/unary_plus"
@@ -93,6 +94,8 @@ require "keisan/parsing/indexing"
 require "keisan/parsing/argument"
 
 require "keisan/parsing/operator"
+
+require "keisan/parsing/assignment"
 
 require "keisan/parsing/unary_operator"
 require "keisan/parsing/unary_plus"
