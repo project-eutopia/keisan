@@ -307,7 +307,6 @@ RSpec.describe Keisan::Parser do
         parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1) ^ 4")
 
         expect(parser.components.map(&:class)).to match_array([
-          Keisan::Parsing::BitwiseNotNot,
           Keisan::Parsing::Number,
           Keisan::Parsing::BitwiseAnd,
           Keisan::Parsing::Number,

@@ -17,6 +17,7 @@ module Keisan
       @components = []
 
       parse_components!
+      remove_unary_identity!
     end
 
     def ast
@@ -33,6 +34,12 @@ module Keisan
       while @unparsed_tokens.count > 0
         token = @unparsed_tokens.shift
         add_token_to_components!(token)
+      end
+    end
+
+    def remove_unary_identity!
+      @components = @components.select do |component|
+        !component.is_a?(Keisan::Parsing::Operator) || component.node_class != Keisan::AST::UnaryIdentity
       end
     end
 
