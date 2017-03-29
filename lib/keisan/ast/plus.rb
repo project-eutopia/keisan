@@ -29,6 +29,13 @@ module Keisan
 
       def simplify(context = nil)
         super
+
+        # Commutative, so pull in operands of any `Plus` operators
+        adds, others = *children.partition {|child| child.is_a?(AST::Plus)}
+        @children = adds.inject(others) do |res, add|
+          res + add.children
+        end
+
         constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
         constant = constants.inject(AST::Number.new(0), &:+).simplify(context)
 
