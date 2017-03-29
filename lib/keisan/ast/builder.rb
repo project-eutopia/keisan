@@ -15,33 +15,7 @@ module Keisan
           @components = Array.wrap(components)
         end
 
-        @nodes_components = []
-
-        @components.each do |component|
-          if @nodes_components.empty?
-            @nodes_components << [component]
-          else
-            is_operator = [@nodes_components.last.last.is_a?(Keisan::Parsing::Operator), component.is_a?(Keisan::Parsing::Operator)]
-
-            if is_operator.first == is_operator.last
-              @nodes_components.last << component
-            else
-              @nodes_components << [component]
-            end
-          end
-        end
-
-        @nodes = []
-
-        @nodes_components.each do |node_or_component_group|
-          if node_or_component_group.first.is_a?(Keisan::Parsing::Operator)
-            node_or_component_group.each do |component|
-              @nodes << component
-            end
-          else
-            @nodes << node_from_components(node_or_component_group)
-          end
-        end
+        @nodes = components_to_basic_nodes(@components)
 
         # Negative means not an operator
         @priorities = @nodes.map {|node| node.is_a?(Keisan::Parsing::Operator) ? node.priority : -1}
@@ -62,6 +36,37 @@ module Keisan
       end
 
       private
+
+      # Array of AST elements, and Parsing operators
+      def components_to_basic_nodes(components)
+        nodes_components = []
+
+        components.each do |component|
+          if nodes_components.empty?
+            nodes_components << [component]
+          else
+            is_operator = [nodes_components.last.last.is_a?(Keisan::Parsing::Operator), component.is_a?(Keisan::Parsing::Operator)]
+
+            if is_operator.first == is_operator.last
+              nodes_components.last << component
+            else
+              nodes_components << [component]
+            end
+          end
+        end
+
+        nodes_components.inject([]) do |nodes, node_or_component_group|
+          if node_or_component_group.first.is_a?(Keisan::Parsing::Operator)
+            node_or_component_group.each do |component|
+              nodes << component
+            end
+          else
+            nodes << node_from_components(node_or_component_group)
+          end
+
+          nodes
+        end
+      end
 
       def node_from_components(components)
         node, postfix_components = *node_postfixes(components)
