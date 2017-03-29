@@ -45,7 +45,7 @@ RSpec.describe Keisan::AST::Node do
 
       expect(Keisan::AST.parse(s_same)).to eq(Keisan::AST.parse(s))
       expect(Keisan::AST.parse(s_diff_var)).not_to eq(Keisan::AST.parse(s))
-      expect(Keisan::AST.parse(s_diff_expr)).not_to eq(Keisan::AST.parse(s))
+      expect(Keisan::AST.parse(s_diff_expr)).not_to eq(Keisan::AST.parse(s_diff_var))
 
       expect(Keisan::AST.parse("1+2+3")).not_to eq(Keisan::AST.parse("1+(2+3)"))
     end
@@ -139,8 +139,8 @@ RSpec.describe Keisan::AST::Node do
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Plus)
         expect(ast_simple.children[0].value).to eq 15
-        expect(ast_simple.children[1].name).to eq "x"
-        expect(ast_simple.children[2].name).to eq "y"
+        expect(ast_simple.children[1].name).to eq "y"
+        expect(ast_simple.children[2].name).to eq "x"
       end
     end
 
@@ -159,7 +159,7 @@ RSpec.describe Keisan::AST::Node do
     context "arithmetic operations" do
       it "prints out the AST as a string expression, wrapping operators in brackets" do
         ast = Keisan::AST.parse("-15 + x**4 * 3 + sin(y)*(1+(-1))+f(z+1,w+1)[2]")
-        expect(ast.to_s).to eq "-15+((x**4)*3)+(sin(y)*(1+-1))+f(z+1,w+1)[2]"
+        expect(ast.simplified.to_s).to eq "-15+((f(1+z,1+w))[2])+(3*(x**4))"
         expect(Keisan::AST.parse(ast.to_s)).to eq ast
       end
     end
@@ -175,7 +175,7 @@ RSpec.describe Keisan::AST::Node do
     context "bitwise operations" do
       it "prints out the AST as a string expression, wrapping operators in brackets" do
         ast = Keisan::AST.parse("~2 & 3 | 5 ^ (6+8|9)")
-        expect(ast.to_s).to eq "(~2&3)|(5^((6+8)|9))"
+        expect(ast.to_s).to eq "(((~2)&3)|5)^((6+8)|9)"
         expect(Keisan::AST.parse(ast.to_s)).to eq ast
       end
     end
