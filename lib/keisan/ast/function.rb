@@ -48,7 +48,7 @@ module Keisan
 
         super
         if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
-          ConstantLiteral.from_value(value(context)).simplify(context)
+          value(context).to_node.simplify(context)
         else
           self
         end

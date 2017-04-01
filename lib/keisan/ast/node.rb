@@ -21,6 +21,13 @@ module Keisan
         self
       end
 
+      def coerce(other)
+        [self, other.to_node]
+      end
+
+      def to_node
+        self
+      end
       def deep_dup
         dup
       end
