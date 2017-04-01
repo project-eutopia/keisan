@@ -16,6 +16,21 @@ module Keisan
         "(#{child.to_s})[#{arguments.map(&:to_s).join(',')}]"
       end
 
+      def evaluate(context = nil)
+        context ||= Keisan::Context.new
+        @children = children.map {|child| child.evaluate(context)}
+        @arguments = arguments.map {|argument| argument.evaluate(context)}
+
+        case child
+        when AST::List
+          if @arguments.size == 1 && @arguments.first.is_a?(AST::Number)
+            return child.children[@arguments.first.value(context)].evaluate(context)
+          end
+        end
+
+        self
+      end
+
       def simplify(context = nil)
         context ||= Context.new
 
