@@ -5,6 +5,10 @@ module Keisan
         return -1 * child.value(context)
       end
 
+      def evaluate(context = nil)
+        -child.evaluate(context)
+      end
+
       def self.symbol
         :"-"
       end

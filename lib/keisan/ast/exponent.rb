@@ -24,6 +24,10 @@ module Keisan
           self
         end
       end
+
+      def evaluate(context = nil)
+        children.reverse[1..-1].inject(children.last.evaluate(context)) {|total, child| child.evaluate(context) ** total}
+      end
     end
   end
 end

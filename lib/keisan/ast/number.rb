@@ -28,10 +28,23 @@ module Keisan
         end
       end
 
+      def -(other)
+        self + (-other)
+      end
+
       def *(other)
         case other
         when AST::Number
           AST::Number.new(value * other.value)
+        else
+          super
+        end
+      end
+
+      def /(other)
+        case other
+        when AST::Number
+          AST::Number.new(Rational(value, other.value))
         else
           super
         end
@@ -42,7 +55,101 @@ module Keisan
         when AST::Number
           AST::Number.new(value ** other.value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          super
+        end
+      end
+
+      def %(other)
+        case other
+        when AST::Number
+          AST::Number.new(value % other.value)
+        else
+          super
+        end
+      end
+
+      def &(other)
+        case other
+        when AST::Number
+          AST::Number.new(value & other.value)
+        else
+          super
+        end
+      end
+
+      def ~
+        AST::Number.new(~value)
+      end
+
+      def ^(other)
+        case other
+        when AST::Number
+          AST::Number.new(value ^ other.value)
+        else
+          super
+        end
+      end
+
+      def |(other)
+        case other
+        when AST::Number
+          AST::Number.new(value | other.value)
+        else
+          super
+        end
+      end
+
+      def >(other)
+        case other
+        when AST::Number
+          AST::Boolean.new(value > other.value)
+        else
+          super
+        end
+      end
+
+      def >=(other)
+        case other
+        when AST::Number
+          AST::Boolean.new(value >= other.value)
+        else
+          super
+        end
+      end
+
+      def <(other)
+        case other
+        when AST::Number
+          AST::Boolean.new(value < other.value)
+        else
+          super
+        end
+      end
+
+      def <=(other)
+        case other
+        when AST::Number
+          AST::Boolean.new(value <= other.value)
+        else
+          super
+        end
+      end
+
+      def equal(other)
+        case other
+        when AST::Number
+          AST::Boolean.new(value == other.value)
+        else
+          super
+        end
+      end
+
+      def not_equal(other)
+        case other
+        when AST::Number
+          AST::Boolean.new(value != other.value)
+        else
+          super
         end
       end
 

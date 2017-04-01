@@ -9,6 +9,10 @@ module Keisan
         "(#{child.to_s})**(-1)"
       end
 
+      def evaluate(context = nil)
+        1.to_node / child.evaluate(context)
+      end
+
       def simplify(context = nil)
         context ||= Context.new
 

@@ -3,27 +3,27 @@ module Keisan
     class Operator < Parent
       # NOTE: operators with same priority must have same associativity
       ARITY_PRIORITY_ASSOCIATIVITY = {
-        "u!": [1, 100, :right],
-        "u~": [1, 100, :right],
-        "u+": [1, 100, :right],
-        "**": [2,  95, :right],
-        "u-": [1,  90, :right],
-        "*":  [2,  85, :left],
-        # "/":  [2,  85, :left],
-        "%":  [2,  85, :left],
-        "+":  [2,  80, :left],
-        # "-":  [2,  80, :left],
-        "&":  [2,  70, :left],
-        "^":  [2,  65, :left],
-        "|":  [2,  65, :left],
-        ">":  [2,  60, :left],
-        ">=": [2,  60, :left],
-        "<":  [2,  60, :left],
-        "<=": [2,  60, :left],
-        "==": [2,  55, :none],
-        "!=": [2,  55, :none],
-        "&&": [2,  50, :left],
-        "||": [2,  45, :left],
+        "u!": [1, 100, :right],  # Logical not
+        "u~": [1, 100, :right],  # Bitwise not
+        "u+": [1, 100, :right],  # Unary plus
+        "**": [2,  95, :right],  # Exponent
+        "u-": [1,  90, :right],  # Unary minus
+        "*":  [2,  85, :left],   # Times
+        # "/":  [2,  85, :left], # Divide
+        "%":  [2,  85, :left],   # Modulo
+        "+":  [2,  80, :left],   # Plus
+        # "-":  [2,  80, :left], # Minus
+        "&":  [2,  70, :left],   # Bitwise and
+        "^":  [2,  65, :left],   # Bitwise xor
+        "|":  [2,  65, :left],   # Bitwise or
+        ">":  [2,  60, :left],   # Greater than
+        ">=": [2,  60, :left],   # Greater than or equal to
+        "<":  [2,  60, :left],   # Less than
+        "<=": [2,  60, :left],   # Less than or equal to
+        "==": [2,  55, :none],   # Equal
+        "!=": [2,  55, :none],   # Not equal
+        "&&": [2,  50, :left],   # Logical and
+        "||": [2,  45, :left],   # Logical or
         "=":  [2,  40, :right] # TODO: handle and test
       }.freeze
 

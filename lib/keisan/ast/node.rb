@@ -21,6 +21,10 @@ module Keisan
         self
       end
 
+      def evaluate(context = nil)
+        self
+      end
+
       def coerce(other)
         [self, other.to_node]
       end
@@ -64,7 +68,7 @@ module Keisan
       end
 
       def ~
-        AST::BitwiseNot.new(self)
+        AST::UnaryBitwiseNot.new(self)
       end
 
       def +@
@@ -107,11 +111,11 @@ module Keisan
         AST::LogicalLessThanOrEqualTo.new([self, other.to_node])
       end
 
-      def ==(other)
+      def equal(other)
         AST::LogicalEqual.new([self, other.to_node])
       end
 
-      def !=(other)
+      def not_equal(other)
         AST::LogicalNotEqual.new([self, other.to_node])
       end
 

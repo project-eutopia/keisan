@@ -10,6 +10,28 @@ module Keisan
       def value(context = nil)
         bool
       end
+
+      def !
+        AST::Boolean.new(!bool)
+      end
+
+      def and(other)
+        case other
+        when AST::Boolean
+          AST::Boolean.new(bool && other.bool)
+        else
+          super
+        end
+      end
+
+      def or(other)
+        case other
+        when AST::Boolean
+          AST::Boolean.new(bool || other.bool)
+        else
+          super
+        end
+      end
     end
   end
 end

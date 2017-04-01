@@ -9,6 +9,10 @@ module Keisan
         false
       end
 
+      def evaluate(context = nil)
+        children[0].evaluate(context).or(children[1].evaluate(context))
+      end
+
       def value(context = nil)
         context ||= Keisan::Context.new
         children[0].value(context) || children[1].value(context)
