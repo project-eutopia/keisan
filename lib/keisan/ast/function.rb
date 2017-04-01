@@ -43,6 +43,19 @@ module Keisan
         end
       end
 
+      def evaluate(context = nil)
+        context ||= Keisan::Context.new
+
+        super
+
+        if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
+          function = function_from_context(context)
+          function.call(context, *children.map {|child| child.value(context)}).to_node.evaluate(context)
+        else
+          self
+        end
+      end
+
       def simplify(context = nil)
         context ||= Context.new
 
