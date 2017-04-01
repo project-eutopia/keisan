@@ -1,12 +1,13 @@
 module Keisan
   class Context
-    attr_reader :function_registry, :variable_registry
+    attr_reader :function_registry, :variable_registry, :allow_recursive
 
-    def initialize(parent: nil, random: nil)
+    def initialize(parent: nil, random: nil, allow_recursive: false)
       @parent = parent
       @function_registry = Functions::Registry.new(parent: @parent.try(:function_registry))
       @variable_registry = Variables::Registry.new(parent: @parent.try(:variable_registry))
       @random            = random
+      @allow_recursive   = allow_recursive
     end
 
     def spawn_child(definitions = {})
