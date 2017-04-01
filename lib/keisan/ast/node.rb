@@ -28,6 +28,101 @@ module Keisan
       def to_node
         self
       end
+
+      def +(other)
+        AST::Plus.new(
+          [self, other.to_node]
+        )
+      end
+
+      def -(other)
+        AST::Plus.new(
+          [self, AST::UnaryMinus.new(other.to_node)]
+        )
+      end
+
+      def *(other)
+        AST::Times.new(
+          [self, other.to_node]
+        )
+      end
+
+      def /(other)
+        AST::Times.new(
+          [self, AST::UnaryInverse.new(other.to_node)]
+        )
+      end
+
+      def %(other)
+        AST::Modulo.new(
+          [self, other.to_node]
+        )
+      end
+
+      def !
+        AST::LogicalNot.new(self)
+      end
+
+      def ~
+        AST::BitwiseNot.new(self)
+      end
+
+      def +@
+        self
+      end
+
+      def -@
+        AST::UnaryMinus.new(self)
+      end
+
+      def **(other)
+        AST::Exponent.new([self, other.to_node])
+      end
+
+      def &(other)
+        AST::BitwiseAnd.new([self, other.to_node])
+      end
+
+      def ^(other)
+        AST::BitwiseXor.new([self, other.to_node])
+      end
+
+      def |(other)
+        AST::BitwiseOr.new([self, other.to_node])
+      end
+
+      def >(other)
+        AST::LogicalGreaterThan.new([self, other.to_node])
+      end
+
+      def >=(other)
+        AST::LogicalGreaterThanOrEqualTo.new([self, other.to_node])
+      end
+
+      def <(other)
+        AST::LogicalLessThan.new([self, other.to_node])
+      end
+
+      def <=(other)
+        AST::LogicalLessThanOrEqualTo.new([self, other.to_node])
+      end
+
+      def ==(other)
+        AST::LogicalEqual.new([self, other.to_node])
+      end
+
+      def !=(other)
+        AST::LogicalNotEqual.new([self, other.to_node])
+      end
+
+      def and(other)
+        AST::LogicalAnd.new([self, other.to_node])
+      end
+
+      def or(other)
+        AST::LogicalOr.new([self, other.to_node])
+      end
+
       def deep_dup
         dup
       end

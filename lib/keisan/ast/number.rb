@@ -11,12 +11,20 @@ module Keisan
         number
       end
 
+      def -@
+        AST::Number.new(-value)
+      end
+
+      def +@
+        AST::Number.new(value)
+      end
+
       def +(other)
         case other
         when AST::Number
           AST::Number.new(value + other.value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          super
         end
       end
 
@@ -24,10 +32,8 @@ module Keisan
         case other
         when AST::Number
           AST::Number.new(value * other.value)
-        when AST::String
-          AST::String.new(other.value * value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          super
         end
       end
 
