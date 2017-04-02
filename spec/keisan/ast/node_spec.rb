@@ -22,7 +22,7 @@ RSpec.describe Keisan::AST::Node do
       ast = Keisan::AST.parse("-(2+x)[0]")
       expect(ast).to be_a(Keisan::AST::UnaryMinus)
       expect(ast.child).to be_a(Keisan::AST::Indexing)
-      expect(ast.child.arguments.map(&:class)).to eq([Keisan::AST::Number])
+      expect(ast.child.indexes.map(&:class)).to eq([Keisan::AST::Number])
       expect(ast.child.child).to be_a(Keisan::AST::Plus)
       expect(ast.child.child.children.map(&:class)).to eq([Keisan::AST::Number, Keisan::AST::Variable])
       expect(ast.child.child.children[0].value).to eq 2
@@ -37,8 +37,8 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.children[0].children[0].child.children[0].name).to eq "x"
       expect(ast.children[0].children[0].child.children[1]).to be_a(Keisan::AST::UnaryMinus)
       expect(ast.children[0].children[0].child.children[1].child).to be_a(Keisan::AST::Indexing)
-      expect(ast.children[0].children[0].child.children[1].child.arguments.map(&:class)).to eq([Keisan::AST::Number])
-      expect(ast.children[0].children[0].child.children[1].child.arguments[0].value).to eq 0
+      expect(ast.children[0].children[0].child.children[1].child.indexes.map(&:class)).to eq([Keisan::AST::Number])
+      expect(ast.children[0].children[0].child.children[1].child.indexes[0].value).to eq 0
       expect(ast.children[0].children[0].child.children[1].child.children.map(&:class)).to eq([Keisan::AST::Plus])
       expect(ast.children[0].children[0].child.children[1].child.children[0].children.map(&:class)).to eq([Keisan::AST::Number, Keisan::AST::Number])
       expect(ast.children[0].children[0].child.children[1].child.children[0].children[0].value).to eq 2

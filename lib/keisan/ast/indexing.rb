@@ -1,30 +1,30 @@
 module Keisan
   module AST
     class Indexing < UnaryOperator
-      attr_reader :arguments
+      attr_reader :indexes
 
-      def initialize(child, arguments = [])
+      def initialize(child, indexes = [])
         @children = [child]
-        @arguments = arguments
+        @indexes = indexes
       end
 
       def value(context = nil)
-        return child.value(context).send(:[], *arguments.map {|arg| arg.value(context)})
+        return child.value(context).send(:[], *indexes.map {|index| index.value(context)})
       end
 
       def to_s
-        "(#{child.to_s})[#{arguments.map(&:to_s).join(',')}]"
+        "(#{child.to_s})[#{indexes.map(&:to_s).join(',')}]"
       end
 
       def evaluate(context = nil)
         context ||= Keisan::Context.new
         @children = children.map {|child| child.evaluate(context)}
-        @arguments = arguments.map {|argument| argument.evaluate(context)}
+        @indexes = indexes.map {|index| index.evaluate(context)}
 
         case child
         when AST::List
-          if @arguments.size == 1 && @arguments.first.is_a?(AST::Number)
-            return child.children[@arguments.first.value(context)].evaluate(context)
+          if @indexes.size == 1 && @indexes.first.is_a?(AST::Number)
+            return child.children[@indexes.first.value(context)].evaluate(context)
           end
         end
 
@@ -34,13 +34,13 @@ module Keisan
       def simplify(context = nil)
         context ||= Context.new
 
-        @arguments = arguments.map {|argument| argument.simplify(context)}
+        @indexes = indexes.map {|index| index.simplify(context)}
         @children = [child.simplify(context)]
 
         case child
         when AST::List
-          if @arguments.size == 1 && @arguments.first.is_a?(AST::Number)
-            return child.children[@arguments.first.value(context)].simplify(context)
+          if @indexes.size == 1 && @indexes.first.is_a?(AST::Number)
+            return child.children[@indexes.first.value(context)].simplify(context)
           end
         end
 
