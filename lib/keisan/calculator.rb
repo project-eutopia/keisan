@@ -2,8 +2,8 @@ module Keisan
   class Calculator
     attr_reader :context
 
-    def initialize(context: nil)
-      @context = context || Context.new
+    def initialize(context: nil, allow_recursive: false)
+      @context = context || Context.new(allow_recursive: allow_recursive)
     end
 
     def evaluate(expression, definitions = {})
