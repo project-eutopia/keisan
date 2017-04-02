@@ -28,14 +28,16 @@ module Keisan
         false
       end
 
-      # For checking if locally defined
-      def has_name?(name)
-        @hash.has_key?(name)
-      end
-
       def register!(name, value)
         raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
         self[name.to_s] = value
+      end
+
+      protected
+
+      # For checking if locally defined
+      def has_name?(name)
+        @hash.has_key?(name)
       end
 
       private
