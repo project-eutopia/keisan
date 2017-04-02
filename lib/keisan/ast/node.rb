@@ -30,7 +30,7 @@ module Keisan
       end
 
       def coerce(other)
-        [self, other.to_node]
+        [other.to_node, self]
       end
 
       def to_node

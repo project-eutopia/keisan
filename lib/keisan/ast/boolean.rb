@@ -16,6 +16,7 @@ module Keisan
       end
 
       def and(other)
+        other = other.to_node
         case other
         when AST::Boolean
           AST::Boolean.new(bool && other.bool)
@@ -25,6 +26,7 @@ module Keisan
       end
 
       def or(other)
+        other = other.to_node
         case other
         when AST::Boolean
           AST::Boolean.new(bool || other.bool)

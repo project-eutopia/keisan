@@ -80,4 +80,32 @@ RSpec.describe Keisan::AST::Number do
       expect(ast.evaluate.value).to eq false
     end
   end
+
+  describe "operations" do
+    it "should reduce to the answer right away" do
+      res = 10 - Keisan::AST::Number.new(3)
+      expect(res).to be_a(described_class)
+      expect(res.value).to eq 7
+
+      res = Keisan::AST::Number.new(10) - 3
+      expect(res).to be_a(described_class)
+      expect(res.value).to eq 7
+
+      res = Keisan::AST::Number.new(5) % 3
+      expect(res).to be_a(described_class)
+      expect(res.value).to eq 2
+
+      res = 5 % Keisan::AST::Number.new(3)
+      expect(res).to be_a(described_class)
+      expect(res.value).to eq 2
+
+      res = Keisan::AST::Number.new(3) ** 4
+      expect(res).to be_a(described_class)
+      expect(res.value).to eq 81
+
+      res = 3 ** Keisan::AST::Number.new(4)
+      expect(res).to be_a(described_class)
+      expect(res.value).to eq 81
+    end
+  end
 end
