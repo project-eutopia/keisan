@@ -10,6 +10,7 @@ module Keisan
       Tokens::ArithmeticOperator,
       Tokens::LogicalOperator,
       Tokens::BitwiseOperator,
+      Tokens::Assignment,
       Tokens::Comma,
       Tokens::Dot
     ]

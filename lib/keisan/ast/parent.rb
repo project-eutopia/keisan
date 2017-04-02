@@ -44,7 +44,14 @@ module Keisan
         dupped
       end
 
+      def evaluate(context = nil)
+        context ||= Keisan::Context.new
+        @children = children.map {|child| child.evaluate(context)}
+        self
+      end
+
       def simplify(context = nil)
+        context ||= Context.new
         @children = @children.map {|child| child.simplify(context)}
         self
       end

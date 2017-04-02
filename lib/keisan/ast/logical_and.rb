@@ -5,6 +5,10 @@ module Keisan
         :"&&"
       end
 
+      def evaluate(context = nil)
+        children[0].evaluate(context).and(children[1].evaluate(context))
+      end
+
       def blank_value
         true
       end

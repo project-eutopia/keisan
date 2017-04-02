@@ -13,7 +13,11 @@ module Keisan
 
       def [](name)
         return @hash[name] if @hash.has_key?(name)
-        return @parent[name] if !@parent.nil? && @parent.has_name?(name)
+
+        if @parent && (parent_value = @parent[name])
+          return parent_value
+        end
+
         return default_registry[name] if @use_defaults && default_registry.has_name?(name)
         raise Keisan::Exceptions::UndefinedFunctionError.new name
       end
@@ -22,11 +26,6 @@ module Keisan
         !!self[name]
       rescue Keisan::Exceptions::UndefinedFunctionError
         false
-      end
-
-      # For checking if locally defined
-      def has_name?(name)
-        @hash.has_key?(name)
       end
 
       def register!(name, function)
@@ -41,6 +40,13 @@ module Keisan
         else
           raise Keisan::Exceptions::InvalidFunctionError.new
         end
+      end
+
+      protected
+
+      # For checking if locally defined
+      def has_name?(name)
+        @hash.has_key?(name)
       end
 
       private

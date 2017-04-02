@@ -10,6 +10,8 @@ module Keisan
       end
 
       def simplify(context = nil)
+        context ||= Context.new
+
         super
 
         if children[1].is_a?(AST::Number) && children[1].value(context) == 1
@@ -21,6 +23,10 @@ module Keisan
         else
           self
         end
+      end
+
+      def evaluate(context = nil)
+        children.reverse[1..-1].inject(children.last.evaluate(context)) {|total, child| child.evaluate(context) ** total}
       end
     end
   end

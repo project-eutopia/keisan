@@ -41,8 +41,8 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       context1 = Keisan::Context.new(random: Random.new(1234))
       context2 = Keisan::Context.new(random: Random.new(1234))
 
-      calc1 = Keisan::Calculator.new(context1)
-      calc2 = Keisan::Calculator.new(context2)
+      calc1 = Keisan::Calculator.new(context: context1)
+      calc2 = Keisan::Calculator.new(context: context2)
 
       20.times do
         expect(calc1.evaluate("rand(100)")).to eq calc2.evaluate("rand(100)")

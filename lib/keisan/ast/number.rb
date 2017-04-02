@@ -11,32 +11,159 @@ module Keisan
         number
       end
 
+      def -@
+        AST::Number.new(-value)
+      end
+
+      def +@
+        AST::Number.new(value)
+      end
+
       def +(other)
+        other = other.to_node
         case other
         when AST::Number
           AST::Number.new(value + other.value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          super
         end
       end
 
+      def -(other)
+        self + (-other.to_node)
+      end
+
       def *(other)
+        other = other.to_node
         case other
         when AST::Number
           AST::Number.new(value * other.value)
-        when AST::String
-          AST::String.new(other.value * value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          super
+        end
+      end
+
+      def /(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Number.new(Rational(value, other.value))
+        else
+          super
         end
       end
 
       def **(other)
+        other = other.to_node
         case other
         when AST::Number
           AST::Number.new(value ** other.value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          super
+        end
+      end
+
+      def %(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Number.new(value % other.value)
+        else
+          super
+        end
+      end
+
+      def &(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Number.new(value & other.value)
+        else
+          super
+        end
+      end
+
+      def ~
+        AST::Number.new(~value)
+      end
+
+      def ^(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Number.new(value ^ other.value)
+        else
+          super
+        end
+      end
+
+      def |(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Number.new(value | other.value)
+        else
+          super
+        end
+      end
+
+      def >(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Boolean.new(value > other.value)
+        else
+          super
+        end
+      end
+
+      def >=(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Boolean.new(value >= other.value)
+        else
+          super
+        end
+      end
+
+      def <(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Boolean.new(value < other.value)
+        else
+          super
+        end
+      end
+
+      def <=(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Boolean.new(value <= other.value)
+        else
+          super
+        end
+      end
+
+      def equal(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Boolean.new(value == other.value)
+        else
+          super
+        end
+      end
+
+      def not_equal(other)
+        other = other.to_node
+        case other
+        when AST::Number
+          AST::Boolean.new(value != other.value)
+        else
+          super
         end
       end
 

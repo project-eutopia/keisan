@@ -227,4 +227,23 @@ RSpec.describe Keisan::AST::Node do
       end
     end
   end
+
+  describe "assignment" do
+    it "parses into correct left and right part" do
+      ast = Keisan::AST.parse("x = -5 + y**2")
+      expect(ast).to be_a(Keisan::AST::Assignment)
+      expect(ast.to_s).to eq "x=((-5)+(y**2))"
+      expect(Keisan::AST.parse(ast.to_s)).to eq ast
+
+      ast = Keisan::AST.parse("f(x) = x**2 + sin(x)")
+      expect(ast).to be_a(Keisan::AST::Assignment)
+      expect(ast.to_s).to eq "f(x)=((x**2)+sin(x))"
+      expect(Keisan::AST.parse(ast.to_s)).to eq ast
+    end
+
+    it "is right associative" do
+      ast = Keisan::AST.parse("x = y = z")
+      expect(ast.to_s).to eq "x=(y=z)"
+    end
+  end
 end

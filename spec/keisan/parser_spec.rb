@@ -521,5 +521,23 @@ RSpec.describe Keisan::Parser do
         expect(parser.components[2].name).to eq "c"
       end
     end
+
+    context "assignment" do
+      it "parses correctly" do
+        parser = described_class.new(string: "x = y = 5")
+
+        expect(parser.components.map(&:class)).to eq([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Assignment,
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Assignment,
+          Keisan::Parsing::Number
+        ])
+
+        expect(parser.components[0].name).to eq "x"
+        expect(parser.components[2].name).to eq "y"
+        expect(parser.components[4].value).to eq 5
+      end
+    end
   end
 end

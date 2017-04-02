@@ -25,10 +25,19 @@ module Keisan
         name.to_s
       end
 
+      def evaluate(context = nil)
+        context ||= Keisan::Context.new
+        if context.has_variable?(name)
+          context.variable(name).to_node.evaluate(context)
+        else
+          self
+        end
+      end
+
       def simplify(context = nil)
         context ||= Keisan::Context.new
         if context.has_variable?(name)
-          ConstantLiteral.from_value(context.variable(name)).simplify(context)
+          context.variable(name).to_node.simplify(context)
         else
           self
         end

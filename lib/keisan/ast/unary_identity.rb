@@ -5,11 +5,16 @@ module Keisan
         return child.value(context)
       end
 
+      def evaluate(context = nil)
+        child.evaluate(context)
+      end
+
       def self.symbol
         nil
       end
 
       def simplify(context = nil)
+        context ||= Context.new
         child.simplify(context)
       end
     end
