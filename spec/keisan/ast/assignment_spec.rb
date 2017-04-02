@@ -134,5 +134,19 @@ RSpec.describe Keisan::AST::Assignment do
         end
       end
     end
+
+    context "function that uses previously defined variable" do
+      it "shadows variables within function definitions" do
+        context = Keisan::Context.new
+
+        Keisan::AST.parse("x = 3 + 6").evaluate(context)
+        evaluation = Keisan::AST.parse("2 * x").evaluate(context)
+        expect(evaluation.value(context)).to eq 18
+
+        Keisan::AST.parse("f(x) = x**2").evaluate(context)
+        evaluation = Keisan::AST.parse("f(4)").evaluate(context)
+        expect(evaluation.value(context)).to eq 16
+      end
+    end
   end
 end

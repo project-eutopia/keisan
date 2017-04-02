@@ -7,9 +7,11 @@ require "keisan/exceptions"
 require "keisan/function"
 require "keisan/functions/registry"
 require "keisan/functions/default_registry"
+require "keisan/functions/expression_function"
 require "keisan/variables/registry"
 require "keisan/variables/default_registry"
 require "keisan/context"
+require "keisan/function_definition_context"
 
 require "keisan/ast/node"
 
