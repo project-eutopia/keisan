@@ -13,6 +13,10 @@ module Keisan
         Set.new
       end
 
+      def well_defined?(context = nil)
+        unbound_variables(context).empty? && unbound_functions(context).empty?
+      end
+
       def simplified(context = nil)
         deep_dup.simplify(context)
       end

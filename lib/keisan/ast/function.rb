@@ -48,7 +48,7 @@ module Keisan
 
         super
 
-        if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
+        if function_defined?(context) && children.all? {|child| child.well_defined?(context)}
           function = function_from_context(context)
           function.call(context, *children.map {|child| child.value(context)}).to_node.evaluate(context)
         else
