@@ -13,7 +13,11 @@ module Keisan
 
       def [](name)
         return @hash[name] if @hash.has_key?(name)
-        return @parent[name] if !@parent.nil? && @parent.has_name?(name)
+
+        if @parent && (parent_value = @parent[name])
+          return parent_value
+        end
+
         return default_registry[name] if @use_defaults && default_registry.has_name?(name)
         raise Keisan::Exceptions::UndefinedVariableError.new name
       end
