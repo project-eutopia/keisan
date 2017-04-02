@@ -12,6 +12,20 @@ RSpec.describe Keisan::AST::Assignment do
         expect(context.variable("x")).to eq 3
         expect(evaluation.value).to eq 8
       end
+
+      it "evaluates to right hand side of assignment" do
+        context = Keisan::Context.new
+        ast = Keisan::AST.parse("g(x) = (f(x) = 2*x) ** 2")
+
+        expect(context.has_function?("f")).to eq false
+        expect(context.has_function?("g")).to eq false
+        evaluation = ast.evaluate(context)
+        expect(context.has_function?("f")).to eq true
+        expect(context.has_function?("g")).to eq true
+
+        expect(Keisan::AST.parse("f(3)").evaluate(context)).to eq Keisan::AST::Number.new(6)
+        expect(Keisan::AST.parse("g(3)").evaluate(context)).to eq Keisan::AST::Number.new(36)
+      end
     end
 
     context "LHS is variable" do
