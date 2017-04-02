@@ -120,16 +120,24 @@ RSpec.describe Keisan::AST::Assignment do
 
           it "allows mutual recursion" do
             context = Keisan::Context.new(allow_recursive: true)
-            Keisan::AST.parse("even(n) = if ( n == 0, true, odd(n-1) )").evaluate(context)
-            Keisan::AST.parse("odd(n) = if ( n == 0, false, even(n-1) )").evaluate(context)
+            Keisan::AST.parse("even(n) = if ( n == 0, true, if ( n > 0, odd(n-1), odd(n+1) ) )").evaluate(context)
+            Keisan::AST.parse("odd(n) = if ( n == 0, false, if ( n > 0, even(n-1), even(n+1) ) )").evaluate(context)
 
             ast = Keisan::AST.parse("odd(3)")
             expect(ast.evaluate(context)).to be_a(Keisan::AST::Boolean)
             expect(ast.evaluate(context).value).to eq true
 
+            ast = Keisan::AST.parse("odd(-4)")
+            expect(ast.evaluate(context)).to be_a(Keisan::AST::Boolean)
+            expect(ast.evaluate(context).value).to eq false
+
             ast = Keisan::AST.parse("even(3)")
             expect(ast.evaluate(context)).to be_a(Keisan::AST::Boolean)
             expect(ast.evaluate(context).value).to eq false
+
+            ast = Keisan::AST.parse("even(-4)")
+            expect(ast.evaluate(context)).to be_a(Keisan::AST::Boolean)
+            expect(ast.evaluate(context).value).to eq true
           end
         end
       end
