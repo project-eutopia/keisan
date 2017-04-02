@@ -2,7 +2,7 @@ module Keisan
   class Calculator
     attr_reader :context
 
-    def initialize(context = nil)
+    def initialize(context: nil)
       @context = context || Context.new
     end
 
