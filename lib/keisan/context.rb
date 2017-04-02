@@ -10,8 +10,8 @@ module Keisan
       @allow_recursive   = allow_recursive
     end
 
-    def spawn_child(definitions = {})
-      child = self.class.new(parent: self)
+    def spawn_child(definitions = {}, transient: false)
+      child = self.class.new(parent: self, allow_recursive: allow_recursive)
 
       definitions.each do |name, value|
         case value
@@ -22,19 +22,8 @@ module Keisan
         end
       end
 
+      child.set_transient! if transient
       child
-    end
-
-    def function(name)
-      @function_registry[name.to_s]
-    end
-
-    def has_function?(name)
-      @function_registry.has?(name)
-    end
-
-    def register_function!(name, function)
-      @function_registry.register!(name.to_s, function)
     end
 
     def variable(name)
@@ -46,11 +35,37 @@ module Keisan
     end
 
     def register_variable!(name, value)
-      @variable_registry.register!(name.to_s, value)
+      if @transient
+        @parent.register_variable!(name, value)
+      else
+        @variable_registry.register!(name.to_s, value)
+      end
+    end
+
+    def function(name)
+      @function_registry[name.to_s]
+    end
+
+    def has_function?(name)
+      @function_registry.has?(name)
+    end
+
+    def register_function!(name, function)
+      if @transient
+        @parent.register_function!(name, function)
+      else
+        @function_registry.register!(name.to_s, function)
+      end
     end
 
     def random
       @random || @parent.try(:random) || Random.new
+    end
+
+    protected
+
+    def set_transient!
+      @transient = true
     end
   end
 end
