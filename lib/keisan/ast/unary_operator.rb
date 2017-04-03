@@ -26,7 +26,11 @@ module Keisan
       end
 
       def to_s
-        "#{symbol.to_s}#{child.to_s}"
+        if child.is_a?(AST::Operator)
+          "#{symbol.to_s}(#{child.to_s})"
+        else
+          "#{symbol.to_s}#{child.to_s}"
+        end
       end
 
       def simplify(context = nil)
