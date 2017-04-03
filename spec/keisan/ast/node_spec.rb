@@ -128,6 +128,19 @@ RSpec.describe Keisan::AST::Node do
         expect(simple.children[0]).to eq Keisan::AST::Number.new(-1)
         expect(simple.children[1]).to be_a(Keisan::AST::Exponent)
       end
+
+      it "simplifies unary minus of something that is a number to a single number" do
+        ast = Keisan::AST::UnaryMinus.new([Keisan::AST::Plus.new(
+          [
+            Keisan::AST::Number.new(4),
+            Keisan::AST::Number.new(6)
+          ]
+        )])
+        expect(ast).to be_a(Keisan::AST::UnaryMinus)
+
+        simple = ast.simplified
+        expect(simple).to eq(Keisan::AST::Number.new(-10))
+      end
     end
 
     context "just numbers and arithmetic" do

@@ -22,8 +22,8 @@ module Keisan
         else
           AST::Times.new([
             AST::Number.new(-1),
-            child.simplify(context)
-          ])
+            child
+          ]).simplify(context)
         end
       end
     end
