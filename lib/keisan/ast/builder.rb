@@ -88,16 +88,16 @@ module Keisan
             }
           )
         when Keisan::Parsing::DotWord
-          Keisan::AST::Function.build(
-            postfix_component.name,
-            [node]
+          Keisan::AST::Function.new(
+            [node],
+            postfix_component.name
           )
         when Keisan::Parsing::DotOperator
-          Keisan::AST::Function.build(
-            postfix_component.name,
+          Keisan::AST::Function.new(
             [node] + postfix_component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
-            }
+            },
+            postfix_component.name
           )
         else
           raise Keisan::Exceptions::ASTError.new("Invalid postfix component #{postfix_component}")
@@ -149,23 +149,23 @@ module Keisan
         when Keisan::Parsing::Group
           Builder.new(components: component.components).node
         when Keisan::Parsing::Function
-          Keisan::AST::Function.build(
-            component.name,
+          Keisan::AST::Function.new(
             component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
-            }
+            },
+            component.name
           )
         when Keisan::Parsing::DotWord
-          Keisan::AST::Function.build(
-            component.name,
-            [node_of_component(component.target)]
+          Keisan::AST::Function.new(
+            [node_of_component(component.target)],
+            component.name
           )
         when Keisan::Parsing::DotOperator
-          Keisan::AST::Function.build(
-            component.name,
+          Keisan::AST::Function.new(
             [node_of_component(component.target)] + component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
-            }
+            },
+            component.name
           )
         else
           raise Keisan::Exceptions::ASTError.new("Unhandled component, #{component}")
