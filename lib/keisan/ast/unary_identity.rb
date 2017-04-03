@@ -14,7 +14,6 @@ module Keisan
       end
 
       def simplify(context = nil)
-        context ||= Context.new
         child.simplify(context)
       end
     end

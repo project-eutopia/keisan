@@ -108,6 +108,41 @@ RSpec.describe Keisan::AST::Node do
   end
 
   describe "simplify" do
+    context "unary plus" do
+      it "reduces to the single operand" do
+        ast = Keisan::AST::UnaryPlus.new([Keisan::AST::Variable.new("x")])
+        expect(ast).to be_a(Keisan::AST::UnaryPlus)
+
+        simple = ast.simplified
+        expect(simple).to be_a(Keisan::AST::Variable)
+      end
+    end
+
+    context "unary minus" do
+      it "gets rid of unary operators" do
+        ast = Keisan::AST.parse("-n**2")
+        expect(ast).to be_a(Keisan::AST::UnaryMinus)
+
+        simple = ast.simplified
+        expect(simple).to be_a(Keisan::AST::Times)
+        expect(simple.children[0]).to eq Keisan::AST::Number.new(-1)
+        expect(simple.children[1]).to be_a(Keisan::AST::Exponent)
+      end
+
+      it "simplifies unary minus of something that is a number to a single number" do
+        ast = Keisan::AST::UnaryMinus.new([Keisan::AST::Plus.new(
+          [
+            Keisan::AST::Number.new(4),
+            Keisan::AST::Number.new(6)
+          ]
+        )])
+        expect(ast).to be_a(Keisan::AST::UnaryMinus)
+
+        simple = ast.simplified
+        expect(simple).to eq(Keisan::AST::Number.new(-10))
+      end
+    end
+
     context "just numbers and arithmetic" do
       it "simplifies the expression" do
         ast = Keisan::AST.parse("1 + 3 + 5")
@@ -186,8 +221,8 @@ RSpec.describe Keisan::AST::Node do
         expect(ast_simple).not_to eq(ast)
         expect(ast_simple).to be_a(Keisan::AST::Plus)
         expect(ast_simple.children[0].value).to eq 15
-        expect(ast_simple.children[1].name).to eq "y"
-        expect(ast_simple.children[2].name).to eq "x"
+        expect(ast_simple.children[1].name).to eq "x"
+        expect(ast_simple.children[2].name).to eq "y"
       end
     end
 
@@ -200,13 +235,45 @@ RSpec.describe Keisan::AST::Node do
         expect(ast_simple.value).to eq 14
       end
     end
+
+    context "bracketed expressions" do
+      it "combines a bunch of nested addition to a single addition" do
+        ast = Keisan::AST.parse("1+(y+(5+z)+z)")
+        ast_simple = ast.simplified
+        expect(ast_simple.to_s).to eq "6+y+z+z"
+      end
+
+      it "combines a bunch of nested multiplication to a single addition" do
+        ast = Keisan::AST.parse("1*(y*(5*z)*z)")
+        ast_simple = ast.simplified
+        expect(ast_simple.to_s).to eq "5*y*z*z"
+      end
+
+      it "reduces exponents with more than 2 operands to just binary exponents" do
+        long = Keisan::AST::Exponent.new([
+          Keisan::AST::Variable.new("x"),
+          Keisan::AST::Variable.new("y"),
+          Keisan::AST::Variable.new("z")
+        ])
+        simple = long.simplified
+
+        expect(simple).to be_a(Keisan::AST::Exponent)
+        expect(simple.children.map(&:class)).to eq([
+          Keisan::AST::Variable,
+          Keisan::AST::Exponent
+        ])
+
+        expect(simple.children.first.name).to eq "x"
+        expect(simple.children.last.children.map(&:name)).to eq ["y", "z"]
+      end
+    end
   end
 
   describe "to_s" do
     context "arithmetic operations" do
       it "prints out the AST as a string expression, wrapping operators in brackets" do
         ast = Keisan::AST.parse("-15 + x**4 * 3 + sin(y)*(1+(-1))+f(z+1,w+1)[2]")
-        expect(ast.simplified.to_s).to eq "-15+((f(1+z,1+w))[2])+(3*(x**4))"
+        expect(ast.simplified.to_s).to eq "-15+(3*(x**4))+((f(1+z,1+w))[2])"
         expect(Keisan::AST.parse(ast.to_s)).to eq ast
       end
     end

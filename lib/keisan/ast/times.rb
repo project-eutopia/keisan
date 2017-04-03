@@ -21,15 +21,19 @@ module Keisan
       def simplify(context = nil)
         context ||= Context.new
 
-        super
+        super(context)
 
         # Commutative, so pull in operands of any `Times` operators
-        times, others = *children.partition {|child| child.is_a?(AST::Times)}
-        @children = times.inject(others) do |res, time|
-          res + time.children
+        @children = children.inject([]) do |new_children, cur_child|
+          case cur_child
+          when AST::Times
+            new_children + cur_child.children
+          else
+            new_children << cur_child
+          end
         end
 
-        constants, non_constants = *children.partition {|child| child.is_a?(ConstantLiteral)}
+        constants, non_constants = *children.partition {|child| child.is_a?(AST::Number)}
         constant = constants.inject(AST::Number.new(1), &:*).simplify(context)
 
         return Keisan::AST::Number.new(0) if constant.value(context) == 0
