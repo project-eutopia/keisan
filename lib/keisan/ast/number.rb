@@ -177,6 +177,10 @@ module Keisan
 
         self
       end
+
+      def differentiate(variable, context = nil)
+        0.to_node
+      end
     end
   end
 end

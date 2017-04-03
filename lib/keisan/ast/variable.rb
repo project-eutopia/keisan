@@ -42,6 +42,16 @@ module Keisan
           self
         end
       end
+
+      def differentiate(variable, context = nil)
+        context ||= Keisan::Context.new
+
+        if name == variable.name && !context.has_variable?(name)
+          1.to_node
+        else
+          0.to_node
+        end
+      end
     end
   end
 end

@@ -26,6 +26,14 @@ module Keisan
           ]).simplify(context)
         end
       end
+
+      def differentiate(variable, context = nil)
+        context ||= Context.new
+        AST::Times.new([
+          -1.to_node,
+          child.differentiate(variable, context)
+        ]).simplify(context)
+      end
     end
   end
 end

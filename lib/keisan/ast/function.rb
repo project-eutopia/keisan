@@ -70,40 +70,35 @@ module Keisan
       def to_s
         "#{name}(#{children.map(&:to_s).join(',')})"
       end
-    end
 
-    class If < Function
-      def value(context = nil)
-        unless (2..3).cover? children.size
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 2 or 3 arguments to if")
+      def differentiate(variable, context = nil)
+        unless unbound_variables(context).include?(variable.name)
+          return AST::Number.new(0)
         end
-
-        bool = children[0].value(context)
-
-        if bool
-          children[1].value(context)
-        else
-          children.size == 3 ? children[2].value(context) : nil
-        end
-      end
-
-      def unbound_functions(context = nil)
-        context ||= Keisan::Context.new
-
-        children.inject(Set.new) do |res, child|
-          res | child.unbound_functions(context)
-        end
+        # Do not know how to differentiate a function in general, so leave as derivative
+        AST::Functions::Diff.new([self, variable])
       end
     end
+  end
+end
 
+require_relative "functions/if"
+require_relative "functions/diff"
+
+module Keisan
+  module AST
     class Function
+      BUILD_CLASSES = {
+        "if"   => AST::Functions::If,
+        "diff" => AST::Functions::Diff
+      }.freeze
+
       def self.build(name, arguments = [])
-        case name.downcase
-        when "if"
-          If.new(arguments, name)
-        else
-          Function.new(arguments, name)
-        end
+        build_class(name.downcase).new(arguments, name)
+      end
+
+      def self.build_class(name)
+        BUILD_CLASSES[name] || Function
       end
     end
   end

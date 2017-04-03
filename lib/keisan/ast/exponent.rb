@@ -42,6 +42,34 @@ module Keisan
       def evaluate(context = nil)
         children.reverse[1..-1].inject(children.last.evaluate(context)) {|total, child| child.evaluate(context) ** total}
       end
+
+      # d ( a^b ) = d ( exp(b log(a)) ) = a^b * d (b log(a))
+      # = a^b * [ db * log(a) + da * b/a] = da b a^(b-1) + db log(a) a^b
+      def differentiate(variable, context = nil)
+        context ||= Context.new
+
+        # Reduce to binary form
+        unless children.count == 2
+          return simplify(context).differentiate(variable, context)
+        end
+
+        base     = children[0].simplified(context)
+        exponent = children[1].simplified(context)
+
+        # Special simple case where exponent is a pure number
+        if exponent.is_a?(AST::Number)
+          return (exponent * base ** (exponent -1)).simplify(context)
+        end
+
+        base_diff     = base.differentiate(variable, context)
+        exponent_diff = exponent.differentiate(variable, context)
+
+        res = base ** exponent * (
+          exponent_diff * AST::Function.new([base], "log") +
+          base_diff * exponent / base
+        )
+        res.simplify(context)
+      end
     end
   end
 end

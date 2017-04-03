@@ -16,6 +16,11 @@ module Keisan
       def simplify(context = nil)
         child.simplify(context)
       end
+
+      def differentiate(variable, context = nil)
+        context ||= Context.new
+        child.differentiate(variable, context).simplify(context)
+      end
     end
   end
 end
