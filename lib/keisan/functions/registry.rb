@@ -34,7 +34,7 @@ module Keisan
 
         case function
         when Proc
-          self[name] = Keisan::Function.new(name, function)
+          self[name] = Keisan::Functions::ProcFunction.new(name, function)
         when Keisan::Function
           self[function.name] = function
         else

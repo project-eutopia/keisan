@@ -4,15 +4,6 @@ require "active_support/core_ext"
 require "keisan/version"
 require "keisan/exceptions"
 
-require "keisan/function"
-require "keisan/functions/registry"
-require "keisan/functions/default_registry"
-require "keisan/functions/expression_function"
-require "keisan/variables/registry"
-require "keisan/variables/default_registry"
-require "keisan/context"
-require "keisan/function_definition_context"
-
 require "keisan/ast/node"
 
 require "keisan/ast/literal"
@@ -58,6 +49,16 @@ require "keisan/ast/indexing"
 
 require "keisan/ast/builder"
 require "keisan/ast"
+
+require "keisan/function"
+require "keisan/functions/proc_function"
+require "keisan/functions/expression_function"
+require "keisan/functions/registry"
+require "keisan/functions/default_registry"
+require "keisan/variables/registry"
+require "keisan/variables/default_registry"
+require "keisan/context"
+require "keisan/function_definition_context"
 
 require "keisan/token"
 require "keisan/tokens/comma"

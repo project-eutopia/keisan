@@ -55,22 +55,14 @@ module Keisan
           raise Keisan::Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
         end
 
-        function = lambda do |*received_args|
-          unless argument_names.count == received_args.count
-            raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
-          end
-
-          local = function_definition_context.spawn_child
-          argument_names.each.with_index do |arg, i|
-            local.register_variable!(arg, received_args[i])
-          end
-
-          rhs.value(local)
-        end
-
         context.register_function!(
           lhs.name,
-          Keisan::Functions::ExpressionFunction.new(lhs.name, function, rhs)
+          Keisan::Functions::ExpressionFunction.new(
+            lhs.name,
+            argument_names,
+            rhs,
+            function_definition_context
+          )
         )
 
         rhs
