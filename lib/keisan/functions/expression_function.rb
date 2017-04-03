@@ -30,6 +30,13 @@ module Keisan
       end
 
       def evaluate(ast_function, context = nil)
+        context ||= Keisan::Context.new
+
+        ast_function.instance_variable_set(
+          :@children,
+          ast_function.children.map {|child| child.evaluate(context)}
+        )
+
         if ast_function.children.all? {|child| child.well_defined?(context)}
           value(ast_function, context).to_node.evaluate(context)
         else
@@ -39,6 +46,11 @@ module Keisan
 
       def simplify(ast_function, context = nil)
         context ||= Context.new
+
+        ast_function.instance_variable_set(
+          :@children,
+          ast_function.children.map {|child| child.evaluate(context)}
+        )
 
         if ast_function.children.all? {|child| child.is_a?(Keisan::AST::ConstantLiteral)}
           value(ast_function, context).to_node.simplify(context)

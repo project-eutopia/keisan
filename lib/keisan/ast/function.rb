@@ -43,7 +43,6 @@ module Keisan
 
       def evaluate(context = nil)
         context ||= Keisan::Context.new
-        super
 
         if function_defined?(context)
           function_from_context(context).evaluate(self, context)
@@ -54,7 +53,6 @@ module Keisan
 
       def simplify(context = nil)
         context ||= Context.new
-        super
 
         if function_defined?(context)
           function_from_context(context).simplify(self, context)
