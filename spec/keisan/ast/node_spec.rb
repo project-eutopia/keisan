@@ -331,10 +331,10 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.simplified.to_s).to eq "1"
 
       ast = Keisan::AST.parse("diff(-4*x**3, x)")
-      expect(ast.simplified.to_s).to eq "-4*(3*(x**2))"
+      expect(ast.simplified.to_s).to eq "-12*(x**2)"
 
       ast = Keisan::AST.parse("diff(1 / alpha, alpha)")
-      expect(ast.simplified.to_s).to eq "-1*(alpha**2)**(-1)"
+      expect(ast.simplified.to_s).to eq "(-1)*((alpha**2)**(-1))"
 
       ast = Keisan::AST.parse("diff(f(x), x)")
       expect(ast.simplified.to_s).to eq "diff(f(x),x)"
