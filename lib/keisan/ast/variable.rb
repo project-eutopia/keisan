@@ -52,13 +52,6 @@ module Keisan
           AST::Number.new(0)
         end
       end
-
-      def polynomial_signature(context = nil)
-        context ||= Keisan::Context.new
-        AST::PolynomialSignature.new(
-          context.has_variable?(name) ? {} : {name => 1}
-        )
-      end
     end
   end
 end

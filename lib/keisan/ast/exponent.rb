@@ -57,15 +57,6 @@ module Keisan
           ]
         ).simplified;
       end
-
-      def polynomial_signature(context = nil)
-        base = children[0].simplified(context)
-        exponent = children[1].simplified(context)
-
-        return AST::PolynomialSignature.new unless exponent.is_a?(AST::Number)
-
-        base.polynomial_signature(context) ** exponent.value(context)
-      end
     end
   end
 end

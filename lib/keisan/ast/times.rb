@@ -61,12 +61,6 @@ module Keisan
         ).simplified
       end
 
-      def polynomial_signature(context = nil)
-        children.inject(AST::PolynomialSignature.new) do |signature, child|
-          signature * child.polynomial_signature(context)
-        end
-      end
-
       private
 
       def convert_divide_to_inverse!

@@ -138,10 +138,6 @@ module Keisan
       def differentiate(variable, context = nil)
         raise Keisan::Exceptions::NonDifferentiableError.new
       end
-
-      def polynomial_signature(context=nil)
-        AST::PolynomialSignature.new
-      end
     end
   end
 end
