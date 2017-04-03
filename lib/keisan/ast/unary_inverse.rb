@@ -21,7 +21,7 @@ module Keisan
         when AST::Number
           AST::Number.new(Rational(1,child.value(context))).simplify(context)
         else
-          super
+          (child ** -1).simplify(context)
         end
       end
 

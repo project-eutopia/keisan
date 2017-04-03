@@ -334,7 +334,7 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.simplified.to_s).to eq "-12*(x**2)"
 
       ast = Keisan::AST.parse("diff(1 / alpha, alpha)")
-      expect(ast.simplified.to_s).to eq "(-1)*((alpha**2)**(-1))"
+      expect(ast.simplified.to_s).to eq "-1*(alpha**-2)"
 
       ast = Keisan::AST.parse("diff(f(x), x)")
       expect(ast.simplified.to_s).to eq "diff(f(x),x)"
@@ -351,7 +351,7 @@ RSpec.describe Keisan::AST::Node do
         it "differentiates properly" do
           ast = Keisan::AST.parse("diff( a(x) ** b(x), x )")
           simple = ast.simplified
-          expect(simple.to_s).to eq "(a(x)**b(x))*((diff(b(x),x)*log(a(x)))+(diff(a(x),x)*b(x)*((a(x))**(-1))))"
+          expect(simple.to_s).to eq "(a(x)**b(x))*((diff(b(x),x)*log(a(x)))+(diff(a(x),x)*b(x)*(a(x)**-1)))"
         end
       end
     end

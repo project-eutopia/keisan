@@ -58,7 +58,7 @@ module Keisan
               children.slice(0,i) + [child.differentiate(variable, context)] + children.slice(i+1,children.size)
             )
           end
-        ).simplified
+        ).simplify(context)
       end
 
       private
