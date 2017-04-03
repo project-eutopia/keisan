@@ -26,6 +26,7 @@ module Keisan
       end
 
       def differentiate(variable, context = nil)
+        context ||= Context.new
         AST::Times.new(
           [
             AST::UnaryMinus.new(child.differentiate(variable, context)),
@@ -35,7 +36,7 @@ module Keisan
               ])
             )
           ]
-        )
+        ).simplify(context)
       end
     end
   end

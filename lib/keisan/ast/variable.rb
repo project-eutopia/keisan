@@ -47,9 +47,9 @@ module Keisan
         context ||= Keisan::Context.new
 
         if name == variable.name && !context.has_variable?(name)
-          AST::Number.new(1)
+          1.to_node
         else
-          AST::Number.new(0)
+          0.to_node
         end
       end
     end

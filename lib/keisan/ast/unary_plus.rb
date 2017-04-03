@@ -17,10 +17,6 @@ module Keisan
           super
         end
       end
-
-      def differentiate(variable, context = nil)
-        child.differentiate(variable, context)
-      end
     end
   end
 end

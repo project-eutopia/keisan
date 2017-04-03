@@ -179,7 +179,7 @@ module Keisan
       end
 
       def differentiate(variable, context = nil)
-        AST::Number.new(0)
+        0.to_node
       end
     end
   end
