@@ -1,13 +1,13 @@
 module Keisan
   module Variables
     class Registry
-      def initialize(variables: {}, parent: nil, use_defaults: true)
+      def initialize(variables: {}, parent: nil, use_defaults: true, force: false)
         @hash = {}
         @parent = parent
         @use_defaults = use_defaults
 
         variables.each do |name, value|
-          register!(name, value)
+          register!(name, value, force: force)
         end
       end
 
@@ -28,8 +28,11 @@ module Keisan
         false
       end
 
-      def register!(name, value)
+      def register!(name, value, force: false)
         raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
+        if !force && @use_defaults && default_registry.has_name?(name)
+          raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
+        end
         self[name.to_s] = value
       end
 

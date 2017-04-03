@@ -13,7 +13,7 @@ module Keisan
       }
 
       def self.registry
-        @registry ||= Registry.new(variables: VARIABLES, parent: nil).freeze
+        @registry ||= Registry.new(variables: VARIABLES, parent: nil, force: true).freeze
       end
     end
   end
