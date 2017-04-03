@@ -225,6 +225,21 @@ RSpec.describe Keisan::AST::Node do
         ast_simple = ast.simplified
         expect(ast_simple.to_s).to eq "5*y*z*z"
       end
+
+      it "reduces exponents with more than 2 operands to just binary exponents" do
+        long = Keisan::AST::Exponent.new([
+          Keisan::AST::Variable.new("x"),
+          Keisan::AST::Variable.new("y"),
+          Keisan::AST::Variable.new("z")
+        ])
+        simple = long.simplified
+
+        expect(simple).to be_a(Keisan::AST::Exponent)
+        expect(simple.children.map(&:class)).to eq([
+          Keisan::AST::Variable,
+          Keisan::AST::Exponent
+        ])
+      end
     end
   end
 
