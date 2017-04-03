@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Rand < Keisan::Function
+    class Rand < ProcFunction
       def initialize
         @name = "rand"
       end

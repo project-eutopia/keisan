@@ -9,10 +9,8 @@ module Keisan
       end
 
       def value(context = nil)
-        context = Keisan::Context.new if context.nil?
-        argument_values = children.map {|child| child.value(context)}
-        function = function_from_context(context)
-        function.call(context, *argument_values)
+        context ||= Keisan::Context.new
+        function_from_context(context).value(self, context)
       end
 
       def unbound_functions(context = nil)
@@ -45,12 +43,10 @@ module Keisan
 
       def evaluate(context = nil)
         context ||= Keisan::Context.new
-
         super
 
-        if function_defined?(context) && children.all? {|child| child.well_defined?(context)}
-          function = function_from_context(context)
-          function.call(context, *children.map {|child| child.value(context)}).to_node.evaluate(context)
+        if function_defined?(context)
+          function_from_context(context).evaluate(self, context)
         else
           self
         end
@@ -58,10 +54,10 @@ module Keisan
 
       def simplify(context = nil)
         context ||= Context.new
-
         super
-        if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
-          value(context).to_node.simplify(context)
+
+        if function_defined?(context)
+          function_from_context(context).simplify(self, context)
         else
           self
         end
