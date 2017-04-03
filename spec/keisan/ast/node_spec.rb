@@ -249,6 +249,9 @@ RSpec.describe Keisan::AST::Node do
           Keisan::AST::Variable,
           Keisan::AST::Exponent
         ])
+
+        expect(simple.children.first.name).to eq "x"
+        expect(simple.children.last.children.map(&:name)).to eq ["y", "z"]
       end
     end
   end
