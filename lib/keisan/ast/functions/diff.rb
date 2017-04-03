@@ -2,8 +2,11 @@ module Keisan
   module AST
     module Functions
       class Diff < AST::Function
+        def initialize(arguments, name = "diff")
+          super(arguments, name)
+        end
+
         def value(context = nil)
-          binding.pry
           raise Keisan::Exceptions::InvalidFunctionError.new("Derivative not defined")
         end
 

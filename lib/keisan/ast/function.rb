@@ -75,7 +75,8 @@ module Keisan
         unless unbound_variables(context).include?(variable.name)
           return AST::Number.new(0)
         end
-        super
+        # Do not know how to differentiate a function in general, so leave as derivative
+        AST::Functions::Diff.new([self, variable])
       end
     end
   end

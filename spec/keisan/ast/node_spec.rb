@@ -345,5 +345,15 @@ RSpec.describe Keisan::AST::Node do
       ast = Keisan::AST.parse("diff(x*f(y), x, y)")
       expect(ast.simplified.to_s).to eq "diff(f(y),y)"
     end
+
+    describe "differentiate method" do
+      context "exponent" do
+        it "differentiates properly" do
+          ast = Keisan::AST.parse("diff( a(x) ** b(x), x )")
+          simple = ast.simplified
+          expect(simple.to_s).to eq "(a(x)**b(x))*((diff(b(x),x)*log(a(x)))+(diff(a(x),x)*b(x)*((a(x))**(-1))))"
+        end
+      end
+    end
   end
 end
