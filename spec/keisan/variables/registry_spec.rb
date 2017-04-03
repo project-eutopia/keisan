@@ -12,9 +12,9 @@ RSpec.describe Keisan::Variables::Registry do
     end
 
     it "retrieves default variables" do
-      expect(registry["pi"]).to eq Math::PI
-      expect(registry["e"]).to eq Math::E
-      expect(registry["i"]).to eq Complex(0,1)
+      expect(registry["PI"]).to eq Math::PI
+      expect(registry["E"]).to eq Math::E
+      expect(registry["I"]).to eq Complex(0,1)
     end
 
     it "can store and retrieve variables" do
@@ -26,7 +26,7 @@ RSpec.describe Keisan::Variables::Registry do
   context "when not using defaults" do
     let(:use_defaults) { false }
     it "raises error when getting a default variable" do
-      expect{registry["pi"]}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+      expect{registry["PI"]}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
     end
   end
 

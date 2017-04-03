@@ -50,7 +50,7 @@ RSpec.describe Keisan::AST::Node do
 
   describe "unbound_variables" do
     it "returns a Set of the undefined variable names" do
-      ast = Keisan::AST.parse("pi")
+      ast = Keisan::AST.parse("PI")
       expect(ast.unbound_variables).to eq Set.new
 
       ast = Keisan::AST.parse("x")
