@@ -108,6 +108,16 @@ RSpec.describe Keisan::AST::Node do
   end
 
   describe "simplify" do
+    context "unary plus" do
+      it "reduces to the single operand" do
+        ast = Keisan::AST::UnaryPlus.new([Keisan::AST::Variable.new("x")])
+        expect(ast).to be_a(Keisan::AST::UnaryPlus)
+
+        simple = ast.simplified
+        expect(simple).to be_a(Keisan::AST::Variable)
+      end
+    end
+
     context "unary minus" do
       it "gets rid of unary operators" do
         ast = Keisan::AST.parse("-n**2")
