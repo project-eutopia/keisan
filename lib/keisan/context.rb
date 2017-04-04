@@ -10,7 +10,7 @@ module Keisan
       @allow_recursive   = allow_recursive
     end
 
-    def spawn_child(definitions = {}, transient: false)
+    def spawn_child(definitions: {}, transient: false)
       child = Context.new(parent: self, allow_recursive: allow_recursive)
 
       definitions.each do |name, value|

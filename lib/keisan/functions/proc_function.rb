@@ -1,26 +1,15 @@
 module Keisan
   module Functions
-    class ExpressionFunction < Keisan::Function
-      attr_reader :arguments, :expression
+    class ProcFunction < Keisan::Function
+      def initialize(name, function_proc)
+        raise Keisan::Exceptions::InvalidFunctionError.new unless function_proc.is_a?(Proc)
 
-      def initialize(name, arguments, expression, local_context)
         super(name)
-        @expression = expression.deep_dup
-        @arguments = arguments
-        @local_context = local_context
+        @function_proc = function_proc
       end
 
       def call(context, *args)
-        unless @arguments.count == args.count
-          raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
-        end
-
-        local = @local_context.spawn_child
-        arguments.each.with_index do |arg_name, i|
-          local.register_variable!(arg_name, args[i])
-        end
-
-        expression.value(local)
+        @function_proc.call(*args)
       end
 
       def value(ast_function, context = nil)

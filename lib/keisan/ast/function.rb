@@ -9,10 +9,8 @@ module Keisan
       end
 
       def value(context = nil)
-        context = Keisan::Context.new if context.nil?
-        argument_values = children.map {|child| child.value(context)}
-        function = function_from_context(context)
-        function.call(context, *argument_values)
+        context ||= Keisan::Context.new
+        function_from_context(context).value(self, context)
       end
 
       def unbound_functions(context = nil)
@@ -46,12 +44,10 @@ module Keisan
       def evaluate(context = nil)
         context ||= Keisan::Context.new
 
-        super
-
-        if function_defined?(context) && children.all? {|child| child.well_defined?(context)}
-          function = function_from_context(context)
-          function.call(context, *children.map {|child| child.value(context)}).to_node.evaluate(context)
+        if function_defined?(context)
+          function_from_context(context).evaluate(self, context)
         else
+          @children = children.map {|child| child.evaluate(context)}
           self
         end
       end
@@ -59,10 +55,10 @@ module Keisan
       def simplify(context = nil)
         context ||= Context.new
 
-        super
-        if function_defined?(context) && children.all? {|child| child.is_a?(ConstantLiteral)}
-          value(context).to_node.simplify(context)
+        if function_defined?(context)
+          function_from_context(context).simplify(self, context)
         else
+          @children = children.map {|child| child.simplify(context)}
           self
         end
       end
@@ -76,29 +72,7 @@ module Keisan
           return AST::Number.new(0)
         end
         # Do not know how to differentiate a function in general, so leave as derivative
-        AST::Functions::Diff.new([self, variable])
-      end
-    end
-  end
-end
-
-require_relative "functions/if"
-require_relative "functions/diff"
-
-module Keisan
-  module AST
-    class Function
-      BUILD_CLASSES = {
-        "if"   => AST::Functions::If,
-        "diff" => AST::Functions::Diff
-      }.freeze
-
-      def self.build(name, arguments = [])
-        build_class(name.downcase).new(arguments, name)
-      end
-
-      def self.build_class(name)
-        BUILD_CLASSES[name] || Function
+        AST::Function.new([self, variable], "diff")
       end
     end
   end

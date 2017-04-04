@@ -7,7 +7,7 @@ module Keisan
     end
 
     def evaluate(expression, definitions = {})
-      context = calculator.context.spawn_child(definitions, transient: true)
+      context = calculator.context.spawn_child(definitions: definitions, transient: true)
       ast = Keisan::AST.parse(expression)
       evaluation = ast.evaluate(context)
 

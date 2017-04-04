@@ -4,9 +4,9 @@ RSpec.describe Keisan::Variables::DefaultRegistry do
   let(:registry) { described_class.registry }
 
   it "contains correct variables" do
-    expect(registry["pi"]).to eq Math::PI
-    expect(registry["e"]).to eq Math::E
-    expect(registry["i"]).to eq Complex(0,1)
+    expect(registry["PI"]).to eq Math::PI
+    expect(registry["E"]).to eq Math::E
+    expect(registry["I"]).to eq Complex(0,1)
   end
 
   it "is unmodifiable" do

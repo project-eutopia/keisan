@@ -1,13 +1,13 @@
 module Keisan
   module Functions
     class Registry
-      def initialize(functions: {}, parent: nil, use_defaults: true)
+      def initialize(functions: {}, parent: nil, use_defaults: true, force: false)
         @hash = {}
         @parent = parent
         @use_defaults = use_defaults
 
         functions.each do |name, function|
-          register!(name, function)
+          register!(name, function, force: force)
         end
       end
 
@@ -28,13 +28,17 @@ module Keisan
         false
       end
 
-      def register!(name, function)
+      def register!(name, function, force: false)
         raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen functions registry") if frozen?
         name = name.to_s
 
+        if !force && @use_defaults && default_registry.has_name?(name)
+          raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default function")
+        end
+
         case function
         when Proc
-          self[name] = Keisan::Function.new(name, function)
+          self[name] = Keisan::Functions::ProcFunction.new(name, function)
         when Keisan::Function
           self[function.name] = function
         else

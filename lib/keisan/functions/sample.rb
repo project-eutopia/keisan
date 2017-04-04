@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Sample < Keisan::Function
+    class Sample < ProcFunction
       def initialize
         @name = "sample"
       end

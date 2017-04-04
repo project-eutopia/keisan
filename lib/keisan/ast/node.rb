@@ -17,6 +17,10 @@ module Keisan
         unbound_variables(context).empty? && unbound_functions(context).empty?
       end
 
+      def deep_dup
+        dup
+      end
+
       def simplified(context = nil)
         deep_dup.simplify(context)
       end
@@ -27,6 +31,15 @@ module Keisan
 
       def evaluate(context = nil)
         self
+      end
+
+      def differentiate(variable, context = nil)
+        raise Keisan::Exceptions::NonDifferentiableError.new
+      end
+
+      def substitute(**definitions)
+        context = Keisan::Context.new.spawn_child(definitions: definitions)
+        evaluate(context)
       end
 
       def coerce(other)
@@ -129,14 +142,6 @@ module Keisan
 
       def or(other)
         AST::LogicalOr.new([self, other.to_node])
-      end
-
-      def deep_dup
-        dup
-      end
-
-      def differentiate(variable, context = nil)
-        raise Keisan::Exceptions::NonDifferentiableError.new
       end
     end
   end

@@ -7,13 +7,13 @@ module Keisan
       end
 
       VARIABLES = {
-        "pi" => Math::PI,
-        "e" => Math::E,
-        "i" => Complex(0,1)
+        "PI" => Math::PI,
+        "E" => Math::E,
+        "I" => Complex(0,1)
       }
 
       def self.registry
-        @registry ||= Registry.new(variables: VARIABLES, parent: nil).freeze
+        @registry ||= Registry.new(variables: VARIABLES, parent: nil, force: true).freeze
       end
     end
   end

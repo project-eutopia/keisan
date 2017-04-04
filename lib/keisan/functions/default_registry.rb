@@ -1,3 +1,5 @@
+require_relative "if"
+require_relative "diff"
 require_relative "rand"
 require_relative "sample"
 
@@ -13,6 +15,9 @@ module Keisan
       private
 
       def self.register_defaults!(registry)
+        registry.register!(:if, Keisan::Functions::If.new, force: true)
+        registry.register!(:diff, Keisan::Functions::Diff.new, force: true)
+
         register_builtin_math!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
@@ -22,22 +27,23 @@ module Keisan
         Math.methods(false).each do |method|
           registry.register!(
             method,
-            Proc.new do |*args|
+            Proc.new {|*args|
               Math.send(method, *args)
-            end
+            },
+            force: true
           )
         end
       end
 
       def self.register_array_methods!(registry)
         %i(min max size).each do |method|
-          registry.register!(method, Proc.new {|a| a.send(method)})
+          registry.register!(method, Proc.new {|a| a.send(method)}, force: true)
         end
       end
 
       def self.register_random_methods!(registry)
-        registry.register!(:rand, Keisan::Functions::Rand.new)
-        registry.register!(:sample, Keisan::Functions::Sample.new)
+        registry.register!(:rand, Keisan::Functions::Rand.new, force: true)
+        registry.register!(:sample, Keisan::Functions::Sample.new, force: true)
       end
     end
   end

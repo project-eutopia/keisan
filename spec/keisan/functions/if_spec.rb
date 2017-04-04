@@ -1,6 +1,11 @@
 require "spec_helper"
 
-RSpec.describe Keisan::AST::Functions::If do
+RSpec.describe Keisan::Functions::If do
+  it "should be in the default context" do
+    c = Keisan::Context.new
+    expect(c.function("if")).to be_a(described_class)
+  end
+
   describe "simplify" do
     it "short circuits if the conditional is a boolean" do
       ast = Keisan::AST.parse("if(N, x, y)")

@@ -13,7 +13,7 @@ RSpec.describe Keisan::Context do
   it "has default variables and functions" do
     my_context = described_class.new
 
-    expect(my_context.variable("pi")).to eq Math::PI
+    expect(my_context.variable("PI")).to eq Math::PI
     expect(my_context.function("sin")).to be_a(Keisan::Function)
   end
 
@@ -90,7 +90,7 @@ RSpec.describe Keisan::Context do
     let(:context) { described_class.new }
 
     it "returns true of variable is defined" do
-      expect(context.has_variable?("pi")).to eq true
+      expect(context.has_variable?("PI")).to eq true
       expect(context.has_variable?("not_exist")).to eq false
       context.register_variable!("not_exist", 5)
       expect(context.has_variable?("not_exist")).to eq true

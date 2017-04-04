@@ -50,7 +50,7 @@ RSpec.describe Keisan::AST::Node do
 
   describe "unbound_variables" do
     it "returns a Set of the undefined variable names" do
-      ast = Keisan::AST.parse("pi")
+      ast = Keisan::AST.parse("PI")
       expect(ast.unbound_variables).to eq Set.new
 
       ast = Keisan::AST.parse("x")
@@ -315,6 +315,19 @@ RSpec.describe Keisan::AST::Node do
   end
 
   describe "diff" do
+    context "calling `value`" do
+      it "evaluates when can fully simplify" do
+        ast = Keisan::AST.parse("diff(4*x, x)")
+        expect(ast.value).to eq 4
+
+        ast = Keisan::AST.parse("diff(4*x**2, x)")
+        expect{ast.value}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+
+        ast = Keisan::AST.parse("diff(4*x**2, x)")
+        expect(ast.evaluate.substitute(x: 3)).to eq Keisan::AST::Number.new(3*8)
+      end
+    end
+
     it "does differentiation under 'simplify'" do
       ast = Keisan::AST.parse("diff(x)")
       expect(ast.simplified.to_s).to eq "x"

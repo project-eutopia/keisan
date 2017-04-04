@@ -66,7 +66,7 @@ RSpec.describe Keisan::AST::Builder do
 
   context "function" do
     it "properly parses" do
-      expect(described_class.new(string: "sin(pi)").ast.value).to be_within(1e-10).of(0)
+      expect(described_class.new(string: "sin(PI)").ast.value).to be_within(1e-10).of(0)
       my_context.register_function!("my_func", Proc.new { 11 })
       expect(described_class.new(string: "5 + my_func()").ast.value(my_context)).to eq 16
     end
