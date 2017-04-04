@@ -72,7 +72,7 @@ module Keisan
           return AST::Number.new(0)
         end
         # Do not know how to differentiate a function in general, so leave as derivative
-        AST::Functions::Diff.new([self, variable])
+        AST::Function.new([self, variable], "diff")
       end
     end
   end

@@ -1,3 +1,5 @@
+require_relative "if"
+require_relative "diff"
 require_relative "rand"
 require_relative "sample"
 
@@ -14,6 +16,7 @@ module Keisan
 
       def self.register_defaults!(registry)
         registry.register!(:if, Keisan::Functions::If.new, force: true)
+        registry.register!(:diff, Keisan::Functions::Diff.new, force: true)
 
         register_builtin_math!(registry)
         register_array_methods!(registry)
