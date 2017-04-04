@@ -112,9 +112,14 @@ calculator.evaluate("n") # n only exists in the definition of f(x)
 #=> Keisan::Exceptions::UndefinedVariableError: n
 ```
 
-This form even supports recursion!
+This form even supports recursion, but you must explicitly allow it.
 
 ```ruby
+calculator = Keisan::Calculator.new(allow_recursive: false)
+calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
+#=> Keisan::Exceptions::InvalidExpression: Unbound function definitions are not allowed by current context
+
+calculator = Keisan::Calculator.new(allow_recursive: true)
 calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
 calculator.evaluate("my_fact(0)")
 #=> 1
@@ -190,7 +195,7 @@ Using the prefixes `0b`, `0o`, and `0x` (standard in Ruby) indicates binary, oct
 calculator.evaluate("0b1100")
 #=> 12
 calculator.evaluate("0o775")
-#=> 504
+#=> 509
 calculator.evaluate("0x1f0")
 #=> 496
 ```
@@ -209,8 +214,8 @@ calculator.evaluate("sample([2, 4, 6, 8])")
 If you want reproducibility, you can pass in your own `Random` object to the calculator's context.
 
 ```ruby
-calculator1 = Keisan::Calculator.new(Keisan::Context.new(random: Random.new(1234)))
-calculator2 = Keisan::Calculator.new(Keisan::Context.new(random: Random.new(1234)))
+calculator1 = Keisan::Calculator.new(context: Keisan::Context.new(random: Random.new(1234)))
+calculator2 = Keisan::Calculator.new(context: Keisan::Context.new(random: Random.new(1234)))
 5.times.map {calculator1.evaluate("rand(1000)")}
 #=> [815, 723, 294, 53, 204]
 5.times.map {calculator2.evaluate("rand(1000)")}
@@ -229,24 +234,48 @@ calculator.evaluate("log10(1000)")
 Furthermore, the following builtin constants are defined
 
 ```ruby
-calculator.evaluate("pi")
+calculator.evaluate("PI")
 #=> 3.141592653589793
-calculator.evaluate("e")
+calculator.evaluate("E")
 #=> 2.718281828459045
-calculator.evaluate("i")
+calculator.evaluate("I")
 #=> (0+1i)
 ```
 
 This allows for simple calculations like
 
 ```ruby
-calculator.evaluate("e**(i*pi)+1")
+calculator.evaluate("E**(I*PI)+1")
 => (0.0+0.0i)
+```
+
+There is a `replace` method that can replace instances of a variable in an expression with another expression.  The form is `replace(original_expression, variable_to_replace, replacement_expression)`.  Before the replacement is carried out, the `original_expression` and `replacement_expression` are `evaluate`d, then instances in the original expression of the given variable are replaced by the replacement expression.
+
+```ruby
+calculator.evaluate("replace(x**2, x, 3)")
+#=> 9
+```
+
+When using `Calculator` class, all variables must be replaced before an expression can be calculated, but the ability to replace any expression is useful when working directly with the AST.
+
+```ruby
+ast = Keisan::AST.parse("replace(replace(x**2 + y**2, x, sin(theta)), y, cos(theta))")
+ast.evaluate.to_s
+#=> "(sin(theta)**2)+(cos(theta)**2)"
+```
+
+The derivative operation is also builtin to Keisan as the `diff` function.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("diff(4*x, x)")
+calculator.evaluate("replace(diff(4*x**2, x), x, 3)")
+#=> 24
 ```
 
 ### Adding custom variables and functions
 
-The `Keisan::Calculator` class has a single `Keisan::Context` object in its `context` attribute.  This class is used to store local variables and functions.  As an example of pre-defining some variables and functions, see the following
+The `Keisan::Calculator` class has a single `Keisan::Context` object in its `context` attribute.  This class is used to store local variables and functions.  These can be stored using either the `define_variable!` or `define_function!` methods, or by using the assignment operator `=` in an expression that is evaluated.  As an example of pre-defining some variables and functions, see the following
 
 ```ruby
 calculator.define_variable!("x", 5)
@@ -257,11 +286,21 @@ calculator.evaluate("x + 1", x: 10)
 #=> 11
 calculator.evaluate("x + 1")
 #=> 6
+
+calculator.evaluate("x = y = 10")
+#=> 10
+calculator.evaluate("x + y")
+#=> 20
+calculator.evaluate("x + y", y: 100)
+#=> 110
+calculator.evaluate("x + y")
+#=> 20
 ```
 
 Notice how when passing variable values directly to the `evaluate` method, it only shadows the value of 5 for that specific calculation.  The same thing works for functions
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.define_function!("f", Proc.new {|x| 3*x})
 #=> #<Keisan::Function:0x005570f935ecc8 @function_proc=#<Proc:0x005570f935ecf0@(pry):6>, @name="f">
 calculator.evaluate("f(2)")
@@ -270,6 +309,15 @@ calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})
 #=> 20
 calculator.evaluate("f(2)")
 #=> 6
+
+calculator.evaluate("f(x) = x + x**2")
+#=> nil
+calculator.evaluate("f(3)")
+#=> 12
+calculator.evaluate("f(3)", f: Proc.new {|x| 10*x})
+#=> 30
+calculator.evaluate("f(3)")
+#=> 12
 ```
 
 ## Supported elements/operators
