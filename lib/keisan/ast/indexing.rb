@@ -46,6 +46,11 @@ module Keisan
 
         self
       end
+
+      def replace(variable, replacement)
+        super
+        @indexes = indexes.map {|index| index.replace(variable, replacement)}
+      end
     end
   end
 end

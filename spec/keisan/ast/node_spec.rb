@@ -323,8 +323,8 @@ RSpec.describe Keisan::AST::Node do
         ast = Keisan::AST.parse("diff(4*x**2, x)")
         expect{ast.value}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
 
-        ast = Keisan::AST.parse("diff(4*x**2, x)")
-        expect(ast.evaluate.replace(x: 3)).to eq Keisan::AST::Number.new(3*8)
+        ast = Keisan::AST.parse("replace(diff(4*x**2, x), x, 3)")
+        expect(ast.value).to eq 3*8
       end
     end
 
@@ -367,6 +367,13 @@ RSpec.describe Keisan::AST::Node do
           expect(simple.to_s).to eq "(a(x)**b(x))*((diff(b(x),x)*log(a(x)))+(diff(a(x),x)*b(x)*(a(x)**-1)))"
         end
       end
+    end
+  end
+
+  describe "replace" do
+    it "replaces a variable with the given expression" do
+      ast = Keisan::AST.parse("replace(x**2 + 1 / x, x, 10)")
+      expect(ast.value).to eq (100 + Rational(1,10))
     end
   end
 end

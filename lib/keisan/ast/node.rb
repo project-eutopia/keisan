@@ -37,9 +37,8 @@ module Keisan
         raise Keisan::Exceptions::NonDifferentiableError.new
       end
 
-      def replace(**definitions)
-        context = Keisan::Context.new.spawn_child(definitions: definitions)
-        evaluate(context)
+      def replace(variable, replacement)
+        self
       end
 
       def coerce(other)

@@ -43,6 +43,14 @@ module Keisan
         end
       end
 
+      def replace(variable, replacement)
+        if name == variable.name
+          replacement
+        else
+          self
+        end
+      end
+
       def differentiate(variable, context = nil)
         context ||= Keisan::Context.new
 
