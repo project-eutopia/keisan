@@ -324,7 +324,7 @@ RSpec.describe Keisan::AST::Node do
         expect{ast.value}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
 
         ast = Keisan::AST.parse("diff(4*x**2, x)")
-        expect(ast.evaluate.substitute(x: 3)).to eq Keisan::AST::Number.new(3*8)
+        expect(ast.evaluate.replace(x: 3)).to eq Keisan::AST::Number.new(3*8)
       end
     end
 
