@@ -7,45 +7,59 @@ module Keisan
 
       def value(ast_function, context = nil)
         context ||= Keisan::Context.new
-        # TODO
-        ast_function
+        evaluation = evaluate(ast_function, context)
+
+        if is_ast_derivative?(evaluation)
+          raise Keisan::Exceptions::NonDifferentiableError.new
+        else
+          evaluation.value(context)
+        end
       end
 
       def evaluate(ast_function, context = nil)
-        context ||= Keisan::Context.new
-        # TODO
-        ast_function
+        context ||= Context.new
+        function, vars = function_and_vars(ast_function)
+
+        vars.inject(function.evaluate(context)) do |result, variable|
+          result = differentiate(result, variable, context)
+          if !is_ast_derivative?(result)
+            result = result.evaluate(context)
+          end
+          result
+        end
       end
 
       def simplify(ast_function, context = nil)
         context ||= Context.new
-
         function, vars = function_and_vars(ast_function)
 
-        result = function.simplify(context)
-
-        while vars.size > 0
-          begin
-            var = vars.first
-            if result.unbound_variables(context).include?(var.name)
-              result = result.differentiate(var, context).simplify(context)
-            else
-              return AST::Number.new(0)
-            end
-          rescue Keisan::Exceptions::NonDifferentiableError => e
-            return AST::Function.new(
-              [result] + vars,
-              "diff"
-            )
+        vars.inject(function.simplify(context)) do |result, variable|
+          result = differentiate(result, variable, context)
+          if !is_ast_derivative?(result)
+            result = result.simplify(context)
           end
-
-          vars.shift
+          result
         end
-
-        result
       end
 
       private
+
+      def is_ast_derivative?(node)
+        node.is_a?(Keisan::AST::Function) && node.name == name
+      end
+
+      def differentiate(node, variable, context)
+        if node.unbound_variables(context).include?(variable.name)
+          node.differentiate(variable, context)
+        else
+          return AST::Number.new(0)
+        end
+      rescue Keisan::Exceptions::NonDifferentiableError => e
+        return AST::Function.new(
+          [node, variable],
+          "diff"
+        )
+      end
 
       def function_and_vars(ast_function)
         unless ast_function.is_a?(Keisan::AST::Function) && ast_function.name == name
