@@ -55,6 +55,11 @@ module Keisan
         @children = @children.map {|child| child.simplify(context)}
         self
       end
+
+      def replace(variable, replacement)
+        @children = children.map {|child| child.replace(variable, replacement)}
+        self
+      end
     end
   end
 end
