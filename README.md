@@ -269,6 +269,7 @@ The derivative operation is also builtin to Keisan as the `diff` function.
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("diff(4*x, x)")
+#=> 4
 calculator.evaluate("replace(diff(4*x**2, x), x, 3)")
 #=> 24
 ```
