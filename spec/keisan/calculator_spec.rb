@@ -9,6 +9,14 @@ RSpec.describe Keisan::Calculator do
     expect(calculator.evaluate("2 / 3 ** 2")).to eq Rational(2,9)
   end
 
+  it "does nothing for blank strings" do
+    expect(calculator.evaluate("  ")).to eq nil
+  end
+
+  it "ignores comments" do
+    expect(calculator.evaluate("2 + 3 # 4")).to eq 5
+  end
+
   it "can handle custom functions" do
     expect(calculator.evaluate("2*f(x) + 4", x: 3, f: Proc.new {|x| x**2})).to eq 2*9+4
   end

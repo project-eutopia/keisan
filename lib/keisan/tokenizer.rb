@@ -22,12 +22,15 @@ module Keisan
     attr_reader :expression, :tokens
 
     def initialize(expression)
-      @expression = self.class.strip_whitespace(expression)
+      @expression = self.class.strip_whitespace_and_comments(expression)
       @scan = @expression.scan(TOKEN_REGEX)
       @tokens = tokenize!
     end
 
-    def self.strip_whitespace(expression)
+    def self.strip_whitespace_and_comments(expression)
+      # Remove comments
+      expression = expression.split("#").first || ""
+
       # Do not allow whitespace between variables, numbers, and the like; they must be joined by operators
       raise Keisan::Exceptions::TokenizingError.new if expression.gsub(Tokens::String.regex, "").match /\w\s+\w/
 
