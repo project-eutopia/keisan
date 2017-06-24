@@ -22,7 +22,13 @@ module Keisan
 
         consume_operators!
 
-        unless @nodes.count == 1
+        case @nodes.count
+        when 0
+          # Empty string, set to just Null
+          @nodes = [Keisan::AST::Null.new]
+        when 1
+          # Good
+        else
           raise Keisan::Exceptions::ASTError.new("Should end up with a single node")
         end
       end
