@@ -80,7 +80,7 @@ module Keisan
       end
 
       def !
-        AST::LogicalNot.new(self)
+        AST::UnaryLogicalNot.new(self)
       end
 
       def ~
