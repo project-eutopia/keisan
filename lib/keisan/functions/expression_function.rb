@@ -56,6 +56,36 @@ module Keisan
         end
       end
 
+      # Multi-argument functions work as follows:
+      # Given f(x, y), in general we will take the derivative with respect to t,
+      # and x = x(t), y = y(t).  For instance d/dt f(2*t, t+1).
+      # In this case, chain rule gives derivative:
+      # dx(t)/dt * f_x(x(t), y(t)) + dy(t)/dt * f_y(x(t), y(t)),
+      # where f_x and f_y are the x and y partial derivatives respectively.
+      def differentiate(ast_function, variable, context = nil)
+        local = local_context_for(context)
+
+        # expression.differentiate(variable, context)
+
+        argument_values = ast_function.children.map {|child| child.evaluate(local)}
+
+        argument_derivatives = ast_function.children.map do |child|
+          child.differentiate(variable, context)
+        end
+
+        function_partial_derivatives = arguments.map {|argument| Keisan::AST::Variable.new(argument)}.map.with_index do |variable, i|
+          partial_derivative = expression.differentiate(variable, context)
+          partial_derivative.replace(variable, argument_values[i])
+        end
+
+        Keisan::AST::Plus.new(
+          argument_derivatives.map.with_index {|argument_derivative, i|
+            partial_derivative = function_partial_derivatives[i]
+            Keisan::AST::Times.new([argument_derivative, partial_derivative])
+          }
+        )
+      end
+
       private
 
       def local_context_for(context = nil)

@@ -58,7 +58,7 @@ module Keisan
 
         # Special simple case where exponent is a pure number
         if exponent.is_a?(AST::Number)
-          return (exponent * base ** (exponent -1)).simplify(context)
+          return (exponent * base.differentiate(variable, context) * base ** (exponent -1)).simplify(context)
         end
 
         base_diff     = base.differentiate(variable, context)
