@@ -32,6 +32,7 @@ module Keisan
 
         rhs_value = rhs.value(context)
         context.register_variable!(lhs.name, rhs_value)
+        # Return the variable assigned value
         rhs
       end
 
@@ -61,11 +62,12 @@ module Keisan
             lhs.name,
             argument_names,
             rhs,
-            function_definition_context
+            context.transient_definitions
           )
         )
 
-        rhs
+        # Return the function itself
+        lhs
       end
     end
   end
