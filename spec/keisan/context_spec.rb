@@ -112,4 +112,48 @@ RSpec.describe Keisan::Context do
       expect(context.has_function?("not_exist")).to eq true
     end
   end
+
+  describe "transient context" do
+    it "has parent context's variables and functions" do
+      my_context = described_class.new
+
+      my_context.register_variable!("x", 2)
+      my_context.register_function!("f", Proc.new {|x| x**2})
+
+      child_context = my_context.spawn_child(transient: true)
+      expect(child_context.variable("x")).to eq 2
+      expect(child_context.function("f").call(nil, 3)).to eq 9
+    end
+
+    it "is transient so all definitions bubble up to parent context" do
+      my_context = described_class.new
+
+      my_context.register_variable!("x", 2)
+      my_context.register_variable!("y", 7)
+      my_context.register_function!("f", Proc.new {|x| x**2})
+      my_context.register_function!("g", Proc.new {|x| x-1})
+
+      expect(my_context.variable("x")).to eq 2
+      expect(my_context.variable("y")).to eq 7
+      expect(my_context.function("f").call(nil, 2)).to eq 4
+      expect(my_context.function("g").call(nil, 2)).to eq 1
+
+      child_context = my_context.spawn_child(transient: true)
+      child_context.register_variable!("x", 5)
+      child_context.register_function!("f", Proc.new {|x| x**3})
+      Keisan::Calculator.new(context: child_context).evaluate("y = 11")
+      Keisan::Calculator.new(context: child_context).evaluate("g(x) = 123*x")
+
+      # Overriden by transient child!
+      expect(my_context.variable("x")).to eq 5
+      expect(my_context.variable("y")).to eq 11
+      expect(my_context.function("f").call(nil, 2)).to eq 8
+      expect(my_context.function("g").call(nil, 2)).to eq 246
+
+      expect(child_context.variable("x")).to eq 5
+      expect(child_context.variable("y")).to eq 11
+      expect(child_context.function("f").call(nil, 2)).to eq 8
+      expect(child_context.function("g").call(nil, 2)).to eq 246
+    end
+  end
 end
