@@ -22,6 +22,10 @@ module Keisan
         raise Keisan::Exceptions::UndefinedFunctionError.new name
       end
 
+      def locals
+        @hash
+      end
+
       def has?(name)
         !!self[name]
       rescue Keisan::Exceptions::UndefinedFunctionError

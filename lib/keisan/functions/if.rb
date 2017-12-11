@@ -27,17 +27,8 @@ module Keisan
         bool = ast_function.children[0].evaluate(context)
 
         if bool.is_a?(Keisan::AST::Boolean)
-          if bool.value
-            ast_function.children[1].evaluate(context)
-          else
-            ast_function.children[2].to_node.evaluate(context)
-          end
-        else
-          ast_function
-        end
-
-        if ast_function.children.all? {|child| child.well_defined?(context)}
-          value(ast_function, context).to_node.evaluate(context)
+          node = bool.value ? ast_function.children[1] : ast_function.children[2]
+          node.to_node.evaluate(context)
         else
           ast_function
         end
@@ -49,7 +40,7 @@ module Keisan
 
         if bool.is_a?(Keisan::AST::Boolean)
           if bool.value
-            ast_function.children[1].simplify(context)
+            ast_function.children[1].to_node.simplify(context)
           else
             ast_function.children[2].to_node.simplify(context)
           end

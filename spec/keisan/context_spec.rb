@@ -6,14 +6,14 @@ RSpec.describe Keisan::Context do
 
     my_context.register_variable!("x", 2)
     my_context.register_function!("f", Proc.new {|x| x**2})
-    expect(my_context.variable("x")).to eq 2
-    expect(my_context.function("f").call(nil, 3)).to eq 9
+    expect(my_context.variable("x").value).to eq 2
+    expect(my_context.function("f").call(nil, 3).value).to eq 9
   end
 
   it "has default variables and functions" do
     my_context = described_class.new
 
-    expect(my_context.variable("PI")).to eq Math::PI
+    expect(my_context.variable("PI").value).to eq Math::PI
     expect(my_context.function("sin")).to be_a(Keisan::Function)
   end
 
@@ -25,8 +25,8 @@ RSpec.describe Keisan::Context do
       my_context.register_function!("f", Proc.new {|x| x**2})
 
       child_context = my_context.spawn_child
-      expect(child_context.variable("x")).to eq 2
-      expect(child_context.function("f").call(nil, 3)).to eq 9
+      expect(child_context.variable("x").value).to eq 2
+      expect(child_context.function("f").call(nil, 3).value).to eq 9
     end
 
     it "can shadow parent" do
@@ -41,15 +41,15 @@ RSpec.describe Keisan::Context do
       child_context.register_variable!("x", 5)
       child_context.register_function!("f", Proc.new {|x| x**3})
 
-      expect(my_context.variable("x")).to eq 2
-      expect(my_context.variable("y")).to eq 7
-      expect(my_context.function("f").call(nil, 2)).to eq 4
-      expect(my_context.function("g").call(nil, 2)).to eq 1
+      expect(my_context.variable("x").value).to eq 2
+      expect(my_context.variable("y").value).to eq 7
+      expect(my_context.function("f").call(nil, 2).value).to eq 4
+      expect(my_context.function("g").call(nil, 2).value).to eq 1
 
-      expect(child_context.variable("x")).to eq 5
-      expect(child_context.variable("y")).to eq 7
-      expect(child_context.function("f").call(nil, 2)).to eq 8
-      expect(child_context.function("g").call(nil, 2)).to eq 1
+      expect(child_context.variable("x").value).to eq 5
+      expect(child_context.variable("y").value).to eq 7
+      expect(child_context.function("f").call(nil, 2).value).to eq 8
+      expect(child_context.function("g").call(nil, 2).value).to eq 1
     end
   end
 
@@ -121,8 +121,8 @@ RSpec.describe Keisan::Context do
       my_context.register_function!("f", Proc.new {|x| x**2})
 
       child_context = my_context.spawn_child(transient: true)
-      expect(child_context.variable("x")).to eq 2
-      expect(child_context.function("f").call(nil, 3)).to eq 9
+      expect(child_context.variable("x").value).to eq 2
+      expect(child_context.function("f").call(nil, 3).value).to eq 9
     end
 
     it "is transient so all definitions bubble up to parent context" do
@@ -133,10 +133,10 @@ RSpec.describe Keisan::Context do
       my_context.register_function!("f", Proc.new {|x| x**2})
       my_context.register_function!("g", Proc.new {|x| x-1})
 
-      expect(my_context.variable("x")).to eq 2
-      expect(my_context.variable("y")).to eq 7
-      expect(my_context.function("f").call(nil, 2)).to eq 4
-      expect(my_context.function("g").call(nil, 2)).to eq 1
+      expect(my_context.variable("x").value).to eq 2
+      expect(my_context.variable("y").value).to eq 7
+      expect(my_context.function("f").call(nil, 2).value).to eq 4
+      expect(my_context.function("g").call(nil, 2).value).to eq 1
 
       child_context = my_context.spawn_child(transient: true)
 
@@ -149,15 +149,15 @@ RSpec.describe Keisan::Context do
       Keisan::Calculator.new(context: child_context).evaluate("g(x) = 123*x")
 
       # Overriden by transient child!
-      expect(my_context.variable("x")).to eq 5
-      expect(my_context.variable("y")).to eq 11
-      expect(my_context.function("f").call(nil, 2)).to eq 8
-      expect(my_context.function("g").call(nil, 2)).to eq 246
+      expect(my_context.variable("x").value).to eq 5
+      expect(my_context.variable("y").value).to eq 11
+      expect(my_context.function("f").call(nil, 2).value).to eq 8
+      expect(my_context.function("g").call(nil, 2).value).to eq 246
 
-      expect(child_context.variable("x")).to eq 5
-      expect(child_context.variable("y")).to eq 11
-      expect(child_context.function("f").call(nil, 2)).to eq 8
-      expect(child_context.function("g").call(nil, 2)).to eq 246
+      expect(child_context.variable("x").value).to eq 5
+      expect(child_context.variable("y").value).to eq 11
+      expect(child_context.function("f").call(nil, 2).value).to eq 8
+      expect(child_context.function("g").call(nil, 2).value).to eq 246
     end
 
     it "stores transient definitions" do

@@ -16,12 +16,14 @@ module Keisan
     # current context, but such that variable/function definitions can be persisted in
     # the calculator.
     def spawn_child(definitions: {}, transient: false)
-      child = self.class.new(parent: self, allow_recursive: allow_recursive)
+      child = pure_child
 
       definitions.each do |name, value|
         case value
         when Proc
           child.register_function!(name, value)
+        when Keisan::Functions::ProcFunction
+          child.register_function!(name, value.function_proc)
         else
           child.register_variable!(name, value)
         end
@@ -85,6 +87,10 @@ module Keisan
 
     def set_transient!
       @transient = true
+    end
+
+    def pure_child
+      self.class.new(parent: self, allow_recursive: allow_recursive)
     end
   end
 end

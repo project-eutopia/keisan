@@ -66,8 +66,7 @@ module Keisan
           )
         )
 
-        # Return the function itself
-        lhs
+        rhs
       end
     end
   end

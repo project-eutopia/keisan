@@ -4,7 +4,7 @@ module Keisan
       attr_reader :children
 
       def initialize(children = [])
-        children = Array.wrap(children)
+        children = Array.wrap(children).map(&:to_node)
         unless children.is_a?(Array) && children.all? {|children| children.is_a?(Node)}
           raise Keisan::Exceptions::InternalError.new
         end

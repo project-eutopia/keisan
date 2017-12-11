@@ -3,7 +3,7 @@ module Keisan
     class UnaryOperator < Operator
       def initialize(children = [])
         children = Array.wrap(children)
-        super
+        super(children)
         if children.count != 1
           raise Keisan::Exceptions::ASTError.new("Unary operator takes has a single child")
         end

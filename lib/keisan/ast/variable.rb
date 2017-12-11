@@ -28,7 +28,13 @@ module Keisan
       def evaluate(context = nil)
         context ||= Keisan::Context.new
         if context.has_variable?(name)
-          context.variable(name).to_node.evaluate(context)
+          variable = context.variable(name)
+          # The variable might just be a variable, i.e. probably in function definition
+          if variable.is_a?(AST::Node)
+            variable.is_a?(AST::Variable) ? variable : variable.evaluate(context)
+          else
+            variable
+          end
         else
           self
         end

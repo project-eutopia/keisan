@@ -10,11 +10,19 @@ module KeisanNumeric
   def to_node
     Keisan::AST::Number.new(self)
   end
+
+  def value(context = nil)
+    self
+  end
 end
 
 module KeisanString
   def to_node
     Keisan::AST::String.new(self)
+  end
+
+  def value(context = nil)
+    self
   end
 end
 
@@ -22,11 +30,19 @@ module KeisanTrueClass
   def to_node
     Keisan::AST::Boolean.new(true)
   end
+
+  def value(context = nil)
+    self
+  end
 end
 
 module KeisanFalseClass
   def to_node
     Keisan::AST::Boolean.new(false)
+  end
+
+  def value(context = nil)
+    self
   end
 end
 
@@ -34,11 +50,19 @@ module KeisanNilClass
   def to_node
     Keisan::AST::Null.new
   end
+
+  def value(context = nil)
+    self
+  end
 end
 
 module KeisanArray
   def to_node
     Keisan::AST::List.new(map {|n| n.to_node})
+  end
+
+  def value(context = nil)
+    self
   end
 end
 

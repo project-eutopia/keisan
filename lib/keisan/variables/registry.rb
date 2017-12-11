@@ -22,8 +22,12 @@ module Keisan
         raise Keisan::Exceptions::UndefinedVariableError.new name
       end
 
+      def locals
+        @hash
+      end
+
       def has?(name)
-        !!self[name]
+        !self[name].nil?
       rescue Keisan::Exceptions::UndefinedVariableError
         false
       end
