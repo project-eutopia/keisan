@@ -1,8 +1,8 @@
 module Keisan
   module Functions
     class MathFunction < ProcFunction
-      def initialize(name)
-        super(name, Proc.new {|arg| Math.send(name, arg)})
+      def initialize(name, proc_function = nil)
+        super(name, proc_function || Proc.new {|arg| Math.send(name, arg)})
       end
 
       def simplify(ast_function, context = nil)
