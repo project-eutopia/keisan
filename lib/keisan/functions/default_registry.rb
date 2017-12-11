@@ -30,6 +30,7 @@ module Keisan
           registry.register!(
             method,
             Proc.new {|*args|
+              args = args.map(&:value)
               Math.send(method, *args)
             },
             force: true

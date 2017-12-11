@@ -24,7 +24,7 @@ module Keisan
           children_values.inject([], &:+)
         else
           children_values.inject(0, &:+)
-        end
+        end.to_node.value(context)
       end
 
       def evaluate(context = nil)

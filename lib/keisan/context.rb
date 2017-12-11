@@ -10,13 +10,20 @@ module Keisan
       @allow_recursive   = allow_recursive
     end
 
+    # A transient context does not persist variables and functions in this context, but
+    # rather store them one level higher in the parent context.  When evaluating a string,
+    # the entire operation is done in a transient context that is unique from the calculators
+    # current context, but such that variable/function definitions can be persisted in
+    # the calculator.
     def spawn_child(definitions: {}, transient: false)
-      child = Context.new(parent: self, allow_recursive: allow_recursive)
+      child = pure_child
 
       definitions.each do |name, value|
         case value
         when Proc
           child.register_function!(name, value)
+        when Keisan::Functions::ProcFunction
+          child.register_function!(name, value.function_proc)
         else
           child.register_variable!(name, value)
         end
@@ -24,6 +31,20 @@ module Keisan
 
       child.set_transient! if transient
       child
+    end
+
+    def transient_definitions
+      return {} unless @transient
+      parent_definitions = @parent.present? ? @parent.transient_definitions : {}
+      parent_definitions.merge(
+        @variable_registry.locals
+      ).merge(
+        @function_registry.locals
+      )
+    end
+
+    def transient?
+      !!@transient
     end
 
     def variable(name)
@@ -66,6 +87,10 @@ module Keisan
 
     def set_transient!
       @transient = true
+    end
+
+    def pure_child
+      self.class.new(parent: self, allow_recursive: allow_recursive)
     end
   end
 end

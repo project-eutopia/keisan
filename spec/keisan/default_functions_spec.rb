@@ -4,7 +4,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
   let(:registry) { described_class.registry }
   it "contains correct functions" do
     expect(registry["sin"].name).to eq "sin"
-    expect(registry["sin"].call(nil, 1)).to eq Math.sin(1)
+    expect(registry["sin"].call(nil, 1).value).to eq Math.sin(1)
   end
 
   it "is unmodifiable" do
@@ -14,13 +14,13 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
   context "array methods" do
     it "works as expected" do
       expect(registry["min"].name).to eq "min"
-      expect(registry["min"].call(nil, [-4, -1, 1, 2])).to eq -4
+      expect(registry["min"].call(nil, [-4, -1, 1, 2]).value).to eq -4
 
       expect(registry["max"].name).to eq "max"
-      expect(registry["max"].call(nil, [-4, -1, 1, 2])).to eq 2
+      expect(registry["max"].call(nil, [-4, -1, 1, 2]).value).to eq 2
 
       expect(registry["size"].name).to eq "size"
-      expect(registry["size"].call(nil, [-4, -1, 1, 2])).to eq 4
+      expect(registry["size"].call(nil, [-4, -1, 1, 2]).value).to eq 4
 
       expect(Keisan::Calculator.new.evaluate("a[size(a)-1]", a: [1, 3, 5, 7])).to eq 7
     end

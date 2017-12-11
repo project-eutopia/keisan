@@ -47,7 +47,7 @@ module Keisan
         if function_defined?(context)
           function_from_context(context).evaluate(self, context)
         else
-          @children = children.map {|child| child.evaluate(context)}
+          @children = children.map {|child| child.evaluate(context).to_node}
           self
         end
       end
@@ -58,7 +58,7 @@ module Keisan
         if function_defined?(context)
           function_from_context(context).simplify(self, context)
         else
-          @children = children.map {|child| child.simplify(context)}
+          @children = children.map {|child| child.simplify(context).to_node}
           self
         end
       end

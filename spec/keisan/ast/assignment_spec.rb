@@ -9,7 +9,7 @@ RSpec.describe Keisan::AST::Assignment do
 
         expect(context.has_variable?("x")).to eq false
         evaluation = ast.evaluate(context)
-        expect(context.variable("x")).to eq 3
+        expect(context.variable("x").value).to eq 3
         expect(evaluation.value).to eq 8
       end
 
@@ -26,6 +26,35 @@ RSpec.describe Keisan::AST::Assignment do
         expect(Keisan::AST.parse("f(3)").evaluate(context)).to eq Keisan::AST::Number.new(6)
         expect(Keisan::AST.parse("g(3)").evaluate(context)).to eq Keisan::AST::Number.new(36)
       end
+
+      it "retains function as full expression" do
+        calculator = Keisan::Calculator.new
+        calculator.evaluate("f(x) = 3*x + 1")
+        calculator.evaluate("g(x) = 2 + n + h(x)", n: 3, h: Proc.new{|x| 2**x})
+
+        f = calculator.context.function("f")
+        g = calculator.context.function("g")
+
+        expect(f).to be_a(Keisan::Functions::ExpressionFunction)
+        expect(g).to be_a(Keisan::Functions::ExpressionFunction)
+
+        expect(f.expression).to be_a(Keisan::AST::Plus)
+        expect(f.expression.children[0]).to be_a(Keisan::AST::Times)
+        expect(f.expression.children[1]).to be_a(Keisan::AST::Number)
+        expect(f.expression.children[1].value).to eq 1
+
+        expect(f.expression.children[0].children[0]).to be_a(Keisan::AST::Number)
+        expect(f.expression.children[0].children[0].value).to eq 3
+        expect(f.expression.children[0].children[1]).to be_a(Keisan::AST::Variable)
+        expect(f.expression.children[0].children[1].name).to eq "x"
+
+        expect(g.expression).to be_a(Keisan::AST::Plus)
+        expect(g.expression.children[0]).to be_a(Keisan::AST::Number)
+        expect(g.expression.children[0].value).to eq 5
+        expect(g.expression.children[1]).to be_a(Keisan::AST::Function)
+        expect(g.expression.children[1].name).to eq "h"
+        expect(g.expression.children[1].children.map(&:name)).to match_array(["x"])
+      end
     end
 
     context "LHS is variable" do
@@ -35,7 +64,7 @@ RSpec.describe Keisan::AST::Assignment do
 
         expect(context.has_variable?("x")).to eq false
         ast.evaluate(context)
-        expect(context.variable("x")).to eq 3
+        expect(context.variable("x").value).to eq 3
       end
 
       context "multiple assignments" do
@@ -49,8 +78,8 @@ RSpec.describe Keisan::AST::Assignment do
           expect(context.has_variable?("x")).to eq true
           expect(context.has_variable?("y")).to eq true
 
-          expect(context.variable("x")).to eq 5
-          expect(context.variable("y")).to eq 5
+          expect(context.variable("x").value).to eq 5
+          expect(context.variable("y").value).to eq 5
         end
       end
     end
@@ -76,15 +105,15 @@ RSpec.describe Keisan::AST::Assignment do
           context = Keisan::Context.new
           ast = Keisan::AST.parse("f(x) = x**2")
 
-          expect(context.has_function?("f")).to eq false
-          ast.evaluate(context)
-          expect(context.has_function?("f")).to eq true
+          expect {
+            ast.evaluate(context)
+          }.to change {context.has_function?("f")}.from(false).to(true)
 
           ast = Keisan::AST.parse("g(x,y) = f(x) + y")
 
-          expect(context.has_function?("g")).to eq false
-          ast.evaluate(context)
-          expect(context.has_function?("g")).to eq true
+          expect {
+            ast.evaluate(context)
+          }.to change {context.has_function?("g")}.from(false).to(true)
 
           function_eval = Keisan::AST.parse("g(4, 5)").evaluate(context)
           expect(function_eval).to be_a(Keisan::AST::Number)

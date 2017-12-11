@@ -3,11 +3,11 @@ module Keisan
     class ExpressionFunction < Keisan::Function
       attr_reader :arguments, :expression
 
-      def initialize(name, arguments, expression, local_context)
+      def initialize(name, arguments, expression, transient_definitions)
         super(name)
         @expression = expression.deep_dup
         @arguments = arguments
-        @local_context = local_context
+        @transient_definitions = transient_definitions
       end
 
       def call(context, *args)
@@ -15,7 +15,7 @@ module Keisan
           raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
         end
 
-        local = @local_context.spawn_child
+        local = local_context_for(context)
         arguments.each.with_index do |arg_name, i|
           local.register_variable!(arg_name, args[i])
         end
@@ -24,28 +24,25 @@ module Keisan
       end
 
       def value(ast_function, context = nil)
-        context ||= Keisan::Context.new
-        argument_values = ast_function.children.map {|child| child.value(context)}
-        call(context, *argument_values)
+        local = local_context_for(context)
+        argument_values = ast_function.children.map {|child| child.value(local)}
+        call(local, *argument_values)
       end
 
       def evaluate(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        local = local_context_for(context)
 
-        ast_function.instance_variable_set(
-          :@children,
-          ast_function.children.map {|child| child.evaluate(context)}
-        )
+        argument_values = ast_function.children.map {|child| child.evaluate(local)}
 
-        if ast_function.children.all? {|child| child.well_defined?(context)}
-          value(ast_function, context).to_node.evaluate(context)
-        else
-          ast_function
+        arguments.each.with_index do |arg_name, i|
+          local.register_variable!(arg_name, argument_values[i].evaluate(local))
         end
+
+        expression.evaluate(local)
       end
 
       def simplify(ast_function, context = nil)
-        context ||= Context.new
+        context = local_context_for(context)
 
         ast_function.instance_variable_set(
           :@children,
@@ -56,6 +53,21 @@ module Keisan
           value(ast_function, context).to_node.simplify(context)
         else
           ast_function
+        end
+      end
+
+      private
+
+      def local_context_for(context = nil)
+        context ||= Keisan::Context.new
+        case context
+        when Keisan::FunctionDefinitionContext
+          context.spawn_child(definitions: @transient_definitions, transient: true)
+        when Keisan::Context
+          Keisan::FunctionDefinitionContext.new(
+            parent: context.spawn_child(definitions: @transient_definitions, transient: true),
+            arguments: arguments
+          )
         end
       end
     end

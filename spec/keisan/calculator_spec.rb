@@ -106,9 +106,13 @@ RSpec.describe Keisan::Calculator do
     end
 
     context "with definitions" do
-      it "raises an error if there is an undefined variable" do
-        calculator.evaluate("f(x) = n*x", n: 10)
-        expect(calculator.evaluate("f(3)")).to eq 30
+      it "local variables are evaluated, i.e. only function arguments remain variables" do
+        calculator.evaluate("a = 2")
+        calculator.evaluate("f(x) = a*n*x + g(x)", n: 10, g: Proc.new {|x| x**2})
+        expect(calculator.evaluate("f(3)")).to eq (60 + 3**2)
+        calculator.evaluate("a = 3")
+        calculator.evaluate("g(x) = 0")
+        expect(calculator.evaluate("f(3)")).to eq (60 + 3**2)
       end
     end
 
