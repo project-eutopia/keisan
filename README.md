@@ -11,7 +11,7 @@ Keisan ([計算, to calculate](https://en.wiktionary.org/wiki/%E8%A8%88%E7%AE%97
 
 Add this line to your application's Gemfile:
 
-```ruby
+```
 gem 'keisan'
 ```
 
@@ -40,6 +40,7 @@ calculator.evaluate("15 + 2 * (1 + 3)")
 Passing in a hash of variable (`name`, `value`) pairs to the `evaluate` method defines variables
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("3*x + y**2", x: -2.5, y: 3)
 #=> 1.5
 ```
@@ -47,6 +48,7 @@ calculator.evaluate("3*x + y**2", x: -2.5, y: 3)
 It will raise an error if an variable is not defined
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("x + 1")
 #=> Keisan::Exceptions::UndefinedVariableError: x
 ```
@@ -54,6 +56,7 @@ calculator.evaluate("x + 1")
 It is also possible to define variables in the string expression itself
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("x = 10*n", n: 2)
 calculator.evaluate("3*x + 1")
 #=> 61
@@ -64,6 +67,7 @@ calculator.evaluate("3*x + 1")
 Just like variables, functions can be defined by passing a `Proc` object as follows
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("2*f(1+2) + 4", f: Proc.new {|x| x**2})
 #=> 22
 ```
@@ -71,6 +75,7 @@ calculator.evaluate("2*f(1+2) + 4", f: Proc.new {|x| x**2})
 It will raise an error if a function is not defined
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("f(2) + 1")
 #=> Keisan::Exceptions::UndefinedFunctionError: f
 ```
@@ -78,6 +83,7 @@ calculator.evaluate("f(2) + 1")
 Note that functions work in both regular (`f(x)`) and postfix (`x.f()`) notation.  The postfix notation requires the function to take at least one argument.  In the case of `a.f(b,c)`, this is translated internally to `f(a,b,c)`.  If there is only a single argument to the function, the braces can be left off: `x.f`.
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("[1,3,5,7].size()")
 #=> 4
 calculator.evaluate("[1,3,5,7].size")
@@ -87,6 +93,7 @@ calculator.evaluate("[1,3,5,7].size")
 It is even possible to do more complicated things like follows
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.define_function!("f", Proc.new {|x| [[x-1,x+1], [x-2,x,x+2]]})
 calculator.evaluate("4.f")
 #=> [[3,5], [2,4,6]]
@@ -103,6 +110,7 @@ calculator.evaluate("4.f[1].size")
 Like variables, it is also possible to define functions in the string expression itself.
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("f(x) = n*x", n: 10) # n is local to this definition only
 calculator.evaluate("f(3)")
 #=> 30
@@ -115,6 +123,7 @@ calculator.evaluate("n") # n only exists in the definition of f(x)
 This form even supports recursion, but you must explicitly allow it.
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator = Keisan::Calculator.new(allow_recursive: false)
 calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
 #=> Keisan::Exceptions::InvalidExpression: Unbound function definitions are not allowed by current context
@@ -136,6 +145,7 @@ calculator.evaluate("my_fact(5)")
 Just like in Ruby, lists can be defined using square brackets, and indexed using square brackets
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("[2, 3, 5, 8]")
 #=> [2, 3, 5, 8]
 calculator.evaluate("[[1,2,3],[4,5,6],[7,8,9]][1][2]")
@@ -145,6 +155,7 @@ calculator.evaluate("[[1,2,3],[4,5,6],[7,8,9]][1][2]")
 They can also be concatenated using the `+` operator
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("[3, 5] + [x, x+1]", x: 10)
 #=> [3, 5, 10, 11]
 ```
@@ -154,6 +165,7 @@ calculator.evaluate("[3, 5] + [x, x+1]", x: 10)
 `keisan` understands basic boolean logic operators, like `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, so calculations like the following are possible
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("1 > 0")
 #=> true
 calculator.evaluate("!!!true")
@@ -165,6 +177,7 @@ calculator.evaluate("x >= 0 && x < 10", x: 5)
 There is also a useful ternary `if` function defined
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("2 + if(1 > 0, 10, 29)")
 #=> 12
 ```
@@ -174,6 +187,7 @@ calculator.evaluate("2 + if(1 > 0, 10, 29)")
 The basic bitwise operations, NOT `~`, OR `|`, XOR `^`, and AND `&` are also available for use
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("2 + 12 & 7")
 #=> 6
 ```
@@ -183,6 +197,7 @@ calculator.evaluate("2 + 12 & 7")
 `keisan` also can parse in strings, and access the characters by index
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("'hello'[1]")
 #=> "e"
 ```
@@ -192,6 +207,7 @@ calculator.evaluate("'hello'[1]")
 Using the prefixes `0b`, `0o`, and `0x` (standard in Ruby) indicates binary, octal, and hexadecimal numbers respectively.
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("0b1100")
 #=> 12
 calculator.evaluate("0o775")
@@ -205,10 +221,11 @@ calculator.evaluate("0x1f0")
 `keisan` has a couple methods for doing random operations, `rand` and `sample`.  For example,
 
 ```ruby
-calculator.evaluate("rand(10)")
-#=> 3
-calculator.evaluate("sample([2, 4, 6, 8])")
-#=> 8
+calculator = Keisan::Calculator.new
+(0...10).include? calculator.evaluate("rand(10)")
+#=> true
+[2,4,6,8].include? calculator.evaluate("sample([2, 4, 6, 8])")
+#=> true
 ```
 
 If you want reproducibility, you can pass in your own `Random` object to the calculator's context.
@@ -227,6 +244,7 @@ calculator2 = Keisan::Calculator.new(context: Keisan::Context.new(random: Random
 `keisan` includes all standard methods given by the Ruby `Math` class.
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("log10(1000)")
 #=> 3.0
 ```
@@ -234,6 +252,7 @@ calculator.evaluate("log10(1000)")
 Furthermore, the following builtin constants are defined
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("PI")
 #=> 3.141592653589793
 calculator.evaluate("E")
@@ -245,13 +264,15 @@ calculator.evaluate("I")
 This allows for simple calculations like
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("E**(I*PI)+1")
-=> (0.0+0.0i)
+#=> (0.0+0.0i)
 ```
 
 There is a `replace` method that can replace instances of a variable in an expression with another expression.  The form is `replace(original_expression, variable_to_replace, replacement_expression)`.  Before the replacement is carried out, the `original_expression` and `replacement_expression` are `evaluate`d, then instances in the original expression of the given variable are replaced by the replacement expression.
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.evaluate("replace(x**2, x, 3)")
 #=> 9
 ```
@@ -279,8 +300,8 @@ calculator.evaluate("replace(diff(4*x**2, x), x, 3)")
 The `Keisan::Calculator` class has a single `Keisan::Context` object in its `context` attribute.  This class is used to store local variables and functions.  These can be stored using either the `define_variable!` or `define_function!` methods, or by using the assignment operator `=` in an expression that is evaluated.  As an example of pre-defining some variables and functions, see the following
 
 ```ruby
+calculator = Keisan::Calculator.new
 calculator.define_variable!("x", 5)
-#=> 5
 calculator.evaluate("x + 1")
 #=> 6
 calculator.evaluate("x + 1", x: 10)
