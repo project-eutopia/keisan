@@ -7,6 +7,7 @@ require_relative "math_function"
 require_relative "sin"
 require_relative "cos"
 require_relative "exp"
+require_relative "log"
 
 module Keisan
   module Functions
@@ -31,6 +32,7 @@ module Keisan
         registry.register!(:sin, Keisan::Functions::Sin.new, force: true)
         registry.register!(:cos, Keisan::Functions::Cos.new, force: true)
         registry.register!(:exp, Keisan::Functions::Exp.new, force: true)
+        registry.register!(:log, Keisan::Functions::Log.new, force: true)
       end
 
       def self.register_builtin_math!(registry)
