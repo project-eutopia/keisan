@@ -359,6 +359,38 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.simplified.to_s).to eq "diff(f(y),y)"
     end
 
+    describe "differentiation of user defined function" do
+      it "works correctly when simple expression" do
+        context = Keisan::Context.new
+        ast = Keisan::AST.parse("g(x) = (f(x) = 2*x) ** 3")
+        evaluation = ast.evaluate(context)
+
+        # g(x) is essentially (2*x)**3, so should have derivative 6*(2*x)**2
+        ast_diff = Keisan::AST.parse("diff(g(x), x)")
+        expect(ast_diff.simplified(context).to_s).to eq "6*((2*x)**2)"
+      end
+
+      it "works correctly with function chain rule" do
+        context = Keisan::Context.new
+        ast = Keisan::AST.parse("f(x, y) = x**2 + y")
+        evaluation = ast.evaluate(context)
+
+        # f(x(t), y(t)) = (2*t)**2 + t + 1
+        # which differentiates to
+        # 8*t + 1
+        ast_diff = Keisan::AST.parse("diff(f(2*t, t+1), t)")
+        expect(ast_diff.simplified(context).to_s).to eq "1+(8*t)"
+      end
+
+      it "does not simplify for Proc functions" do
+        context = Keisan::Context.new
+        context.register_function!("f", Proc.new {|x| x**2})
+        ast = Keisan::AST.parse("diff(f(x), x)")
+        # Do not know how to differentiate, so left in this form
+        expect(ast.simplified(context).to_s).to eq "diff(f(x),x)"
+      end
+    end
+
     describe "differentiate method" do
       context "exponent" do
         it "differentiates properly" do
