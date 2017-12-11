@@ -5,6 +5,8 @@ require_relative "rand"
 require_relative "sample"
 require_relative "math_function"
 require_relative "sin"
+require_relative "cos"
+require_relative "exp"
 
 module Keisan
   module Functions
@@ -27,6 +29,8 @@ module Keisan
         register_random_methods!(registry)
 
         registry.register!(:sin, Keisan::Functions::Sin.new, force: true)
+        registry.register!(:cos, Keisan::Functions::Cos.new, force: true)
+        registry.register!(:exp, Keisan::Functions::Exp.new, force: true)
       end
 
       def self.register_builtin_math!(registry)
