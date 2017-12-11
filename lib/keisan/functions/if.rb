@@ -48,6 +48,18 @@ module Keisan
           ast_function
         end
       end
+
+      def differentiate(ast_function, variable, context = nil)
+        context ||= Context.new
+        Keisan::AST::Function.new(
+          [
+            ast_function.children[0],
+            ast_function.children[1].differentiate(variable, context),
+            ast_function.children[2].differentiate(variable, context)
+          ],
+          @name
+        )
+      end
     end
   end
 end
