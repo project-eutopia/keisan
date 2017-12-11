@@ -3,6 +3,8 @@ require_relative "diff"
 require_relative "replace"
 require_relative "rand"
 require_relative "sample"
+require_relative "math_function"
+require_relative "sin"
 
 module Keisan
   module Functions
@@ -23,6 +25,8 @@ module Keisan
         register_builtin_math!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
+
+        registry.register!(:sin, Keisan::Functions::Sin.new, force: true)
       end
 
       def self.register_builtin_math!(registry)

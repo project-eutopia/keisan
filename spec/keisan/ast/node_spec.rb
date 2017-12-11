@@ -357,6 +357,9 @@ RSpec.describe Keisan::AST::Node do
 
       ast = Keisan::AST.parse("diff(x*f(y), x, y)")
       expect(ast.simplified.to_s).to eq "diff(f(y),y)"
+
+      ast = Keisan::AST.parse("diff(sin(x**2), x)")
+      expect(ast.simplified.to_s).to eq "2*x*cos(x**2)"
     end
 
     describe "differentiation of user defined function" do

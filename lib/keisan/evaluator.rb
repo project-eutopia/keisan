@@ -14,7 +14,7 @@ module Keisan
       case ast
       when Keisan::AST::Assignment
         if ast.children.first.is_a?(Keisan::AST::Variable)
-          context.variable(ast.children.first.name).value
+          context.variable(ast.children.first.name).value(context)
         end
       else
         evaluation.value(context)
