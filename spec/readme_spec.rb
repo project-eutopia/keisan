@@ -1,9 +1,22 @@
 require "spec_helper"
+require "digest"
 
+# NOTE: This test uses `eval` on lines pulled from the README.md file, which is dangerous if the
+# README ends up containing bad code
+#
+# To mitigate this problem, we have a hard-coded checksum here that must be updated by hand when
+# making code changes.  This will force developers to be aware of this problem when updating the README
 RSpec.describe "README.md" do
   describe "code examples" do
     File.open(File.expand_path("../../README.md", __FILE__)) do |file|
       content = file.read
+      digest = Digest::SHA256.hexdigest(content)
+
+      # cat README.md | sha256sum
+      if digest != "7e2dbf3481986ee1b8d697ef7c7f70c654c839b41096f50b71ddb7fc0d6a8ef3"
+        raise "Invalid README file detected: #{digest}"
+      end
+
       content.scan(/^```ruby$\n(?<block>(?:^.*?$\n)*?)^```$/m).map {|match| match[0].split("\n").map(&:strip)}
     end.each.with_index do |code_block, i|
       it "runs code example #{i} correctly: #{code_block}" do
