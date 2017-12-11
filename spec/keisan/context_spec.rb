@@ -139,6 +139,10 @@ RSpec.describe Keisan::Context do
       expect(my_context.function("g").call(nil, 2)).to eq 1
 
       child_context = my_context.spawn_child(transient: true)
+
+      expect(my_context.transient?).to be false
+      expect(child_context.transient?).to be true
+
       child_context.register_variable!("x", 5)
       child_context.register_function!("f", Proc.new {|x| x**3})
       Keisan::Calculator.new(context: child_context).evaluate("y = 11")
@@ -154,6 +158,15 @@ RSpec.describe Keisan::Context do
       expect(child_context.variable("y")).to eq 11
       expect(child_context.function("f").call(nil, 2)).to eq 8
       expect(child_context.function("g").call(nil, 2)).to eq 246
+    end
+
+    it "stores transient definitions" do
+      my_context     = described_class.new
+      child_context  = my_context.spawn_child(definitions: {x: 15, f: Proc.new {|x| x**2}}, transient: true)
+      child2_context = child_context.spawn_child(definitions: {y: 32, g: Proc.new {|x| x**3}}, transient: true)
+
+      expect(child_context.transient_definitions.keys).to match_array(["x", "f"])
+      expect(child2_context.transient_definitions.keys).to match_array(["x", "y", "f", "g"])
     end
   end
 end

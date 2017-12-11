@@ -31,6 +31,20 @@ module Keisan
       child
     end
 
+    def transient_definitions
+      return {} unless @transient
+      parent_definitions = @parent.present? ? @parent.transient_definitions : {}
+      parent_definitions.merge(
+        @variable_registry.locals
+      ).merge(
+        @function_registry.locals
+      )
+    end
+
+    def transient?
+      !!@transient
+    end
+
     def variable(name)
       @variable_registry[name.to_s]
     end
