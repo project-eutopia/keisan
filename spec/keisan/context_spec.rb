@@ -41,6 +41,11 @@ RSpec.describe Keisan::Context do
       child_context.register_variable!("x", 5)
       child_context.register_function!("f", Proc.new {|x| x**3})
 
+      expect(my_context.variable("x")).to eq 2
+      expect(my_context.variable("y")).to eq 7
+      expect(my_context.function("f").call(nil, 2)).to eq 4
+      expect(my_context.function("g").call(nil, 2)).to eq 1
+
       expect(child_context.variable("x")).to eq 5
       expect(child_context.variable("y")).to eq 7
       expect(child_context.function("f").call(nil, 2)).to eq 8
