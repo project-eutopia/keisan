@@ -68,10 +68,14 @@ module Keisan
       end
 
       def differentiate(variable, context = nil)
+        function = function_from_context(context)
+        function.differentiate(self, variable, context)
+
+      rescue Keisan::Exceptions::UndefinedFunctionError, Keisan::Exceptions::NotImplementedError
         unless unbound_variables(context).include?(variable.name)
           return AST::Number.new(0)
         end
-        # Do not know how to differentiate a function in general, so leave as derivative
+
         AST::Function.new([self, variable], "diff")
       end
     end
