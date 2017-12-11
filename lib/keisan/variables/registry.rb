@@ -33,7 +33,7 @@ module Keisan
         if !force && @use_defaults && default_registry.has_name?(name)
           raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
         end
-        self[name.to_s] = value
+        self[name.to_s] = value.to_node
       end
 
       protected
