@@ -11,9 +11,7 @@ module Keisan
       end
 
       def call(context, *args)
-        unless @arguments.count == args.count
-          raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
-        end
+        verify_argument_size!(args.count)
 
         local = local_context_for(context)
         arguments.each.with_index do |arg_name, i|
@@ -24,12 +22,16 @@ module Keisan
       end
 
       def value(ast_function, context = nil)
+        verify_argument_size!(ast_function.children.count)
+
         local = local_context_for(context)
         argument_values = ast_function.children.map {|child| child.value(local)}
         call(local, *argument_values)
       end
 
       def evaluate(ast_function, context = nil)
+        verify_argument_size!(ast_function.children.count)
+
         local = local_context_for(context)
 
         argument_values = ast_function.children.map {|child| child.evaluate(local)}
@@ -42,6 +44,8 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
+        verify_argument_size!(ast_function.children.count)
+
         context = local_context_for(context)
 
         ast_function.instance_variable_set(
@@ -63,6 +67,8 @@ module Keisan
       # dx(t)/dt * f_x(x(t), y(t)) + dy(t)/dt * f_y(x(t), y(t)),
       # where f_x and f_y are the x and y partial derivatives respectively.
       def differentiate(ast_function, variable, context = nil)
+        verify_argument_size!(ast_function.children.count)
+
         local = local_context_for(context)
 
         # expression.differentiate(variable, context)
@@ -87,6 +93,12 @@ module Keisan
       end
 
       private
+
+      def verify_argument_size!(argument_size)
+        unless @arguments.count == argument_size
+          raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
+        end
+      end
 
       def local_context_for(context = nil)
         context ||= Keisan::Context.new
