@@ -79,20 +79,25 @@ module Keisan
           child.differentiate(variable, context)
         end
 
-        function_partial_derivatives = arguments.map {|argument| Keisan::AST::Variable.new(argument)}.map.with_index do |variable, i|
-          partial_derivative = expression.differentiate(variable, context)
-          partial_derivative.replace(variable, argument_values[i])
-        end
-
         Keisan::AST::Plus.new(
           argument_derivatives.map.with_index {|argument_derivative, i|
-            partial_derivative = function_partial_derivatives[i]
+            partial_derivative = partial_derivatives[i].replace(argument_variables[i], argument_values[i])
             Keisan::AST::Times.new([argument_derivative, partial_derivative])
           }
         )
       end
 
       private
+
+      def argument_variables
+        @argument_variables ||= arguments.map {|argument| Keisan::AST::Variable.new(argument)}
+      end
+
+      def partial_derivatives
+        @partial_derivatives ||= argument_variables.map.with_index do |variable, i|
+          partial_derivative = expression.differentiate(variable)
+        end
+      end
 
       def verify_argument_size!(argument_size)
         unless @arguments.count == argument_size
