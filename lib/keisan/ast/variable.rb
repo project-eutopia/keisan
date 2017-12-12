@@ -9,7 +9,7 @@ module Keisan
 
       def value(context = nil)
         context = Keisan::Context.new if context.nil?
-        context.variable(name)
+        context.variable(name).value(context)
       end
 
       def unbound_variables(context = nil)

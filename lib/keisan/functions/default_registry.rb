@@ -3,6 +3,15 @@ require_relative "diff"
 require_relative "replace"
 require_relative "rand"
 require_relative "sample"
+require_relative "math_function"
+require_relative "sin"
+require_relative "cos"
+require_relative "sec"
+require_relative "tan"
+require_relative "cot"
+require_relative "csc"
+require_relative "exp"
+require_relative "log"
 
 module Keisan
   module Functions
@@ -23,6 +32,15 @@ module Keisan
         register_builtin_math!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
+
+        registry.register!(:sin, Keisan::Functions::Sin.new, force: true)
+        registry.register!(:cos, Keisan::Functions::Cos.new, force: true)
+        registry.register!(:tan, Keisan::Functions::Tan.new, force: true)
+        registry.register!(:cot, Keisan::Functions::Cot.new, force: true)
+        registry.register!(:sec, Keisan::Functions::Sec.new, force: true)
+        registry.register!(:csc, Keisan::Functions::Csc.new, force: true)
+        registry.register!(:exp, Keisan::Functions::Exp.new, force: true)
+        registry.register!(:log, Keisan::Functions::Log.new, force: true)
       end
 
       def self.register_builtin_math!(registry)
