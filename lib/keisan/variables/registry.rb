@@ -1,8 +1,9 @@
 module Keisan
   module Variables
     class Registry
-      def initialize(variables: {}, parent: nil, use_defaults: true, force: false)
+      def initialize(variables: {}, shadowed: [], parent: nil, use_defaults: true, force: false)
         @hash = {}
+        @shadowed = Set.new(shadowed)
         @parent = parent
         @use_defaults = use_defaults
 
@@ -12,6 +13,7 @@ module Keisan
       end
 
       def [](name)
+        raise Keisan::Exceptions::UndefinedVariableError.new if @shadowed.include?(name)
         return @hash[name] if @hash.has_key?(name)
 
         if @parent && (parent_value = @parent[name])
@@ -27,12 +29,14 @@ module Keisan
       end
 
       def has?(name)
+        return false if @shadowed.include?(name)
         !self[name].nil?
       rescue Keisan::Exceptions::UndefinedVariableError
         false
       end
 
       def register!(name, value, force: false)
+        return if @shadowed.include?(name)
         raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
         if !force && @use_defaults && default_registry.has_name?(name)
           raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
