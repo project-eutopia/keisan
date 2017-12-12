@@ -17,12 +17,12 @@ module Keisan
         argument_simplified = ast_function.children.first.simplify(context)
         argument_differentiated = argument_simplified.differentiate(variable, context)
 
-        self.class.derivative(argument_simplified, argument_differentiated).simplify(context)
+        (argument_differentiated * self.class.derivative(argument_simplified)).simplify(context)
       end
 
       protected
 
-      def self.derivative(argument_simplified, argument_differentiated)
+      def self.derivative(argument)
         raise Keisan::Exceptions::NotImplementedError.new
       end
 

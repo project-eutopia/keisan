@@ -7,8 +7,8 @@ module Keisan
 
       protected
 
-      def self.derivative(argument_simplified, argument_differentiated)
-        argument_differentiated * Keisan::AST::Function.new([argument_simplified], "exp")
+      def self.derivative(argument)
+        Keisan::AST::Function.new([argument], "exp")
       end
     end
   end

@@ -7,8 +7,8 @@ module Keisan
 
       protected
 
-      def self.derivative(argument_simplified, argument_differentiated)
-        argument_differentiated / argument_simplified
+      def self.derivative(argument)
+        1 / argument
       end
     end
   end
