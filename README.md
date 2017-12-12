@@ -27,12 +27,39 @@ Or install it yourself as:
 
 ### Calculator class
 
-The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.
+The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.  There is also a `simplify` method that allows undefined variables and functions to exist, and will just return a string representation of the expression as simplified as it can.
 
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("15 + 2 * (1 + 3)")
 #=> 23
+calculator.simplify("1*(0*2+x*g(t))")
+#=> "x*g(t)"
+```
+
+For users who want access to the parsed abstract syntax tree, you can use the `ast` method to parse any given expression.
+
+```ruby
+calculator = Keisan::Calculator.new
+ast = calculator.ast("x**2+1")
+ast.to_s
+#=> "(x**2)+1"
+ast.class
+#=> Keisan::AST::Plus
+ast.children[0].class
+#=> Keisan::AST::Exponent
+ast.children[0].children[0].class
+#=> Keisan::AST::Variable
+ast.children[0].children[0].name
+#=> "x"
+ast.children[0].children[1].class
+#=> Keisan::AST::Number
+ast.children[0].children[1].value
+#=> 2
+ast.children[1].class
+#=> Keisan::AST::Number
+ast.children[1].value
+#=> 1
 ```
 
 ##### Specifying variables
@@ -300,8 +327,10 @@ This also works intelligently with user defined functions.
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("f(x, y) = x**2 + y")
+calculator.simplify("diff(f(2*t, t+1), t)")
+#=> "1+(8*t)"
 calculator.evaluate("replace(diff(f(2*t, t+1), t), t, 3)")
-#=> 8*3+1
+#=> 1+8*3
 ```
 
 ### Adding custom variables and functions

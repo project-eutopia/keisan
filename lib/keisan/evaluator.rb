@@ -20,5 +20,17 @@ module Keisan
         evaluation.value(context)
       end
     end
+
+    def simplify(expression, definitions = {})
+      context = calculator.context.spawn_child(definitions: definitions, transient: true)
+      ast = Keisan::AST.parse(expression)
+      simplification = ast.simplify(context)
+
+      simplification.to_s
+    end
+
+    def ast(expression)
+      Keisan::AST.parse(expression)
+    end
   end
 end
