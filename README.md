@@ -300,8 +300,10 @@ This also works intelligently with user defined functions.
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("f(x, y) = x**2 + y")
+calculator.simplify("diff(f(2*t, t+1), t)")
+#=> "1+(8*t)"
 calculator.evaluate("replace(diff(f(2*t, t+1), t), t, 3)")
-#=> 8*3+1
+#=> 1+8*3
 ```
 
 ### Adding custom variables and functions
