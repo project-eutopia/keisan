@@ -386,6 +386,17 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.simplified.to_s).to eq "-2*(sin(2*x)**-2)"
     end
 
+    it "arguments not overridden by variable definitions" do
+      calculator = Keisan::Calculator.new
+      calculator.evaluate("x = 1")
+      calculator.evaluate("n = 2")
+      calculator.evaluate("f(x) = x**n")
+      expect(calculator.evaluate("f(3)")).to eq 9
+
+      s = calculator.simplify("diff(f(t**2), t)")
+      expect(s).to eq "4*t*(t**2)"
+    end
+
     describe "differentiation of user defined function" do
       it "works correctly when simple expression" do
         context = Keisan::Context.new
