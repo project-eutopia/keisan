@@ -17,28 +17,45 @@ module Keisan
       end
 
       def evaluate(ast_function, context = nil)
-        context ||= Context.new
-        function, vars = function_and_vars(ast_function)
+        context ||= Keisan::Context.new
+        function, variables = function_and_variables(ast_function)
+        local = context_from(variables, context)
 
-        vars.inject(function.evaluate(context)) do |result, variable|
-          result = differentiate(result, variable, context)
+        result = variables.inject(function.evaluate(local)) do |result, variable|
+          result = differentiate(result, variable, local)
           if !is_ast_derivative?(result)
-            result = result.evaluate(context)
+            result = result.evaluate(local)
           end
           result
+        end
+
+        case result
+        when Keisan::AST::Function
+          result.name == "diff" ? result : result.simplify(context)
+        else
+          result.simplify(context)
         end
       end
 
       def simplify(ast_function, context = nil)
-        context ||= Context.new
-        function, vars = function_and_vars(ast_function)
+        raise Keisan::Exceptions::InternalError.new("received non-diff function") unless ast_function.name == "diff"
+        function, variables = function_and_variables(ast_function)
+        context ||= Keisan::Context.new
+        local = context_from(variables, context)
 
-        vars.inject(function.simplify(context)) do |result, variable|
-          result = differentiate(result, variable, context)
+        result = variables.inject(function.simplify(local)) do |result, variable|
+          result = differentiate(result, variable, local)
           if !is_ast_derivative?(result)
-            result = result.simplify(context)
+            result = result.simplify(local)
           end
           result
+        end
+
+        case result
+        when Keisan::AST::Function
+          result.name == "diff" ? result : result.simplify(context)
+        else
+          result.simplify(context)
         end
       end
 
@@ -61,21 +78,25 @@ module Keisan
         )
       end
 
-      def function_and_vars(ast_function)
+      def function_and_variables(ast_function)
         unless ast_function.is_a?(Keisan::AST::Function) && ast_function.name == name
           raise Keisan::Exceptions::InvalidFunctionError.new("Must receive diff function")
         end
 
-        vars = ast_function.children[1..-1]
+        variables = ast_function.children[1..-1]
 
-        unless vars.all? {|var| var.is_a?(AST::Variable)}
+        unless variables.all? {|var| var.is_a?(AST::Variable)}
           raise Keisan::Exceptions::InvalidFunctionError.new("Diff must differentiate with respect to variables")
         end
 
         [
           ast_function.children.first,
-          vars
+          variables
         ]
+      end
+
+      def context_from(variables, context = nil)
+        context.spawn_child(shadowed: variables.map(&:name)) || Keisan::Context.new(shadowed: variables.map(&:name))
       end
     end
   end

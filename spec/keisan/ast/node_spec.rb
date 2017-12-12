@@ -338,7 +338,12 @@ RSpec.describe Keisan::AST::Node do
       ast = Keisan::AST.parse("diff(x,x)")
       expect(ast.simplified(Keisan::Context.new.tap {|c|
         c.register_variable!("x", 5)
-      }).to_s).to eq "0"
+      }).to_s).to eq "1"
+
+      ast = Keisan::AST.parse("diff(x**2,x)")
+      expect(ast.simplified(Keisan::Context.new.tap {|c|
+        c.register_variable!("x", 5)
+      }).to_s).to eq "10"
 
       ast = Keisan::AST.parse("diff(x,x)")
       expect(ast.simplified.to_s).to eq "1"
@@ -388,13 +393,15 @@ RSpec.describe Keisan::AST::Node do
 
     it "arguments not overridden by variable definitions" do
       calculator = Keisan::Calculator.new
-      calculator.evaluate("x = 1")
+      calculator.evaluate("x = 10")
       calculator.evaluate("n = 2")
       calculator.evaluate("f(x) = x**n")
       expect(calculator.evaluate("f(3)")).to eq 9
 
-      s = calculator.simplify("diff(f(t**2), t)")
-      expect(s).to eq "4*t*(t**2)"
+      s = calculator.simplify("diff(f(x**2), x)")
+      expect(s).to eq "4000"
+
+      expect(calculator.evaluate("diff(f(x), x, x)")).to eq 2
     end
 
     describe "differentiation of user defined function" do
