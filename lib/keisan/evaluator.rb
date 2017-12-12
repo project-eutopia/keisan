@@ -28,5 +28,9 @@ module Keisan
 
       simplification.to_s
     end
+
+    def ast(expression)
+      Keisan::AST.parse(expression)
+    end
   end
 end

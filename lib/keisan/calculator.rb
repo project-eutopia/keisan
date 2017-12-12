@@ -14,6 +14,10 @@ module Keisan
       Evaluator.new(self).simplify(expression, definitions)
     end
 
+    def ast(expression)
+      Evaluator.new(self).ast(expression)
+    end
+
     def define_variable!(name, value)
       context.register_variable!(name, value)
     end

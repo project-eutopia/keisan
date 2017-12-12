@@ -42,6 +42,22 @@ RSpec.describe Keisan::Calculator do
     end
   end
 
+  describe "#ast" do
+    it "returns the abstract syntax tree parsed from the expression" do
+      ast = calculator.ast("x**2+1")
+      expect(ast).to be_a(Keisan::AST::Plus)
+
+      expect(ast.children[0]).to be_a(Keisan::AST::Exponent)
+      expect(ast.children[0].children[0]).to be_a(Keisan::AST::Variable)
+      expect(ast.children[0].children[0].name).to eq "x"
+      expect(ast.children[0].children[1]).to be_a(Keisan::AST::Number)
+      expect(ast.children[0].children[1].value).to eq 2
+
+      expect(ast.children[1]).to be_a(Keisan::AST::Number)
+      expect(ast.children[1].value).to eq 1
+    end
+  end
+
   describe "defining variables and functions" do
     it "saves them in the calculators context" do
       calculator.define_variable!("x", 5)

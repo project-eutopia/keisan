@@ -27,12 +27,39 @@ Or install it yourself as:
 
 ### Calculator class
 
-The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.
+The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.  There is also a `simplify` method that allows undefined variables and functions to exist, and will just return a string representation of the expression as simplified as it can.
 
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("15 + 2 * (1 + 3)")
 #=> 23
+calculator.simplify("1*(0*2+x*g(t))")
+#=> "x*g(t)"
+```
+
+For users who want access to the parsed abstract syntax tree, you can use the `ast` method to parse any given expression.
+
+```ruby
+calculator = Keisan::Calculator.new
+ast = calculator.ast("x**2+1")
+ast.to_s
+#=> "(x**2)+1"
+ast.class
+#=> Keisan::AST::Plus
+ast.children[0].class
+#=> Keisan::AST::Exponent
+ast.children[0].children[0].class
+#=> Keisan::AST::Variable
+ast.children[0].children[0].name
+#=> "x"
+ast.children[0].children[1].class
+#=> Keisan::AST::Number
+ast.children[0].children[1].value
+#=> 2
+ast.children[1].class
+#=> Keisan::AST::Number
+ast.children[1].value
+#=> 1
 ```
 
 ##### Specifying variables

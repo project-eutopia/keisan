@@ -13,7 +13,7 @@ RSpec.describe "README.md" do
       digest = Digest::SHA256.hexdigest(content)
 
       # cat README.md | sha256sum
-      if digest != "dd9d2ba2023393ec013248de66554ef939ef44757c1c446265780cfd51deadbc"
+      if digest != "452f80b7197e428ac096590915bcfceda7b67e5e63ed1426d2e3b4239a62246d"
         raise "Invalid README file detected: #{digest}"
       end
 
