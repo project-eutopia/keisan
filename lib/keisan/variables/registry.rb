@@ -1,8 +1,9 @@
 module Keisan
   module Variables
     class Registry
-      def initialize(variables: {}, parent: nil, use_defaults: true, force: false)
+      def initialize(variables: {}, shadowed: [], parent: nil, use_defaults: true, force: false)
         @hash = {}
+        @shadowed = Set.new(shadowed.map(&:to_s))
         @parent = parent
         @use_defaults = use_defaults
 
@@ -13,6 +14,7 @@ module Keisan
 
       def [](name)
         return @hash[name] if @hash.has_key?(name)
+        raise Keisan::Exceptions::UndefinedVariableError.new if @shadowed.include?(name)
 
         if @parent && (parent_value = @parent[name])
           return parent_value

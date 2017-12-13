@@ -109,10 +109,10 @@ module Keisan
         context ||= Keisan::Context.new
         case context
         when Keisan::FunctionDefinitionContext
-          context.spawn_child(definitions: @transient_definitions, transient: true)
+          context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true)
         when Keisan::Context
           Keisan::FunctionDefinitionContext.new(
-            parent: context.spawn_child(definitions: @transient_definitions, transient: true),
+            parent: context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true),
             arguments: arguments
           )
         end

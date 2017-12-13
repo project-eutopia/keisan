@@ -7,6 +7,12 @@ RSpec.describe Keisan::AST::String do
       expect(ast.evaluate).to be_a(described_class)
       expect(ast.evaluate.value).to eq "hello world"
     end
+
+    it "works on strings with mixed quotes" do
+      ast = Keisan::AST.parse("\"foo ' bar\"")
+      expect(ast.evaluate).to be_a(described_class)
+      expect(ast.evaluate.value).to eq "foo ' bar"
+    end
   end
 
   describe "operations" do

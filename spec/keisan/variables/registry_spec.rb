@@ -43,11 +43,20 @@ RSpec.describe Keisan::Variables::Registry do
       expect(registry["x"].value).to eq 5
     end
 
-    it "can shadow parent variables" do
+    it "can override parent variables" do
       registry.register!("x", 11)
 
       expect(registry["x"].value).to eq 11
       expect(parent_registry["x"].value).to eq 5
+    end
+
+    it "can shadow parent variables" do
+      parent_registry = described_class.new(variables: {x: 5})
+      child_registry = described_class.new(parent: parent_registry, shadowed: ["x"])
+
+      expect{child_registry["x"]}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+      child_registry.register!("x", 11)
+      expect(child_registry["x"].value).to eq 11
     end
   end
 end

@@ -2,10 +2,10 @@ module Keisan
   class Context
     attr_reader :function_registry, :variable_registry, :allow_recursive
 
-    def initialize(parent: nil, random: nil, allow_recursive: false)
+    def initialize(parent: nil, random: nil, allow_recursive: false, shadowed: [])
       @parent = parent
       @function_registry = Functions::Registry.new(parent: @parent.try(:function_registry))
-      @variable_registry = Variables::Registry.new(parent: @parent.try(:variable_registry))
+      @variable_registry = Variables::Registry.new(parent: @parent.try(:variable_registry), shadowed: shadowed)
       @random            = random
       @allow_recursive   = allow_recursive
     end
@@ -15,8 +15,8 @@ module Keisan
     # the entire operation is done in a transient context that is unique from the calculators
     # current context, but such that variable/function definitions can be persisted in
     # the calculator.
-    def spawn_child(definitions: {}, transient: false)
-      child = pure_child
+    def spawn_child(definitions: {}, shadowed: [], transient: false)
+      child = pure_child(shadowed: shadowed)
 
       definitions.each do |name, value|
         case value
@@ -29,7 +29,7 @@ module Keisan
         end
       end
 
-      child.set_transient! if transient
+      child.set_transient! if transient || self.transient?
       child
     end
 
@@ -89,8 +89,8 @@ module Keisan
       @transient = true
     end
 
-    def pure_child
-      self.class.new(parent: self, allow_recursive: allow_recursive)
+    def pure_child(shadowed: [])
+      self.class.new(parent: self, shadowed: shadowed, allow_recursive: allow_recursive)
     end
   end
 end
