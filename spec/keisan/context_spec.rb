@@ -142,6 +142,23 @@ RSpec.describe Keisan::Context do
       expect(child_context.function("f").call(nil, 3).value).to eq 9
     end
 
+    it "can be overridden" do
+      my_context = described_class.new
+
+      my_context.register_variable!("x", 2)
+      my_context.register_function!("f", Proc.new {|x| x**2})
+
+      transient_context = my_context.spawn_child(transient: true)
+      nontransient_context = transient_context.spawn_child(transient: false)
+
+      transient_context.register_variable!("x", 3)
+      expect(my_context.variable("x").value).to eq 3
+
+      nontransient_context.register_variable!("x", 5)
+      expect(my_context.variable("x").value).to eq 3
+      expect(nontransient_context.variable("x").value).to eq 5
+    end
+
     it "is transient so all definitions bubble up to parent context" do
       my_context = described_class.new
 
