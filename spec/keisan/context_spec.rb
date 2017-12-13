@@ -185,5 +185,18 @@ RSpec.describe Keisan::Context do
       expect(child_context.transient_definitions.keys).to match_array(["x", "f"])
       expect(child2_context.transient_definitions.keys).to match_array(["x", "y", "f", "g"])
     end
+
+    it "inherits transientness from parent" do
+      my_context     = described_class.new
+      child_context  = my_context.spawn_child(definitions: {x: 15, f: Proc.new {|x| x**2}}, transient: true)
+      child2_context = child_context.spawn_child(definitions: {y: 32, g: Proc.new {|x| x**3}})
+
+      expect(child_context.transient_definitions.keys).to match_array(["x", "f"])
+      expect(child2_context.transient_definitions.keys).to match_array(["x", "y", "f", "g"])
+
+      expect{my_context.variable("x")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+      child2_context.register_variable!("x", 123)
+      expect(my_context.variable("x").value).to eq 123
+    end
   end
 end

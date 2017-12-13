@@ -29,7 +29,7 @@ module Keisan
         end
       end
 
-      child.set_transient! if transient
+      child.set_transient! if transient || self.transient?
       child
     end
 
