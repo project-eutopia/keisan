@@ -72,6 +72,9 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       expect(calculator.evaluate("csch(2*I)")).to eq (1i*Math::sin(2))**-1
       expect(calculator.evaluate("sech(-3*I)")).to eq Math::cos(-3)**-1
       expect(calculator.evaluate("coth(-I)")).to be_within(1e-15).of (1i*Math::tan(-1))**-1
+
+      expect(calculator.evaluate("sqrt(-4)")).to eq 2i
+      expect(calculator.evaluate("cbrt(-8)")).to be_within(1e-15).of 1 + 1i*Math::sqrt(3)
     end
 
     it "has correct derivative" do
@@ -93,6 +96,9 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       expect(calculator.simplify("diff(csch(2*x), x)").to_s).to eq "-2*cosh(2*x)*(sinh(2*x)**-2)"
       expect(calculator.simplify("diff(sech(2*x), x)").to_s).to eq "-2*sinh(2*x)*(cosh(2*x)**-2)"
       expect(calculator.simplify("diff(coth(2*x), x)").to_s).to eq "-2*(sinh(2*x)**-2)"
+
+      expect(calculator.simplify("diff(sqrt(2*x), x)").to_s).to eq "(2*x)**(-1/2)"
+      expect(calculator.simplify("diff(cbrt(2*x), x)").to_s).to eq "(2/3)*((2*x)**(-2/3))"
     end
   end
 end

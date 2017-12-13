@@ -19,6 +19,8 @@ require_relative "sech"
 require_relative "tanh"
 require_relative "coth"
 require_relative "csch"
+require_relative "sqrt"
+require_relative "cbrt"
 
 module Keisan
   module Functions
@@ -56,6 +58,9 @@ module Keisan
         registry.register!(:coth, Keisan::Functions::Coth.new, force: true)
         registry.register!(:sech, Keisan::Functions::Sech.new, force: true)
         registry.register!(:csch, Keisan::Functions::Csch.new, force: true)
+
+        registry.register!(:sqrt, Keisan::Functions::Sqrt.new, force: true)
+        registry.register!(:cbrt, Keisan::Functions::Cbrt.new, force: true)
       end
 
       def self.register_builtin_math!(registry)
