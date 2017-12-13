@@ -35,6 +35,9 @@ module Keisan
       end
 
       def register!(name, value, force: false)
+        name = name.to_s
+        name = name.name if name.is_a?(Keisan::AST::Variable)
+
         raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
         if !force && @use_defaults && default_registry.has_name?(name)
           raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default variable")

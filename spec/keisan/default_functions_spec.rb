@@ -24,6 +24,17 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
 
       expect(Keisan::Calculator.new.evaluate("a[size(a)-1]", a: [1, 3, 5, 7])).to eq 7
     end
+
+    context "functional methods" do
+      describe "#map" do
+        it "maps the list to the given expression" do
+          expect{Keisan::Calculator.new.evaluate("map(10, x, x**2)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("map([1,3,5], 4, x**2)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect(Keisan::Calculator.new.evaluate("map([1,3,5], x, x**2)")).to eq [1, 9, 25]
+          expect(Keisan::Calculator.new.simplify("[1,3,5].map(x, y*x**2)")).to eq "[y,9*y,25*y]"
+        end
+      end
+    end
   end
 
   context "random methods" do

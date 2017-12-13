@@ -59,7 +59,7 @@ module Keisan
       if @transient
         @parent.register_variable!(name, value)
       else
-        @variable_registry.register!(name.to_s, value)
+        @variable_registry.register!(name, value)
       end
     end
 
