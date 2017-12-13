@@ -3,18 +3,11 @@ require "readline"
 
 module Keisan
   class Repl
-    def self.start
-      new
-    end
-
-    private_class_method :new
-    private
-
     attr_reader :calculator
 
     def initialize
+      @running = true
       reset
-      start
     end
 
     def reset
@@ -22,25 +15,45 @@ module Keisan
     end
 
     def start
-      while command = Readline.readline("keisan> ", true)
+      while @running
+        command = get_command
+
+        # ctrl-d should break out
+        break if command.nil?
+
         command = command.strip
-        # Jump to next REPL if empty string
+        # Try again if user entered nothing
         next if command.empty?
 
-        case command
-        when /\Areset\z/i
-          reset
-        when /\Aquit\z/i
-          break
-        else
-          begin
-            result = calculator.simplify(command)
-            puts "=> " + CodeRay.encode(result.to_s, :ruby, :terminal)
-          rescue StandardError => e
-            puts CodeRay.encode(e.class.to_s, :ruby, :terminal) + ": " + CodeRay.encode("\"#{e.message}\"", :ruby, :terminal)
-          end
+        process_command command
+      end
+    end
+
+    def get_command
+      Readline.readline("keisan> ", true)
+    end
+
+    def process_command(command)
+      case command
+      when /\Areset\z/i
+        reset
+      when /\Aquit\z/i
+        @running = false
+      else
+        begin
+          output_result calculator.simplify(command)
+        rescue StandardError => error
+          output_error error
         end
       end
+    end
+
+    def output_result(result)
+      puts "=> " + CodeRay.encode(result.to_s, :ruby, :terminal)
+    end
+
+    def output_error(error)
+      puts CodeRay.encode(error.class.to_s, :ruby, :terminal) + ": " + CodeRay.encode("\"#{error.message}\"", :ruby, :terminal)
     end
   end
 end
