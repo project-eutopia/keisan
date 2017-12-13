@@ -38,7 +38,7 @@ RSpec.describe Keisan::Calculator do
   describe "#simplify" do
     it "allows for undefined variables to still exist and returns a string representation of the expression" do
       expect{calculator.evaluate("0*x+1")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
-      expect(calculator.simplify("0*x+1")).to eq "1"
+      expect(calculator.simplify("0*x+1").to_s).to eq "1"
     end
   end
 

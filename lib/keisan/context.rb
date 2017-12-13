@@ -15,7 +15,7 @@ module Keisan
     # the entire operation is done in a transient context that is unique from the calculators
     # current context, but such that variable/function definitions can be persisted in
     # the calculator.
-    def spawn_child(definitions: {}, shadowed: [], transient: false)
+    def spawn_child(definitions: {}, shadowed: [], transient: nil)
       child = pure_child(shadowed: shadowed)
 
       definitions.each do |name, value|
@@ -29,7 +29,9 @@ module Keisan
         end
       end
 
-      child.set_transient! if transient || self.transient?
+      if transient.nil? && self.transient? || transient == true
+        child.set_transient!
+      end
       child
     end
 
@@ -56,7 +58,7 @@ module Keisan
     end
 
     def register_variable!(name, value)
-      if @transient
+      if transient?
         @parent.register_variable!(name, value)
       else
         @variable_registry.register!(name, value)
@@ -72,7 +74,7 @@ module Keisan
     end
 
     def register_function!(name, function)
-      if @transient
+      if transient?
         @parent.register_function!(name, function)
       else
         @function_registry.register!(name.to_s, function)

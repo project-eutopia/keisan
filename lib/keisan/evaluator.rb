@@ -24,9 +24,7 @@ module Keisan
     def simplify(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
       ast = Keisan::AST.parse(expression)
-      simplification = ast.simplify(context)
-
-      simplification.to_s
+      ast.simplify(context)
     end
 
     def ast(expression)

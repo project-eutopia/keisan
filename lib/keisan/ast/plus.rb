@@ -46,6 +46,16 @@ module Keisan
           end
         end
 
+        if children.all? {|child| child.is_a?(Keisan::AST::String)}
+          return Keisan::AST::String.new(children.inject("") do |result, child|
+            result + child.value
+          end)
+        elsif children.all? {|child| child.is_a?(Keisan::AST::List)}
+          return Keisan::AST::List.new(children.inject([]) do |result, child|
+            result + child.value
+          end)
+        end
+
         constants, non_constants = *children.partition {|child| child.is_a?(AST::Number)}
         constant = constants.inject(AST::Number.new(0), &:+).simplify(context)
 
