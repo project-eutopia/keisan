@@ -11,14 +11,43 @@ module Keisan
         lhs = children.first
         rhs = children.last
 
-        case lhs
-        when Keisan::AST::Variable
+        if is_variable_definition?
           evaluate_variable(context, lhs, rhs)
-        when Keisan::AST::Function
+        elsif is_function_definition?
           evaluate_function(context, lhs, rhs)
         else
           raise Keisan::Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
         end
+      end
+
+      def simplify(context = nil)
+        evaluate(context)
+      end
+
+      def unbound_variables(context = nil)
+        variables = super(context)
+        if is_variable_definition?
+          variables.delete(children.first.name)
+        else
+          variables
+        end
+      end
+
+      def unbound_functions(context = nil)
+        functions = super(context)
+        if is_function_definition?
+          functions.delete(children.first.name)
+        else
+          functions
+        end
+      end
+
+      def is_variable_definition?
+        children.first.is_a?(Keisan::AST::Variable)
+      end
+
+      def is_function_definition?
+        children.first.is_a?(Keisan::AST::Function)
       end
 
       private
@@ -46,7 +75,6 @@ module Keisan
           parent: context,
           arguments: argument_names
         )
-        rhs = rhs.evaluate(function_definition_context)
 
         unless rhs.unbound_variables(context) <= Set.new(argument_names)
           raise Keisan::Exceptions::InvalidExpression.new("Unbound variables found in function definition")
@@ -61,7 +89,7 @@ module Keisan
           Keisan::Functions::ExpressionFunction.new(
             lhs.name,
             argument_names,
-            rhs,
+            rhs.simplify(function_definition_context),
             context.transient_definitions
           )
         )

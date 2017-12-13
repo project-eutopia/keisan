@@ -39,14 +39,14 @@ RSpec.describe Keisan::AST::Assignment do
         expect(g).to be_a(Keisan::Functions::ExpressionFunction)
 
         expect(f.expression).to be_a(Keisan::AST::Plus)
-        expect(f.expression.children[0]).to be_a(Keisan::AST::Times)
-        expect(f.expression.children[1]).to be_a(Keisan::AST::Number)
-        expect(f.expression.children[1].value).to eq 1
+        expect(f.expression.children[0]).to be_a(Keisan::AST::Number)
+        expect(f.expression.children[0].value).to eq 1
+        expect(f.expression.children[1]).to be_a(Keisan::AST::Times)
 
-        expect(f.expression.children[0].children[0]).to be_a(Keisan::AST::Number)
-        expect(f.expression.children[0].children[0].value).to eq 3
-        expect(f.expression.children[0].children[1]).to be_a(Keisan::AST::Variable)
-        expect(f.expression.children[0].children[1].name).to eq "x"
+        expect(f.expression.children[1].children[0]).to be_a(Keisan::AST::Number)
+        expect(f.expression.children[1].children[0].value).to eq 3
+        expect(f.expression.children[1].children[1]).to be_a(Keisan::AST::Variable)
+        expect(f.expression.children[1].children[1].name).to eq "x"
 
         expect(g.expression).to be_a(Keisan::AST::Plus)
         expect(g.expression.children[0]).to be_a(Keisan::AST::Number)
