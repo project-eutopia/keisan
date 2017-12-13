@@ -75,6 +75,10 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
 
       expect(calculator.evaluate("sqrt(-4)")).to eq 2i
       expect(calculator.evaluate("cbrt(-8)")).to be_within(1e-15).of 1 + 1i*Math::sqrt(3)
+
+      expect(calculator.evaluate("abs(3+4*I)")).to eq 5
+      expect(calculator.evaluate("real(3+4*I)")).to eq 3
+      expect(calculator.evaluate("imag(3+4*I)")).to eq 4
     end
 
     it "has correct derivative" do
