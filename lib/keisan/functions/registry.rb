@@ -44,7 +44,7 @@ module Keisan
         when Proc
           self[name] = Keisan::Functions::ProcFunction.new(name, function)
         when Keisan::Function
-          self[function.name] = function
+          self[name] = function
         else
           raise Keisan::Exceptions::InvalidFunctionError.new
         end
