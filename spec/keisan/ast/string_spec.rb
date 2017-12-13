@@ -29,4 +29,12 @@ RSpec.describe Keisan::AST::String do
       expect(res.value).to eq "hello world"
     end
   end
+
+  describe "simplify" do
+    it "should concatenate strings if possible" do
+      calculator = Keisan::Calculator.new
+      result = calculator.simplify("'hello ' + 'world'")
+      expect(result.to_s).to eq "\"hello world\""
+    end
+  end
 end

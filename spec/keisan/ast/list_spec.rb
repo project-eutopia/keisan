@@ -19,4 +19,12 @@ RSpec.describe Keisan::AST::List do
       expect(node.children[1].children[2]).to eq(Keisan::AST::Boolean.new(true))
     end
   end
+
+  describe "simplify" do
+    it "should concatenate lists if possible" do
+      calculator = Keisan::Calculator.new
+      result = calculator.simplify("[1,2] + [3,4]")
+      expect(result.to_s).to eq "[1,2,3,4]"
+    end
+  end
 end
