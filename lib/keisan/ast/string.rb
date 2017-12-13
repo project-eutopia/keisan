@@ -19,6 +19,14 @@ module Keisan
           raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
+
+      def to_s
+        if value =~ /\"/
+          "\"#{value.gsub("\"", "\\\"")}\""
+        else
+          "\"#{value}\""
+        end
+      end
     end
   end
 end

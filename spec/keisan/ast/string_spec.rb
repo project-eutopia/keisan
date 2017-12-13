@@ -15,6 +15,13 @@ RSpec.describe Keisan::AST::String do
     end
   end
 
+  describe "to_s" do
+    it "prints with quotes" do
+      ast = Keisan::AST.parse("\"foo ' bar\"")
+      expect(ast.to_s).to eq "\"foo ' bar\""
+    end
+  end
+
   describe "operations" do
     it "should reduce to a single string" do
       res = Keisan::AST::String.new("hello ") + Keisan::AST::String.new("world")
