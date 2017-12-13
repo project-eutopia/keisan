@@ -21,7 +21,7 @@ module Keisan
         list, variable, expression = list_variable_expression_for(ast_function)
 
         context ||= Keisan::Context.new
-        local = context.spawn_child(transient: false)
+        local = context.spawn_child(transient: false, shadowed: [variable.name])
 
         Keisan::AST::List.new(
           list.children.select do |element|
