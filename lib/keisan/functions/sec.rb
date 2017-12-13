@@ -1,8 +1,8 @@
 module Keisan
   module Functions
-    class Sec < MathFunction
+    class Sec < CMathFunction
       def initialize
-        super("sec", Proc.new {|arg| 1 / Math::cos(arg)})
+        super("sec", Proc.new {|arg| 1 / CMath::cos(arg)})
       end
 
       protected

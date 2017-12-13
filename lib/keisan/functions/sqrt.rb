@@ -1,14 +1,14 @@
 module Keisan
   module Functions
-    class Tan < CMathFunction
+    class Sqrt < CMathFunction
       def initialize
-        super("tan")
+        super("sqrt")
       end
 
       protected
 
       def self.derivative(argument)
-        Keisan::AST::Exponent.new([Keisan::AST::Function.new([argument], "cos"), -2])
+        Keisan::AST::Exponent.new([argument, Rational(-1,2)]) / 2
       end
     end
   end

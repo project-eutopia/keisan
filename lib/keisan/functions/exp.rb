@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Exp < MathFunction
+    class Exp < CMathFunction
       def initialize
         super("exp")
       end

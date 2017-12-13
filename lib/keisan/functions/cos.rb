@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Cos < MathFunction
+    class Cos < CMathFunction
       def initialize
         super("cos")
       end

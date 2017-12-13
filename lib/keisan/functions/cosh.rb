@@ -1,14 +1,14 @@
 module Keisan
   module Functions
-    class Tan < CMathFunction
+    class Cosh < CMathFunction
       def initialize
-        super("tan")
+        super("cosh")
       end
 
       protected
 
       def self.derivative(argument)
-        Keisan::AST::Exponent.new([Keisan::AST::Function.new([argument], "cos"), -2])
+        Keisan::AST::Function.new([argument], "sinh")
       end
     end
   end

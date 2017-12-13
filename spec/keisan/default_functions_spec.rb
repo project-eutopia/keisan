@@ -49,4 +49,60 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       end
     end
   end
+
+  context "transcendental methods" do
+    it "has correct evaluation" do
+      calculator = Keisan::Calculator.new
+
+      expect(calculator.evaluate("exp(1)")).to eq Math::E
+      expect(calculator.evaluate("exp(PI*I)").real).to eq -1
+      expect(calculator.evaluate("exp(PI*I)").imag.abs).to be <= 1e-15
+      expect(calculator.evaluate("log(I)")).to eq 1i*Math::PI/2
+
+      expect(calculator.evaluate("sin(2*I)")).to eq (1i*Math::sinh(2))
+      expect(calculator.evaluate("cos(-3*I)")).to eq Math::cosh(-3)
+      expect(calculator.evaluate("tan(-I)")).to eq (1i*Math::tanh(-1))
+      expect(calculator.evaluate("csc(2*I)")).to eq (1i*Math::sinh(2))**-1
+      expect(calculator.evaluate("sec(-3*I)")).to eq Math::cosh(-3)**-1
+      expect(calculator.evaluate("cot(-I)")).to eq (1i*Math::tanh(-1))**-1
+
+      expect(calculator.evaluate("sinh(2*I)")).to eq (1i*Math::sin(2))
+      expect(calculator.evaluate("cosh(-3*I)")).to eq Math::cos(-3)
+      expect(calculator.evaluate("tanh(-I)")).to be_within(1e-15).of (1i*Math::tan(-1))
+      expect(calculator.evaluate("csch(2*I)")).to eq (1i*Math::sin(2))**-1
+      expect(calculator.evaluate("sech(-3*I)")).to eq Math::cos(-3)**-1
+      expect(calculator.evaluate("coth(-I)")).to be_within(1e-15).of (1i*Math::tan(-1))**-1
+
+      expect(calculator.evaluate("sqrt(-4)")).to eq 2i
+      expect(calculator.evaluate("cbrt(-8)")).to be_within(1e-15).of 1 + 1i*Math::sqrt(3)
+
+      expect(calculator.evaluate("abs(3+4*I)")).to eq 5
+      expect(calculator.evaluate("real(3+4*I)")).to eq 3
+      expect(calculator.evaluate("imag(3+4*I)")).to eq 4
+    end
+
+    it "has correct derivative" do
+      calculator = Keisan::Calculator.new
+
+      expect(calculator.simplify("diff(exp(2*x), x)").to_s).to eq "2*exp(2*x)"
+      expect(calculator.simplify("diff(log(2*x), x)").to_s).to eq "2*((2*x)**-1)"
+
+      expect(calculator.simplify("diff(sin(2*x), x)").to_s).to eq "2*cos(2*x)"
+      expect(calculator.simplify("diff(cos(2*x), x)").to_s).to eq "-2*sin(2*x)"
+      expect(calculator.simplify("diff(tan(2*x), x)").to_s).to eq "2*(cos(2*x)**-2)"
+      expect(calculator.simplify("diff(csc(2*x), x)").to_s).to eq "-2*cos(2*x)*(sin(2*x)**-2)"
+      expect(calculator.simplify("diff(sec(2*x), x)").to_s).to eq "2*sin(2*x)*(cos(2*x)**-2)"
+      expect(calculator.simplify("diff(cot(2*x), x)").to_s).to eq "-2*(sin(2*x)**-2)"
+
+      expect(calculator.simplify("diff(sinh(2*x), x)").to_s).to eq "2*cosh(2*x)"
+      expect(calculator.simplify("diff(cosh(2*x), x)").to_s).to eq "2*sinh(2*x)"
+      expect(calculator.simplify("diff(tanh(2*x), x)").to_s).to eq "2*(cosh(2*x)**-2)"
+      expect(calculator.simplify("diff(csch(2*x), x)").to_s).to eq "-2*cosh(2*x)*(sinh(2*x)**-2)"
+      expect(calculator.simplify("diff(sech(2*x), x)").to_s).to eq "-2*sinh(2*x)*(cosh(2*x)**-2)"
+      expect(calculator.simplify("diff(coth(2*x), x)").to_s).to eq "-2*(sinh(2*x)**-2)"
+
+      expect(calculator.simplify("diff(sqrt(2*x), x)").to_s).to eq "(2*x)**(-1/2)"
+      expect(calculator.simplify("diff(cbrt(2*x), x)").to_s).to eq "(2/3)*((2*x)**(-2/3))"
+    end
+  end
 end

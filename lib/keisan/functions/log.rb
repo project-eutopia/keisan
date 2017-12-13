@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Log < MathFunction
+    class Log < CMathFunction
       def initialize
         super("log")
       end

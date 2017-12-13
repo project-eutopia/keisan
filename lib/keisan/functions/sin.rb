@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Sin < MathFunction
+    class Sin < CMathFunction
       def initialize
         super("sin")
       end
