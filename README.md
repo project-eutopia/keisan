@@ -27,13 +27,13 @@ Or install it yourself as:
 
 ### Calculator class
 
-The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.  There is also a `simplify` method that allows undefined variables and functions to exist, and will just return a string representation of the expression as simplified as it can.
+The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.  There is also a `simplify` method that allows undefined variables and functions to exist, and will just return the simplified AST.
 
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("15 + 2 * (1 + 3)")
 #=> 23
-calculator.simplify("1*(0*2+x*g(t))")
+calculator.simplify("1*(0*2+x*g(t))").to_s
 #=> "x*g(t)"
 ```
 
@@ -193,7 +193,7 @@ Keisan also supports the basic functional programming operators `map` (or `colle
 calculator = Keisan::Calculator.new
 calculator.evaluate("map([1,3,5], x, 2*x)")
 #=> [2,6,10]
-calculator.simplify("[1,3,5].map(x, y*x**2)")
+calculator.simplify("[1,3,5].map(x, y*x**2)").to_s
 #=> "[y,9*y,25*y]"
 calculator.evaluate("select([1,2,3,4], x, x % 2 == 0)")
 #=> [2,4]
@@ -341,7 +341,7 @@ This also works intelligently with user defined functions.
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("f(x, y) = x**2 + y")
-calculator.simplify("diff(f(2*t, t+1), t)")
+calculator.simplify("diff(f(2*t, t+1), t)").to_s
 #=> "1+(8*t)"
 calculator.evaluate("replace(diff(f(2*t, t+1), t), t, 3)")
 #=> 1+8*3

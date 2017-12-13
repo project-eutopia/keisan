@@ -32,7 +32,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect{Keisan::Calculator.new.evaluate("map([1,3,5], 4, x**2)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect(Keisan::Calculator.new.evaluate("map([1,3,5], x, x**2)")).to eq [1, 9, 25]
           expect(Keisan::Calculator.new.evaluate("collect([1,3,5], x, 2*x)")).to eq [2,6,10]
-          expect(Keisan::Calculator.new.simplify("[1,3,5].map(x, y*x**2)")).to eq "[y,9*y,25*y]"
+          expect(Keisan::Calculator.new.simplify("[1,3,5].map(x, y*x**2)").to_s).to eq "[y,9*y,25*y]"
         end
 
         it "shadows variable definitions" do
@@ -49,7 +49,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect{Keisan::Calculator.new.evaluate("filter([-1,0,1], 4, x > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect(Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x > 0)")).to eq [1]
           expect(Keisan::Calculator.new.evaluate("select([1,2,3,4], x, x % 2 == 0)")).to eq [2,4]
-          expect(Keisan::Calculator.new.simplify("[1,3,5].filter(x, x == 3)")).to eq "[3]"
+          expect(Keisan::Calculator.new.simplify("[1,3,5].filter(x, x == 3)").to_s).to eq "[3]"
         end
       end
     end

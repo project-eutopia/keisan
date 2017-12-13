@@ -409,7 +409,7 @@ RSpec.describe Keisan::AST::Node do
       calculator.evaluate("f(x) = x**n")
       expect(calculator.evaluate("f(3)")).to eq 9
 
-      s = calculator.simplify("diff(f(x**2), x)")
+      s = calculator.simplify("diff(f(x**2), x)").to_s
       expect(s).to eq "4000"
 
       expect(calculator.evaluate("diff(f(x), x, x)")).to eq 2
