@@ -25,6 +25,12 @@ Or install it yourself as:
 
 ## Usage
 
+### REPL
+
+The command `bin/keisan` will open up an interactive REPL.  The commands you type in to this REPL are relayed to an internal `Keisan::Calculator` class and displayed back to you.
+
+![alt text](screenshots/repl.png "Keisan built-in REPL")
+
 ### Calculator class
 
 The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.  There is also a `simplify` method that allows undefined variables and functions to exist, and will just return the simplified AST.

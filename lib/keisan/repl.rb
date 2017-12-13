@@ -20,11 +20,6 @@ module Keisan
 
         # ctrl-d should break out
         break if command.nil?
-
-        command = command.strip
-        # Try again if user entered nothing
-        next if command.empty?
-
         process_command command
       end
     end
@@ -34,6 +29,9 @@ module Keisan
     end
 
     def process_command(command)
+      command = command.strip
+      return if command.empty?
+
       case command
       when /\Areset\z/i
         reset
