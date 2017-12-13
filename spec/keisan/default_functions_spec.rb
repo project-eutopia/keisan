@@ -49,4 +49,20 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       end
     end
   end
+
+  context "transcendental methods" do
+    it "works as expected" do
+      expect(Keisan::Calculator.new.evaluate("exp(1)")).to eq Math::E
+      expect(Keisan::Calculator.new.evaluate("exp(PI*I)").real).to eq -1
+      expect(Keisan::Calculator.new.evaluate("exp(PI*I)").imag.abs).to be <= 1e-15
+      expect(Keisan::Calculator.new.evaluate("log(I)")).to eq 1i*Math::PI/2
+
+      expect(Keisan::Calculator.new.evaluate("sin(2*I)")).to eq (1i*Math::sinh(2))
+      expect(Keisan::Calculator.new.evaluate("cos(-3*I)")).to eq Math::cosh(-3)
+      expect(Keisan::Calculator.new.evaluate("tan(-I)")).to eq (1i*Math::tanh(-1))
+      expect(Keisan::Calculator.new.evaluate("csc(2*I)")).to eq (1i*Math::sinh(2))**-1
+      expect(Keisan::Calculator.new.evaluate("sec(-3*I)")).to eq Math::cosh(-3)**-1
+      expect(Keisan::Calculator.new.evaluate("cot(-I)")).to eq (1i*Math::tanh(-1))**-1
+    end
+  end
 end

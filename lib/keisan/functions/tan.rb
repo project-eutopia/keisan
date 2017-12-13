@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Tan < MathFunction
+    class Tan < CMathFunction
       def initialize
         super("tan")
       end

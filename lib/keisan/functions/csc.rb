@@ -1,8 +1,8 @@
 module Keisan
   module Functions
-    class Csc < MathFunction
+    class Csc < CMathFunction
       def initialize
-        super("csc", Proc.new {|arg| 1 / Math::sin(arg)})
+        super("csc", Proc.new {|arg| 1 / CMath::sin(arg)})
       end
 
       protected

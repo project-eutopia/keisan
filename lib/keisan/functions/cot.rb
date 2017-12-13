@@ -1,8 +1,8 @@
 module Keisan
   module Functions
-    class Cot < MathFunction
+    class Cot < CMathFunction
       def initialize
-        super("cot", Proc.new {|arg| 1 / Math::tan(arg)})
+        super("cot", Proc.new {|arg| 1 / CMath::tan(arg)})
       end
 
       protected
