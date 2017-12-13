@@ -340,6 +340,17 @@ RSpec.describe Keisan::AST::Node do
         c.register_variable!("x", 5)
       }).to_s).to eq "1"
 
+      ast = Keisan::AST.parse("diff(2*x + 5*y, x)")
+      expect(ast.simplified(Keisan::Context.new.tap {|c|
+        c.register_variable!("y", 11)
+      }).to_s).to eq "2"
+
+      ast = Keisan::AST.parse("diff(2*x + 5*x*y + 7*y, x)")
+      expect(ast.simplified(Keisan::Context.new.tap {|c|
+        c.register_variable!("x", 1234)
+        c.register_variable!("y", 11)
+      }).to_s).to eq "57"
+
       ast = Keisan::AST.parse("diff(x**2,x)")
       expect(ast.simplified(Keisan::Context.new.tap {|c|
         c.register_variable!("x", 5)
