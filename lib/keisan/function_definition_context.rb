@@ -2,7 +2,7 @@ module Keisan
   class FunctionDefinitionContext < Context
     def initialize(parent:, arguments:, shadowed: [], allow_recursive: false, arguments_context: nil)
       super(parent: parent, shadowed: shadowed, allow_recursive: allow_recursive)
-      @arguments = Set.new(arguments)
+      @arguments = Set.new(arguments.map(&:to_s))
       @arguments_context = arguments_context || Context.new
       set_transient!
     end

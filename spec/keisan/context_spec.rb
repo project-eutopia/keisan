@@ -29,7 +29,7 @@ RSpec.describe Keisan::Context do
       expect(child_context.function("f").call(nil, 3).value).to eq 9
     end
 
-    it "can shadow parent" do
+    it "can override parent with new definitions" do
       my_context = described_class.new
 
       my_context.register_variable!("x", 2)
@@ -50,6 +50,23 @@ RSpec.describe Keisan::Context do
       expect(child_context.variable("y").value).to eq 7
       expect(child_context.function("f").call(nil, 2).value).to eq 8
       expect(child_context.function("g").call(nil, 2).value).to eq 1
+    end
+
+    it "can hide parent variables with shadowed argument" do
+      my_context = described_class.new
+
+      my_context.register_variable!("x", 2)
+      my_context.register_variable!("y", 7)
+
+      child_context = my_context.spawn_child(shadowed: ["x"])
+
+      expect(my_context.variable("x").value).to eq 2
+      expect(my_context.variable("y").value).to eq 7
+      expect{child_context.variable("x").value}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+      expect(child_context.variable("y").value).to eq 7
+
+      child_context.register_variable!("x", 13)
+      expect(child_context.variable("x").value).to eq 13
     end
   end
 

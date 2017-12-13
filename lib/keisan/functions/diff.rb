@@ -96,7 +96,8 @@ module Keisan
       end
 
       def context_from(variables, context = nil)
-        context.spawn_child(shadowed: variables.map(&:name)) || Keisan::Context.new(shadowed: variables.map(&:name))
+        context ||= Keisan::Context.new(shadowed: variables.map(&:name))
+        context.spawn_child(shadowed: variables.map(&:name))
       end
     end
   end
