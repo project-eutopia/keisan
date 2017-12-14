@@ -40,6 +40,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           calculator.evaluate("x = 5")
           expect(calculator.evaluate("[1,2,3].map(x, x**2)")).to eq [1,4,9]
           expect(calculator.evaluate("[1,2,3].filter(x,x == 2)")).to eq [2]
+          expect(calculator.evaluate("[1,2,3,4].inject(2*x, product, x, product*x)")).to eq 240
         end
       end
 
@@ -50,6 +51,16 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect(Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x > 0)")).to eq [1]
           expect(Keisan::Calculator.new.evaluate("select([1,2,3,4], x, x % 2 == 0)")).to eq [2,4]
           expect(Keisan::Calculator.new.simplify("[1,3,5].filter(x, x == 3)").to_s).to eq "[3]"
+        end
+      end
+
+      describe "#reduce" do
+        it "reduces the list given expression" do
+          expect{Keisan::Calculator.new.evaluate("reduce(1, 2, 3)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("reduce([-1,0,1], 4, 1, x, x+total)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+
+          expect(Keisan::Calculator.new.simplify("reduce([1,2,3], init, total, x, total+x)").to_s).to eq "6+init"
+          expect(Keisan::Calculator.new.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")).to eq 120
         end
       end
     end
