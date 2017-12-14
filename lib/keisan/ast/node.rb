@@ -29,6 +29,10 @@ module Keisan
         self
       end
 
+      def evaluated(context = nil)
+        deep_dup.evaluate(context)
+      end
+
       def evaluate(context = nil)
         self
       end
