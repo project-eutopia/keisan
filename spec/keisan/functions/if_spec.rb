@@ -30,4 +30,19 @@ RSpec.describe Keisan::Functions::If do
       expect(evaluation.to_s).to eq "if(x>0,2,-5*(x**4))"
     end
   end
+
+  it "returns nil if no else expression and boolean is false" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("x = -10")
+    expect(calculator.evaluate("if(x > 0, y = 1)")).to eq nil
+  end
+
+  it "can do assignment inside blocks" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("x = 5")
+    calculator.evaluate("if(x > 0, y = 1, y = 2)")
+    expect(calculator.evaluate("y")).to eq 1
+    calculator.evaluate("if(x < 0, z = 1, z = 2)")
+    expect(calculator.evaluate("z")).to eq 2
+  end
 end
