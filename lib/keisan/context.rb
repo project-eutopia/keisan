@@ -10,6 +10,10 @@ module Keisan
       @allow_recursive   = allow_recursive
     end
 
+    def allow_recursive!
+      @allow_recursive = true
+    end
+
     # A transient context does not persist variables and functions in this context, but
     # rather store them one level higher in the parent context.  When evaluating a string,
     # the entire operation is done in a transient context that is unique from the calculators
