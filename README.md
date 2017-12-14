@@ -193,7 +193,7 @@ calculator.evaluate("[3, 5] + [x, x+1]", x: 10)
 #=> [3, 5, 10, 11]
 ```
 
-Keisan also supports the basic functional programming operators `map` (or `collect`) and `filter` (or `select`).
+Keisan also supports the basic functional programming operators `map` (or `collect`), `filter` (or `select`), and `reduce` (or `inject`).
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -205,6 +205,8 @@ calculator.evaluate("select([1,2,3,4], x, x % 2 == 0)")
 #=> [2,4]
 calculator.evaluate("[-2,-1,0,1,2].filter(x, x > 0)")
 #=> [1,2]
+calculator.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")
+#=> 120
 ```
 
 ##### Logical operations
