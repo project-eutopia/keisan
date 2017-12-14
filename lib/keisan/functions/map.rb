@@ -5,11 +5,11 @@ module Keisan
       # e.g. map([1,2,3], x, 2*x)
       # should give [2,4,6]
       def initialize
-        @name = "map"
+        super("map", 3)
       end
 
       def value(ast_function, context = nil)
-        evaluate(ast_function, context = nil)
+        evaluate(ast_function, context)
       end
 
       def evaluate(ast_function, context = nil)
@@ -18,6 +18,8 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
+        validate_arguments!(ast_function.children.count)
+
         context ||= Keisan::Context.new
         list, variable, expression = list_variable_expression_for(ast_function, context)
 
@@ -34,10 +36,6 @@ module Keisan
       private
 
       def list_variable_expression_for(ast_function, context)
-        unless ast_function.children.size == 3
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to map")
-        end
-
         list = ast_function.children[0].simplify(context)
         variable = ast_function.children[1]
         expression = ast_function.children[2]

@@ -3,6 +3,7 @@ module Keisan
     class Sample < ProcFunction
       def initialize
         @name = "sample"
+        @arity = 1
       end
 
       # Single argument: integer in range [0, max)
