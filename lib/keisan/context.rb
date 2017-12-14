@@ -58,7 +58,7 @@ module Keisan
     end
 
     def register_variable!(name, value)
-      if transient?
+      if !@variable_registry.shadowed.member?(name) && transient?
         @parent.register_variable!(name, value)
       else
         @variable_registry.register!(name, value)

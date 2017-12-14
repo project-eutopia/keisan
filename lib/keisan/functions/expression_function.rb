@@ -24,20 +24,21 @@ module Keisan
       def value(ast_function, context = nil)
         verify_argument_size!(ast_function.children.count)
 
-        local = local_context_for(context)
-        argument_values = ast_function.children.map {|child| child.value(local)}
-        call(local, *argument_values)
+        context ||= Keisan::Context.new
+        argument_values = ast_function.children.map {|child| child.value(context)}
+        call(context, *argument_values)
       end
 
       def evaluate(ast_function, context = nil)
         verify_argument_size!(ast_function.children.count)
 
+        context ||= Keisan::Context.new
         local = local_context_for(context)
 
-        argument_values = ast_function.children.map {|child| child.evaluate(local)}
+        argument_values = ast_function.children.map {|child| child.evaluate(context)}
 
         arguments.each.with_index do |arg_name, i|
-          local.register_variable!(arg_name, argument_values[i].evaluate(local))
+          local.register_variable!(arg_name, argument_values[i].evaluate(context))
         end
 
         expression.evaluate(local)
@@ -45,8 +46,6 @@ module Keisan
 
       def simplify(ast_function, context = nil)
         verify_argument_size!(ast_function.children.count)
-
-        context = local_context_for(context)
 
         ast_function.instance_variable_set(
           :@children,
@@ -107,15 +106,7 @@ module Keisan
 
       def local_context_for(context = nil)
         context ||= Keisan::Context.new
-        case context
-        when Keisan::FunctionDefinitionContext
-          context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true)
-        when Keisan::Context
-          Keisan::FunctionDefinitionContext.new(
-            parent: context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true),
-            arguments: arguments
-          )
-        end
+        context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true)
       end
     end
   end

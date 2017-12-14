@@ -71,10 +71,7 @@ module Keisan
         end
 
         argument_names = lhs.children.map(&:name)
-        function_definition_context = Keisan::FunctionDefinitionContext.new(
-          parent: context,
-          arguments: argument_names
-        )
+        function_definition_context = context.spawn_child(shadowed: argument_names, transient: true)
 
         unless rhs.unbound_variables(context) <= Set.new(argument_names)
           raise Keisan::Exceptions::InvalidExpression.new("Unbound variables found in function definition")

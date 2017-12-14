@@ -58,7 +58,6 @@ require "keisan/functions/default_registry"
 require "keisan/variables/registry"
 require "keisan/variables/default_registry"
 require "keisan/context"
-require "keisan/function_definition_context"
 
 require "keisan/token"
 require "keisan/tokens/comma"
