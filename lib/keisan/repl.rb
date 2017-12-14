@@ -3,7 +3,13 @@ require "readline"
 
 module Keisan
   class Repl
-    COMMANDS = %w(reset quit allow_recursive).freeze
+    COMMANDS = %w(
+      reset
+      quit
+      variables
+      functions
+      allow_recursive
+    ).freeze
 
     attr_reader :calculator
 
@@ -40,6 +46,10 @@ module Keisan
         reset
       when /\Aquit\z/i
         @running = false
+      when /\Avariables\z/i
+        output_variables
+      when /\Afunctions\z/i
+        output_functions
       when /\Aallow_recursive\z/i
         calculator.allow_recursive!
       else
@@ -59,7 +69,31 @@ module Keisan
       puts CodeRay.encode(error.class.to_s, :ruby, :terminal) + ": " + CodeRay.encode("\"#{error.message}\"", :ruby, :terminal)
     end
 
+    def output_variables
+      variable_registry.locals.each do |name, variable|
+        puts CodeRay.encode("#{name} = #{variable.value}", :ruby, :terminal)
+      end
+    end
+
+    def output_functions
+      function_registry.locals.each do |name, function|
+        puts CodeRay.encode("#{name}(#{function.arguments.join(', ')}) = #{function.expression.to_s}", :ruby, :terminal)
+      end
+    end
+
     private
+
+    def context
+      calculator.context
+    end
+
+    def variable_registry
+      context.variable_registry
+    end
+
+    def function_registry
+      context.function_registry
+    end
 
     def initialize_completion_commands
       completion_proc = Proc.new { |s| COMMANDS.grep(/^#{Regexp.escape(s)}/) }
