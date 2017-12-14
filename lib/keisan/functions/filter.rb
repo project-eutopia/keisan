@@ -14,7 +14,7 @@ module Keisan
 
       def evaluate(ast_function, context = nil)
         context ||= Context.new
-        simplify(ast_function).evaluate(context)
+        simplify(ast_function, context).evaluate(context)
       end
 
       def simplify(ast_function, context = nil)
@@ -42,7 +42,7 @@ module Keisan
 
       def list_variable_expression_for(ast_function)
         unless ast_function.children.size == 3
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to map")
+          raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to filter")
         end
 
         list = ast_function.children[0]
@@ -50,11 +50,11 @@ module Keisan
         expression = ast_function.children[2]
 
         unless list.is_a?(Keisan::AST::List)
-          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to map must be a list")
+          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to filter must be a list")
         end
 
         unless variable.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to map must be a list")
+          raise Keisan::Exceptions::InvalidFunctionError.new("Second argument to filter must be a variable")
         end
 
         [list, variable, expression]

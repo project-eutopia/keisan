@@ -3,6 +3,7 @@ require_relative "diff"
 require_relative "replace"
 require_relative "map"
 require_relative "filter"
+require_relative "reduce"
 require_relative "rand"
 require_relative "sample"
 require_relative "math_function"
@@ -46,6 +47,8 @@ module Keisan
         registry.register!(:collect, Keisan::Functions::Map.new, force: true)
         registry.register!(:filter, Keisan::Functions::Filter.new, force: true)
         registry.register!(:select, Keisan::Functions::Filter.new, force: true)
+        registry.register!(:reduce, Keisan::Functions::Reduce.new, force: true)
+        registry.register!(:inject, Keisan::Functions::Reduce.new, force: true)
 
         register_builtin_math!(registry)
         register_array_methods!(registry)

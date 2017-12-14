@@ -14,7 +14,7 @@ module Keisan
 
       def evaluate(ast_function, context = nil)
         context ||= Context.new
-        simplify(ast_function).evaluate(context)
+        simplify(ast_function, context).evaluate(context)
       end
 
       def simplify(ast_function, context = nil)
@@ -47,7 +47,7 @@ module Keisan
         end
 
         unless variable.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to map must be a list")
+          raise Keisan::Exceptions::InvalidFunctionError.new("Second argument to map must be a variable")
         end
 
         [list, variable, expression]
