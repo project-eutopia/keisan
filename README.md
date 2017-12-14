@@ -193,6 +193,28 @@ calculator.evaluate("[3, 5] + [x, x+1]", x: 10)
 #=> [3, 5, 10, 11]
 ```
 
+Keisan also supports the following useful list methods,
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("[1,3,5].size")
+#=> 3
+calculator.evaluate("[1,3,5].max")
+#=> 5
+calculator.evaluate("[1,3,5].min")
+#=> 1
+calculator.evaluate("[1,3,5].reverse")
+#=> [5,3,1]
+calculator.evaluate("[[1,2],[3,4]].flatten")
+#=> [1,2,3,4]
+calculator.evaluate("range(5)")
+#=> [0,1,2,3,4]
+calculator.evaluate("range(5,10)")
+#=> [5,6,7,8,9]
+calculator.evaluate("range(0,10,2)")
+#=> [0,2,4,6,8]
+```
+
 Keisan also supports the basic functional programming operators `map` (or `collect`), `filter` (or `select`), and `reduce` (or `inject`).
 
 ```ruby
