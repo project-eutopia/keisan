@@ -1,6 +1,8 @@
 module Keisan
   module Variables
     class Registry
+      attr_reader :shadowed
+
       def initialize(variables: {}, shadowed: [], parent: nil, use_defaults: true, force: false)
         @hash = {}
         @shadowed = Set.new(shadowed.map(&:to_s))
