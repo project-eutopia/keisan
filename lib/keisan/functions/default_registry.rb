@@ -1,6 +1,7 @@
 require_relative "if"
 require_relative "diff"
 require_relative "replace"
+require_relative "range"
 require_relative "map"
 require_relative "filter"
 require_relative "reduce"
@@ -97,44 +98,7 @@ module Keisan
           registry.register!(method, Proc.new {|a| a.send(method)}, force: true)
         end
 
-        # range(10) => Integers from 0 inclusive to 10 exclusively
-        # range(5, 15) => Integers from 5 inclusive to 15 exclusive
-        # range(10, -1, -2) => Integers from 10 inclusive to -1 exclusive, decreasing by twos
-        #   i.e.:  [10, 8, 6, 4, 2, 0]
-        registry.register!("range", Proc.new {|*args|
-          case args.count
-          when 1
-            (0...args[0]).to_a
-          when 2
-            (args[0]...args[1]).to_a
-          when 3
-            current = args[0]
-            final = args[1]
-            shift = args[2]
-
-            if shift == 0 or !shift.is_a?(Integer)
-              raise Keisan::Exceptions::InvalidFunctionError.new("range's 3rd argument must be non-zero integer")
-            end
-
-            result = []
-
-            if shift > 0
-              while current < final
-                result << current
-                current += shift
-              end
-            else
-              while current > final
-                result << current
-                current += shift
-              end
-            end
-
-            result
-          else
-            raise Keisan::Exceptions::InvalidFunctionError.new("range takes 1 to 3 arguments")
-          end
-        }, force: true)
+        registry.register!("range", Keisan::Functions::Range.new, force: true)
       end
 
       def self.register_random_methods!(registry)

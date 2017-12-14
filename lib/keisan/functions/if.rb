@@ -2,7 +2,7 @@ module Keisan
   module Functions
     class If < Keisan::Function
       def initialize
-        super("if", Range.new(2,3))
+        super("if", ::Range.new(2,3))
       end
 
       def value(ast_function, context = nil)
