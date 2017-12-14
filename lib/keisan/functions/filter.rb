@@ -18,7 +18,7 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        list, variable, expression = list_variable_expression_for(ast_function)
+        list, variable, expression = list_variable_expression_for(ast_function, context)
 
         context ||= Keisan::Context.new
         local = context.spawn_child(transient: false, shadowed: [variable.name])
@@ -40,12 +40,12 @@ module Keisan
 
       private
 
-      def list_variable_expression_for(ast_function)
+      def list_variable_expression_for(ast_function, context)
         unless ast_function.children.size == 3
           raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to filter")
         end
 
-        list = ast_function.children[0]
+        list = ast_function.children[0].simplify(context)
         variable = ast_function.children[1]
         expression = ast_function.children[2]
 

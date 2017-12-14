@@ -18,9 +18,9 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        list, initial, accumulator, variable, expression = list_initial_accumulator_variable_expression_for(ast_function)
-
         context ||= Keisan::Context.new
+        list, initial, accumulator, variable, expression = list_initial_accumulator_variable_expression_for(ast_function, context)
+
         local = context.spawn_child(transient: false, shadowed: [accumulator.name, variable.name])
         local.register_variable!(accumulator, initial.simplify(context))
 
@@ -35,12 +35,12 @@ module Keisan
 
       private
 
-      def list_initial_accumulator_variable_expression_for(ast_function)
+      def list_initial_accumulator_variable_expression_for(ast_function, context)
         unless ast_function.children.size == 5
           raise Keisan::Exceptions::InvalidFunctionError.new("Require 5 arguments to reduce")
         end
 
-        list = ast_function.children[0]
+        list = ast_function.children[0].simplify(context)
         initial = ast_function.children[1]
         accumulator = ast_function.children[2]
         variable = ast_function.children[3]
