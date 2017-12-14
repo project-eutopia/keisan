@@ -1,8 +1,8 @@
 module Keisan
   module Functions
-    class Let < Keisan::Function
+    class Let < Function
       def initialize
-        super("let", Range.new(1,2))
+        super("let", ::Range.new(1,2))
       end
 
       def value(ast_function, context = nil)
