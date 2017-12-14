@@ -22,6 +22,18 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       expect(registry["size"].name).to eq "size"
       expect(registry["size"].call(nil, [-4, -1, 1, 2]).value).to eq 4
 
+      expect(registry["reverse"].name).to eq "reverse"
+      expect(registry["reverse"].call(nil, [1, 2, 3]).value).to eq [3, 2, 1]
+
+      expect(registry["flatten"].name).to eq "flatten"
+      expect(registry["flatten"].call(nil, [[1,2], [3,4]]).value).to eq [1, 2, 3, 4]
+
+      expect(registry["range"].name).to eq "range"
+      expect(registry["range"].call(nil, 5).value).to eq [0, 1, 2, 3, 4]
+      expect(registry["range"].call(nil, 5, 10).value).to eq [5, 6, 7, 8, 9]
+      expect(registry["range"].call(nil, 12, 22, 2).value).to eq [12, 14, 16, 18, 20]
+      expect(registry["range"].call(nil, 10, 4, -2).value).to eq [10, 8, 6]
+
       expect(Keisan::Calculator.new.evaluate("a[size(a)-1]", a: [1, 3, 5, 7])).to eq 7
     end
 
@@ -61,6 +73,17 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
 
           expect(Keisan::Calculator.new.simplify("reduce([1,2,3], init, total, x, total+x)").to_s).to eq "6+init"
           expect(Keisan::Calculator.new.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")).to eq 120
+        end
+      end
+
+      context "first argument is function/variable that returns a list" do
+        it "works properly" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("l = [1,2,3,4,5]")
+
+          expect(calculator.evaluate("l.map(x, 2*x)")).to eq [2, 4, 6, 8, 10]
+          expect(calculator.evaluate("range(10).filter(x, x % 2 == 0)")).to eq [0, 2, 4, 6, 8]
+          expect(calculator.evaluate("range(101).inject(0, total, x, total+x)")).to eq 5050
         end
       end
     end
