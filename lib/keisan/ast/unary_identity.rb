@@ -2,7 +2,7 @@ module Keisan
   module AST
     class UnaryIdentity < UnaryOperator
       def value(context = nil)
-        return child.value(context)
+        child.value(context)
       end
 
       def evaluate(context = nil)
