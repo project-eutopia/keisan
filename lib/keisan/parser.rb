@@ -64,17 +64,6 @@ module Keisan
           add_element_to_components!(token)
         end
 
-      elsif @components[-1].is_a?(Parsing::UnaryOperator)
-        # Expect an element or another unary operator
-        case token.type
-        when :operator
-          add_unary_operator_to_components!(token)
-        when :number, :string, :word, :group, :null, :boolean
-          add_element_to_components!(token)
-        else
-          raise Keisan::Exceptions::ParseError.new("Expected an element, received #{token.string}")
-        end
-
       elsif @components[-1].is_a?(Parsing::Element)
         # A word followed by a "round group" is actually a function: e.g. sin(x)
         if @components[-1].is_a?(Parsing::Variable) && token.type == :group && token.group_type == :round
@@ -104,10 +93,15 @@ module Keisan
         if token.type == :group && token.group_type == :round
           name = @components[-1].name
           @components[-1] = Parsing::DotOperator.new(name, arguments_from_group(token))
-        elsif token.type == :dot
-          @components << Keisan::Parsing::Dot.new
+        # Or indexing
         elsif token.type == :group && token.group_type == :square
           add_indexing_to_components!(token)
+        # Or another operation
+        elsif token.type == :dot
+          @components << Keisan::Parsing::Dot.new
+        # Or an operator
+        elsif token.type == :operator
+          add_operator_to_components!(token)
         else
           raise Keisan::Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
         end
@@ -186,10 +180,6 @@ module Keisan
         @components << Keisan::Parsing::BitwiseOr.new
       when :"^"
         @components << Keisan::Parsing::BitwiseXor.new
-      when :"~"
-        @components << Keisan::Parsing::BitwiseNot.new
-      when :"~~"
-        @components << Keisan::Parsing::BitwiseNotNot.new
       # Logical
       when :"=="
         @components << Keisan::Parsing::LogicalEqual.new
@@ -199,10 +189,6 @@ module Keisan
         @components << Keisan::Parsing::LogicalAnd.new
       when :"||"
         @components << Keisan::Parsing::LogicalOr.new
-      when :"!"
-        @components << Keisan::Parsing::LogicalNot.new
-      when :"!!"
-        @components << Keisan::Parsing::LogicalNotNot.new
       when :">"
         @components << Keisan::Parsing::LogicalGreaterThan.new
       when :"<"
