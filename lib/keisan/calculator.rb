@@ -6,6 +6,14 @@ module Keisan
       @context = context || Context.new(allow_recursive: allow_recursive)
     end
 
+    def allow_recursive
+      context.allow_recursive
+    end
+
+    def allow_recursive!
+      context.allow_recursive!
+    end
+
     def evaluate(expression, definitions = {})
       Evaluator.new(self).evaluate(expression, definitions)
     end

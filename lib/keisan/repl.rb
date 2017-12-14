@@ -37,6 +37,8 @@ module Keisan
         reset
       when /\Aquit\z/i
         @running = false
+      when /\Aallow_recursive\!\z/i
+        calculator.allow_recursive!
       else
         begin
           output_result calculator.simplify(command)
