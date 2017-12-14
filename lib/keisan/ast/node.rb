@@ -30,7 +30,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        self
+        value(context)
       end
 
       def differentiate(variable, context = nil)

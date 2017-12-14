@@ -1,6 +1,157 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Node do
+  describe "value and evaluate" do
+    it "raises NotImplementedError error" do
+      expect{described_class.new.value}.to raise_error(Keisan::Exceptions::NotImplementedError)
+      expect{described_class.new.evaluate}.to raise_error(Keisan::Exceptions::NotImplementedError)
+    end
+  end
+
+  describe "simplify" do
+    it "just returns self" do
+      node = described_class.new
+      expect(node.simplify).to eq node
+    end
+  end
+
+  describe "differentiate" do
+    it "rairse NonDifferentiableError" do
+      node = described_class.new
+      expect{node.differentiate(Keisan::AST::Variable.new("x"))}.to raise_error(Keisan::Exceptions::NonDifferentiableError)
+    end
+  end
+
+  describe "operators" do
+    it "combines the AST appropriately" do
+      x = Keisan::AST::Variable.new("x")
+      y = Keisan::AST::Variable.new("y")
+
+      (x+y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::Plus)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x-y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::Plus)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1]).to be_a(Keisan::AST::UnaryMinus)
+        expect(ast.children[1].child.name).to eq "y"
+      end
+
+      (x*y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::Times)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x/y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::Times)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1]).to be_a(Keisan::AST::UnaryInverse)
+        expect(ast.children[1].child.name).to eq "y"
+      end
+
+      (x%y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::Modulo)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (!x).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::UnaryLogicalNot)
+        expect(ast.child.name).to eq "x"
+      end
+
+      (~x).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::UnaryBitwiseNot)
+        expect(ast.child.name).to eq "x"
+      end
+
+      (+x).tap do |ast|
+        expect(ast.name).to eq "x"
+      end
+
+      (-x).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::UnaryMinus)
+        expect(ast.child.name).to eq "x"
+      end
+
+      (x**y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::Exponent)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x&y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::BitwiseAnd)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x^y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::BitwiseXor)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x|y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::BitwiseOr)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x>y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalGreaterThan)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x>=y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalGreaterThanOrEqualTo)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x<y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalLessThan)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x<=y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalLessThanOrEqualTo)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x.equal(y)).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalEqual)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x.not_equal(y)).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalNotEqual)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x.and(y)).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalAnd)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x.or(y)).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::LogicalOr)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+    end
+  end
+
   describe "unary operators" do
     it "parses correctly" do
       ast = Keisan::AST.parse("--20")
