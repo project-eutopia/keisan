@@ -4,14 +4,14 @@ module Keisan
       attr_reader :arguments, :expression
 
       def initialize(name, arguments, expression, transient_definitions)
-        super(name)
+        super(name, arguments.count)
         @expression = expression.deep_dup
         @arguments = arguments
         @transient_definitions = transient_definitions
       end
 
       def call(context, *args)
-        verify_argument_size!(args.count)
+        validate_arguments!(args.count)
 
         local = local_context_for(context)
         arguments.each.with_index do |arg_name, i|
@@ -22,7 +22,7 @@ module Keisan
       end
 
       def value(ast_function, context = nil)
-        verify_argument_size!(ast_function.children.count)
+        validate_arguments!(ast_function.children.count)
 
         context ||= Context.new
         argument_values = ast_function.children.map {|child| child.value(context)}
@@ -30,7 +30,7 @@ module Keisan
       end
 
       def evaluate(ast_function, context = nil)
-        verify_argument_size!(ast_function.children.count)
+        validate_arguments!(ast_function.children.count)
 
         context ||= Context.new
         local = local_context_for(context)
@@ -45,7 +45,7 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        verify_argument_size!(ast_function.children.count)
+        validate_arguments!(ast_function.children.count)
 
         ast_function.instance_variable_set(
           :@children,
@@ -66,7 +66,7 @@ module Keisan
       # dx(t)/dt * f_x(x(t), y(t)) + dy(t)/dt * f_y(x(t), y(t)),
       # where f_x and f_y are the x and y partial derivatives respectively.
       def differentiate(ast_function, variable, context = nil)
-        verify_argument_size!(ast_function.children.count)
+        validate_arguments!(ast_function.children.count)
 
         local = local_context_for(context)
 

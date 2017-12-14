@@ -5,11 +5,11 @@ module Keisan
       # e.g. reduce([1,2,3,4], 0, total, x, total+x)
       # should give 10
       def initialize
-        @name = "reduce"
+        super("reduce", 5)
       end
 
       def value(ast_function, context = nil)
-        evaluate(ast_function, context = nil)
+        evaluate(ast_function, context)
       end
 
       def evaluate(ast_function, context = nil)
@@ -18,6 +18,8 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
+        validate_arguments!(ast_function.children.count)
+
         context ||= Context.new
         list, initial, accumulator, variable, expression = list_initial_accumulator_variable_expression_for(ast_function, context)
 
@@ -36,10 +38,6 @@ module Keisan
       private
 
       def list_initial_accumulator_variable_expression_for(ast_function, context)
-        unless ast_function.children.size == 5
-          raise Exceptions::InvalidFunctionError.new("Require 5 arguments to reduce")
-        end
-
         list = ast_function.children[0].simplify(context)
         initial = ast_function.children[1]
         accumulator = ast_function.children[2]
