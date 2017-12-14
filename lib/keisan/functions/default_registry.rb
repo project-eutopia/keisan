@@ -1,4 +1,5 @@
 require_relative "if"
+require_relative "while"
 require_relative "diff"
 require_relative "replace"
 require_relative "range"
@@ -42,6 +43,7 @@ module Keisan
 
       def self.register_defaults!(registry)
         registry.register!(:if, Keisan::Functions::If.new, force: true)
+        registry.register!(:while, Keisan::Functions::While.new, force: true)
         registry.register!(:diff, Keisan::Functions::Diff.new, force: true)
         registry.register!(:replace, Keisan::Functions::Replace.new, force: true)
         registry.register!(:map, Keisan::Functions::Map.new, force: true)
