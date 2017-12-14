@@ -1,9 +1,10 @@
 module Keisan
   class Function
-    attr_reader :name
+    attr_reader :name, :arity
 
-    def initialize(name)
+    def initialize(name, arity = 1)
       @name = name
+      @arity = arity
     end
 
     def value(ast_function, context = nil)
@@ -20,6 +21,23 @@ module Keisan
 
     def differentiate(ast_function, variable, context = nil)
       raise Keisan::Exceptions::NotImplementedError.new
+    end
+
+    protected
+
+    def validate_arguments!(count)
+      case arity
+      when Integer
+        if arity < 0 && count < arity.abs || arity >= 0 && count != arity
+          raise Keisan::Exceptions::InvalidFunctionError.new("Require #{arity} arguments to #{name}")
+        end
+      when Range
+        unless arity.include? count
+          raise Keisan::Exceptions::InvalidFunctionError.new("Require #{arity} arguments to #{name}")
+        end
+      else
+        raise Keisan::Exceptions::InternalError.new("Invalid arity: #{arity}")
+      end
     end
   end
 end

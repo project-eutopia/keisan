@@ -2,10 +2,12 @@ module Keisan
   module Functions
     class Diff < Keisan::Function
       def initialize
+        super("diff", -1)
         @name = "diff"
       end
 
       def value(ast_function, context = nil)
+        validate_arguments!(ast_function.children.count)
         context ||= Keisan::Context.new
         evaluation = evaluate(ast_function, context)
 
@@ -17,6 +19,7 @@ module Keisan
       end
 
       def evaluate(ast_function, context = nil)
+        validate_arguments!(ast_function.children.count)
         context ||= Keisan::Context.new
         function, variables = function_and_variables(ast_function)
         local = context_from(variables, context)
@@ -38,6 +41,7 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
+        validate_arguments!(ast_function.children.count)
         raise Keisan::Exceptions::InternalError.new("received non-diff function") unless ast_function.name == "diff"
         function, variables = function_and_variables(ast_function)
         context ||= Keisan::Context.new

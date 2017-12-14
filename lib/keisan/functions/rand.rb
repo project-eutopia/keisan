@@ -3,6 +3,7 @@ module Keisan
     class Rand < ProcFunction
       def initialize
         @name = "rand"
+        @arity = ::Range.new(1,2)
       end
 
       # Single argument: integer in range [0, max)
