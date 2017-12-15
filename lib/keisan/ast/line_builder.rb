@@ -32,19 +32,6 @@ module Keisan
 
       private
 
-      def filter_off_extraneous_line_separators!
-        # LineSeparator only valid if not abutting a comma, or touching the inside of a bracket
-        # @components = @components.select.with_index do |component, i|
-        #   if component.is_a?(Keisan::Parsing::LineSeparator)
-        #     if i > 0 && @components[i-1].is_a?(Keisan::Parsing)
-        #     elsif i < @components.size-1
-        #     end
-        #   else
-        #     true
-        #   end
-        # end
-      end
-
       # Array of AST elements, and Parsing operators
       def components_to_basic_nodes(components)
         nodes_components = []
