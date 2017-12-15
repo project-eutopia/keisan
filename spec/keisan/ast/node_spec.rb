@@ -464,4 +464,13 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.value).to eq (100 + Rational(1,10))
     end
   end
+
+  describe "multi line" do
+    describe "#to_s" do
+      it "concatenates with semi-colons" do
+        ast = Keisan::AST.parse("1\n2+x;;3")
+        expect(ast.to_s).to eq "1;2+x;3"
+      end
+    end
+  end
 end

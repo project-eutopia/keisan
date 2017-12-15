@@ -17,6 +17,7 @@ require "keisan/ast/boolean"
 require "keisan/ast/parent"
 require "keisan/ast/operator"
 require "keisan/ast/assignment"
+require "keisan/ast/multi_line"
 require "keisan/ast/unary_operator"
 require "keisan/ast/unary_identity"
 require "keisan/ast/unary_plus"
@@ -47,6 +48,7 @@ require "keisan/ast/function"
 require "keisan/ast/list"
 require "keisan/ast/indexing"
 
+require "keisan/ast/line_builder"
 require "keisan/ast/builder"
 require "keisan/ast"
 
@@ -73,6 +75,7 @@ require "keisan/tokens/arithmetic_operator"
 require "keisan/tokens/logical_operator"
 require "keisan/tokens/bitwise_operator"
 require "keisan/tokens/word"
+require "keisan/tokens/line_separator"
 
 require "keisan/tokenizer"
 
@@ -94,6 +97,7 @@ require "keisan/parsing/square_group"
 require "keisan/parsing/list"
 require "keisan/parsing/indexing"
 require "keisan/parsing/argument"
+require "keisan/parsing/line_separator"
 
 require "keisan/parsing/operator"
 

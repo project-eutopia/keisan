@@ -432,4 +432,22 @@ RSpec.describe Keisan::Tokenizer do
       expect(tokenizer.tokens[4].value).to eq 5
     end
   end
+
+  context "multiline" do
+    it "parses correctly" do
+      tokenizer = described_class.new("1 \n x; 3 ")
+
+      expect(tokenizer.tokens.map(&:class)).to eq([
+        Keisan::Tokens::Number,
+        Keisan::Tokens::LineSeparator,
+        Keisan::Tokens::Word,
+        Keisan::Tokens::LineSeparator,
+        Keisan::Tokens::Number
+      ])
+
+      expect(tokenizer.tokens[0].value).to eq 1
+      expect(tokenizer.tokens[2].string).to eq "x"
+      expect(tokenizer.tokens[4].value).to eq 3
+    end
+  end
 end

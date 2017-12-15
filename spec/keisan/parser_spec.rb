@@ -539,5 +539,59 @@ RSpec.describe Keisan::Parser do
         expect(parser.components[4].value).to eq 5
       end
     end
+
+    context "multiline" do
+      it "recognizes semi-colons and newlines as line separators" do
+        parser = described_class.new(string: "1 \n x; 3 ")
+
+        expect(parser.components.map(&:class)).to eq([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LineSeparator,
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::LineSeparator,
+          Keisan::Parsing::Number
+        ])
+
+        expect(parser.components[0].value).to eq 1
+        expect(parser.components[2].name).to eq "x"
+        expect(parser.components[4].value).to eq 3
+      end
+
+      it "works okay inside brackets too" do
+        parser = described_class.new(string: "10 + (1; x)")
+        expect(parser.components.map(&:class)).to eq([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::RoundGroup
+        ])
+
+        expect(parser.components[2].components.map(&:class)).to eq([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LineSeparator,
+          Keisan::Parsing::Variable
+        ])
+
+        parser = described_class.new(string: "f(x;,\n g(a,1;b))")
+        expect(parser.components.map(&:class)).to eq([Keisan::Parsing::Function])
+
+        expect(parser.components[0].arguments[0].components.map(&:class)).to eq([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::LineSeparator
+        ])
+        expect(parser.components[0].arguments[1].components.map(&:class)).to eq([
+          Keisan::Parsing::LineSeparator,
+          Keisan::Parsing::Function
+        ])
+
+        expect(parser.components[0].arguments[1].components[1].arguments[0].components.map(&:class)).to eq([
+          Keisan::Parsing::Variable
+        ])
+        expect(parser.components[0].arguments[1].components[1].arguments[1].components.map(&:class)).to eq([
+          Keisan::Parsing::Number,
+          Keisan::Parsing::LineSeparator,
+          Keisan::Parsing::Variable
+        ])
+      end
+    end
   end
 end
