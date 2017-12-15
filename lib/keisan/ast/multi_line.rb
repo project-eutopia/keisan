@@ -16,6 +16,10 @@ module Keisan
         context ||= Keisan::Context.new
         evaluate(context)
       end
+
+      def to_s
+        children.map(&:to_s).join(";")
+      end
     end
   end
 end
