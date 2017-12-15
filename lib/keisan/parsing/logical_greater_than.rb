@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class LogicalGreaterThan < LogicalOperator
       def node_class
-        Keisan::AST::LogicalGreaterThan
+        AST::LogicalGreaterThan
       end
     end
   end

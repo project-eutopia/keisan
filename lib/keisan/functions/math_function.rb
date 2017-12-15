@@ -11,7 +11,7 @@ module Keisan
       end
 
       def differentiate(ast_function, variable, context = nil)
-        raise Keisan::Exceptions::InvalidFunctionError.new unless ast_function.children.count == 1
+        raise Exceptions::InvalidFunctionError.new unless ast_function.children.count == 1
         context ||= Context.new
 
         argument_simplified = ast_function.children.first.simplify(context)
@@ -23,7 +23,7 @@ module Keisan
       protected
 
       def self.derivative(argument)
-        raise Keisan::Exceptions::NotImplementedError.new
+        raise Exceptions::NotImplementedError.new
       end
 
       def self.apply_simplifications(simplified)

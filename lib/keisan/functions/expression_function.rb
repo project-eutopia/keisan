@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class ExpressionFunction < Keisan::Function
+    class ExpressionFunction < Function
       attr_reader :arguments, :expression
 
       def initialize(name, arguments, expression, transient_definitions)
@@ -24,7 +24,7 @@ module Keisan
       def value(ast_function, context = nil)
         verify_argument_size!(ast_function.children.count)
 
-        context ||= Keisan::Context.new
+        context ||= Context.new
         argument_values = ast_function.children.map {|child| child.value(context)}
         call(context, *argument_values)
       end
@@ -32,7 +32,7 @@ module Keisan
       def evaluate(ast_function, context = nil)
         verify_argument_size!(ast_function.children.count)
 
-        context ||= Keisan::Context.new
+        context ||= Context.new
         local = local_context_for(context)
 
         argument_values = ast_function.children.map {|child| child.evaluate(context)}
@@ -52,7 +52,7 @@ module Keisan
           ast_function.children.map {|child| child.evaluate(context)}
         )
 
-        if ast_function.children.all? {|child| child.is_a?(Keisan::AST::ConstantLiteral)}
+        if ast_function.children.all? {|child| child.is_a?(AST::ConstantLiteral)}
           value(ast_function, context).to_node.simplify(context)
         else
           ast_function
@@ -78,10 +78,10 @@ module Keisan
           child.differentiate(variable, context)
         end
 
-        Keisan::AST::Plus.new(
+        AST::Plus.new(
           argument_derivatives.map.with_index {|argument_derivative, i|
             partial_derivative = partial_derivatives[i].replace(argument_variables[i], argument_values[i])
-            Keisan::AST::Times.new([argument_derivative, partial_derivative])
+            AST::Times.new([argument_derivative, partial_derivative])
           }
         )
       end
@@ -89,7 +89,7 @@ module Keisan
       private
 
       def argument_variables
-        @argument_variables ||= arguments.map {|argument| Keisan::AST::Variable.new(argument)}
+        @argument_variables ||= arguments.map {|argument| AST::Variable.new(argument)}
       end
 
       def partial_derivatives
@@ -100,12 +100,12 @@ module Keisan
 
       def verify_argument_size!(argument_size)
         unless @arguments.count == argument_size
-          raise Keisan::Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
+          raise Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
         end
       end
 
       def local_context_for(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true)
       end
     end

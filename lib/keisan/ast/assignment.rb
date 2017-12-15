@@ -6,7 +6,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
 
         lhs = children.first
         rhs = children.last
@@ -16,7 +16,7 @@ module Keisan
         elsif is_function_definition?
           evaluate_function(context, lhs, rhs)
         else
-          raise Keisan::Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
+          raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
         end
       end
 
@@ -43,11 +43,11 @@ module Keisan
       end
 
       def is_variable_definition?
-        children.first.is_a?(Keisan::AST::Variable)
+        children.first.is_a?(Variable)
       end
 
       def is_function_definition?
-        children.first.is_a?(Keisan::AST::Function)
+        children.first.is_a?(Function)
       end
 
       private
@@ -56,7 +56,7 @@ module Keisan
         rhs = rhs.evaluate(context)
 
         unless rhs.well_defined?
-          raise Keisan::Exceptions::InvalidExpression.new("Right hand side of assignment to variable must be well defined")
+          raise Exceptions::InvalidExpression.new("Right hand side of assignment to variable must be well defined")
         end
 
         rhs_value = rhs.value(context)
@@ -66,24 +66,24 @@ module Keisan
       end
 
       def evaluate_function(context, lhs, rhs)
-        unless lhs.children.all? {|arg| arg.is_a?(Keisan::AST::Variable)}
-          raise Keisan::Exceptions::InvalidExpression.new("Left hand side function must have variables as arguments")
+        unless lhs.children.all? {|arg| arg.is_a?(Variable)}
+          raise Exceptions::InvalidExpression.new("Left hand side function must have variables as arguments")
         end
 
         argument_names = lhs.children.map(&:name)
         function_definition_context = context.spawn_child(shadowed: argument_names, transient: true)
 
         unless rhs.unbound_variables(context) <= Set.new(argument_names)
-          raise Keisan::Exceptions::InvalidExpression.new("Unbound variables found in function definition")
+          raise Exceptions::InvalidExpression.new("Unbound variables found in function definition")
         end
 
         unless context.allow_recursive || rhs.unbound_functions(context).empty?
-          raise Keisan::Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
+          raise Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
         end
 
         context.register_function!(
           lhs.name,
-          Keisan::Functions::ExpressionFunction.new(
+          Functions::ExpressionFunction.new(
             lhs.name,
             argument_names,
             rhs.simplify(function_definition_context),

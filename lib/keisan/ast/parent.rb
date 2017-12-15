@@ -6,20 +6,20 @@ module Keisan
       def initialize(children = [])
         children = Array.wrap(children).map(&:to_node)
         unless children.is_a?(Array) && children.all? {|children| children.is_a?(Node)}
-          raise Keisan::Exceptions::InternalError.new
+          raise Exceptions::InternalError.new
         end
         @children = children
       end
 
       def unbound_variables(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         children.inject(Set.new) do |vars, child|
           vars | child.unbound_variables(context)
         end
       end
 
       def unbound_functions(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         children.inject(Set.new) do |fns, child|
           fns | child.unbound_functions(context)
         end
@@ -45,7 +45,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         @children = children.map {|child| child.evaluate(context)}
         self
       end

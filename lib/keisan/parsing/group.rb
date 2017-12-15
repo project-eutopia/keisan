@@ -4,7 +4,7 @@ module Keisan
       attr_reader :components
 
       def initialize(sub_tokens)
-        @components = Keisan::Parser.new(tokens: sub_tokens).components
+        @components = Parser.new(tokens: sub_tokens).components
       end
     end
   end

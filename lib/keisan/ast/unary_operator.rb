@@ -5,7 +5,7 @@ module Keisan
         children = Array.wrap(children)
         super(children)
         if children.count != 1
-          raise Keisan::Exceptions::ASTError.new("Unary operator takes has a single child")
+          raise Exceptions::ASTError.new("Unary operator takes has a single child")
         end
       end
 
@@ -26,7 +26,7 @@ module Keisan
       end
 
       def to_s
-        if child.is_a?(AST::Operator)
+        if child.is_a?(Operator)
           "#{symbol.to_s}(#{child.to_s})"
         else
           "#{symbol.to_s}#{child.to_s}"

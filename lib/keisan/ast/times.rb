@@ -26,17 +26,17 @@ module Keisan
         # Commutative, so pull in operands of any `Times` operators
         @children = children.inject([]) do |new_children, cur_child|
           case cur_child
-          when AST::Times
+          when Times
             new_children + cur_child.children
           else
             new_children << cur_child
           end
         end
 
-        constants, non_constants = *children.partition {|child| child.is_a?(AST::Number)}
-        constant = constants.inject(AST::Number.new(1), &:*).simplify(context)
+        constants, non_constants = *children.partition {|child| child.is_a?(Number)}
+        constant = constants.inject(Number.new(1), &:*).simplify(context)
 
-        return Keisan::AST::Number.new(0) if constant.value(context) == 0
+        return Number.new(0) if constant.value(context) == 0
 
         if non_constants.empty?
           constant
@@ -52,9 +52,9 @@ module Keisan
 
       def differentiate(variable, context = nil)
         # Product rule
-        AST::Plus.new(
+        Plus.new(
           children.map.with_index do |child,i|
-            AST::Times.new(
+            Times.new(
               children.slice(0,i) + [child.differentiate(variable, context)] + children.slice(i+1,children.size)
             )
           end
@@ -65,8 +65,8 @@ module Keisan
 
       def convert_divide_to_inverse!
         @parsing_operators.each.with_index do |parsing_operator, index|
-          if parsing_operator.is_a?(Keisan::Parsing::Divide)
-            @children[index+1] = Keisan::AST::UnaryInverse.new(@children[index+1])
+          if parsing_operator.is_a?(Parsing::Divide)
+            @children[index+1] = UnaryInverse.new(@children[index+1])
           end
         end
       end

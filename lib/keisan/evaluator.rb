@@ -8,12 +8,12 @@ module Keisan
 
     def evaluate(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
-      ast = Keisan::AST.parse(expression)
+      ast = AST.parse(expression)
       evaluation = ast.evaluate(context)
 
       case ast
-      when Keisan::AST::Assignment
-        if ast.children.first.is_a?(Keisan::AST::Variable)
+      when AST::Assignment
+        if ast.children.first.is_a?(AST::Variable)
           context.variable(ast.children.first.name).value(context)
         end
       else
@@ -23,12 +23,12 @@ module Keisan
 
     def simplify(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
-      ast = Keisan::AST.parse(expression)
+      ast = AST.parse(expression)
       ast.simplify(context)
     end
 
     def ast(expression)
-      Keisan::AST.parse(expression)
+      AST.parse(expression)
     end
   end
 end

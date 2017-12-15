@@ -26,7 +26,7 @@ module Keisan
         case value
         when Proc
           child.register_function!(name, value)
-        when Keisan::Functions::ProcFunction
+        when Functions::ProcFunction
           child.register_function!(name, value.function_proc)
         else
           child.register_variable!(name, value)

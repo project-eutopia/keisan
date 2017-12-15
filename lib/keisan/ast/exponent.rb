@@ -19,20 +19,20 @@ module Keisan
           child ** total
         end
 
-        unless reduced.is_a?(AST::Exponent)
+        unless reduced.is_a?(Exponent)
           return reduced.simplify(context)
         end
 
         if reduced.children.count != 2
-          raise Keisan::Exceptions::InternalError.new("Exponent should be binary")
+          raise Exceptions::InternalError.new("Exponent should be binary")
         end
         @children = reduced.children
 
-        if children[1].is_a?(AST::Number) && children[1].value(context) == 1
+        if children[1].is_a?(Number) && children[1].value(context) == 1
           return children[0]
         end
 
-        if children.all? {|child| child.is_a?(AST::Number)}
+        if children.all? {|child| child.is_a?(Number)}
           (children[0] ** children[1]).simplify(context)
         else
           self
@@ -57,7 +57,7 @@ module Keisan
         exponent = children[1].simplified(context)
 
         # Special simple case where exponent is a pure number
-        if exponent.is_a?(AST::Number)
+        if exponent.is_a?(Number)
           return (exponent * base.differentiate(variable, context) * base ** (exponent -1)).simplify(context)
         end
 
@@ -65,7 +65,7 @@ module Keisan
         exponent_diff = exponent.differentiate(variable, context)
 
         res = base ** exponent * (
-          exponent_diff * AST::Function.new([base], "log") +
+          exponent_diff * Function.new([base], "log") +
           base_diff * exponent / base
         )
         res.simplify(context)

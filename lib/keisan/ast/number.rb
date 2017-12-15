@@ -12,18 +12,18 @@ module Keisan
       end
 
       def -@
-        AST::Number.new(-value)
+        Number.new(-value)
       end
 
       def +@
-        AST::Number.new(value)
+        Number.new(value)
       end
 
       def +(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value + other.value)
+        when Number
+          Number.new(value + other.value)
         else
           super
         end
@@ -36,8 +36,8 @@ module Keisan
       def *(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value * other.value)
+        when Number
+          Number.new(value * other.value)
         else
           super
         end
@@ -46,8 +46,8 @@ module Keisan
       def /(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(Rational(value, other.value))
+        when Number
+          Number.new(Rational(value, other.value))
         else
           super
         end
@@ -56,8 +56,8 @@ module Keisan
       def **(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value ** other.value)
+        when Number
+          Number.new(value ** other.value)
         else
           super
         end
@@ -66,8 +66,8 @@ module Keisan
       def %(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value % other.value)
+        when Number
+          Number.new(value % other.value)
         else
           super
         end
@@ -76,22 +76,22 @@ module Keisan
       def &(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value & other.value)
+        when Number
+          Number.new(value & other.value)
         else
           super
         end
       end
 
       def ~
-        AST::Number.new(~value)
+        Number.new(~value)
       end
 
       def ^(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value ^ other.value)
+        when Number
+          Number.new(value ^ other.value)
         else
           super
         end
@@ -100,8 +100,8 @@ module Keisan
       def |(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Number.new(value | other.value)
+        when Number
+          Number.new(value | other.value)
         else
           super
         end
@@ -110,8 +110,8 @@ module Keisan
       def >(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Boolean.new(value > other.value)
+        when Number
+          Boolean.new(value > other.value)
         else
           super
         end
@@ -120,8 +120,8 @@ module Keisan
       def >=(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Boolean.new(value >= other.value)
+        when Number
+          Boolean.new(value >= other.value)
         else
           super
         end
@@ -130,8 +130,8 @@ module Keisan
       def <(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Boolean.new(value < other.value)
+        when Number
+          Boolean.new(value < other.value)
         else
           super
         end
@@ -140,8 +140,8 @@ module Keisan
       def <=(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Boolean.new(value <= other.value)
+        when Number
+          Boolean.new(value <= other.value)
         else
           super
         end
@@ -150,8 +150,8 @@ module Keisan
       def equal(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Boolean.new(value == other.value)
+        when Number
+          Boolean.new(value == other.value)
         else
           super
         end
@@ -160,8 +160,8 @@ module Keisan
       def not_equal(other)
         other = other.to_node
         case other
-        when AST::Number
-          AST::Boolean.new(value != other.value)
+        when Number
+          Boolean.new(value != other.value)
         else
           super
         end

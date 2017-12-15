@@ -8,7 +8,7 @@ module Keisan
       protected
 
       def self.derivative(argument)
-        Keisan::AST::Exponent.new([argument, Rational(-1,2)]) / 2
+        AST::Exponent.new([argument, Rational(-1,2)]) / 2
       end
     end
   end

@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class Plus < ArithmeticOperator
       def node_class
-        Keisan::AST::Plus
+        AST::Plus
       end
     end
   end

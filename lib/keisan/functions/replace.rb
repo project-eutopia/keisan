@@ -1,17 +1,17 @@
 module Keisan
   module Functions
-    class Replace < Keisan::Function
+    class Replace < Function
       def initialize
         @name = "replace"
       end
 
       def value(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         evaluate(ast_function, context).value(context)
       end
 
       def evaluate(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         expression, variable, replacement = expression_variable_replacement(ast_function)
 
         expression = expression.evaluate(context)
@@ -28,18 +28,18 @@ module Keisan
       private
 
       def expression_variable_replacement(ast_function)
-        unless ast_function.is_a?(Keisan::AST::Function) && ast_function.name == name
-          raise Keisan::Exceptions::InvalidFunctionError.new("Must receive replace function")
+        unless ast_function.is_a?(AST::Function) && ast_function.name == name
+          raise Exceptions::InvalidFunctionError.new("Must receive replace function")
         end
 
         unless ast_function.children.size == 3
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to replace")
+          raise Exceptions::InvalidFunctionError.new("Require 3 arguments to replace")
         end
 
         expression, variable, replacement = *ast_function.children.map(&:deep_dup)
 
-        unless variable.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("Replace must replace a variable")
+        unless variable.is_a?(AST::Variable)
+          raise Exceptions::InvalidFunctionError.new("Replace must replace a variable")
         end
 
         [expression, variable, replacement]

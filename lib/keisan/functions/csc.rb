@@ -8,7 +8,7 @@ module Keisan
       protected
 
       def self.derivative(argument)
-        -Keisan::AST::Function.new([argument], "cos") * Keisan::AST::Exponent.new([Keisan::AST::Function.new([argument], "sin"), -2])
+        -AST::Function.new([argument], "cos") * AST::Exponent.new([AST::Function.new([argument], "sin"), -2])
       end
     end
   end

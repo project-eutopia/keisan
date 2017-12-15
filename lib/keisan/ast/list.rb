@@ -2,7 +2,7 @@ module Keisan
   module AST
     class List < Parent
       def value(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         children.map {|child| child.value(context)}
       end
 

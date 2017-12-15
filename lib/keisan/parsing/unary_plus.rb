@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class UnaryPlus < UnaryOperator
       def node_class
-        Keisan::AST::UnaryPlus
+        AST::UnaryPlus
       end
     end
   end

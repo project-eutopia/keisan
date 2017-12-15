@@ -2,7 +2,7 @@ module Keisan
   module AST
     class Node
       def value(context = nil)
-        raise Keisan::Exceptions::NotImplementedError.new
+        raise Exceptions::NotImplementedError.new
       end
 
       def unbound_variables(context = nil)
@@ -34,7 +34,7 @@ module Keisan
       end
 
       def differentiate(variable, context = nil)
-        raise Keisan::Exceptions::NonDifferentiableError.new
+        raise Exceptions::NonDifferentiableError.new
       end
 
       def replace(variable, replacement)
@@ -50,41 +50,41 @@ module Keisan
       end
 
       def +(other)
-        AST::Plus.new(
+        Plus.new(
           [self, other.to_node]
         )
       end
 
       def -(other)
-        AST::Plus.new(
-          [self, AST::UnaryMinus.new(other.to_node)]
+        Plus.new(
+          [self, UnaryMinus.new(other.to_node)]
         )
       end
 
       def *(other)
-        AST::Times.new(
+        Times.new(
           [self, other.to_node]
         )
       end
 
       def /(other)
-        AST::Times.new(
-          [self, AST::UnaryInverse.new(other.to_node)]
+        Times.new(
+          [self, UnaryInverse.new(other.to_node)]
         )
       end
 
       def %(other)
-        AST::Modulo.new(
+        Modulo.new(
           [self, other.to_node]
         )
       end
 
       def !
-        AST::UnaryLogicalNot.new(self)
+        UnaryLogicalNot.new(self)
       end
 
       def ~
-        AST::UnaryBitwiseNot.new(self)
+        UnaryBitwiseNot.new(self)
       end
 
       def +@
@@ -92,55 +92,55 @@ module Keisan
       end
 
       def -@
-        AST::UnaryMinus.new(self)
+        UnaryMinus.new(self)
       end
 
       def **(other)
-        AST::Exponent.new([self, other.to_node])
+        Exponent.new([self, other.to_node])
       end
 
       def &(other)
-        AST::BitwiseAnd.new([self, other.to_node])
+        BitwiseAnd.new([self, other.to_node])
       end
 
       def ^(other)
-        AST::BitwiseXor.new([self, other.to_node])
+        BitwiseXor.new([self, other.to_node])
       end
 
       def |(other)
-        AST::BitwiseOr.new([self, other.to_node])
+        BitwiseOr.new([self, other.to_node])
       end
 
       def >(other)
-        AST::LogicalGreaterThan.new([self, other.to_node])
+        LogicalGreaterThan.new([self, other.to_node])
       end
 
       def >=(other)
-        AST::LogicalGreaterThanOrEqualTo.new([self, other.to_node])
+        LogicalGreaterThanOrEqualTo.new([self, other.to_node])
       end
 
       def <(other)
-        AST::LogicalLessThan.new([self, other.to_node])
+        LogicalLessThan.new([self, other.to_node])
       end
 
       def <=(other)
-        AST::LogicalLessThanOrEqualTo.new([self, other.to_node])
+        LogicalLessThanOrEqualTo.new([self, other.to_node])
       end
 
       def equal(other)
-        AST::LogicalEqual.new([self, other.to_node])
+        LogicalEqual.new([self, other.to_node])
       end
 
       def not_equal(other)
-        AST::LogicalNotEqual.new([self, other.to_node])
+        LogicalNotEqual.new([self, other.to_node])
       end
 
       def and(other)
-        AST::LogicalAnd.new([self, other.to_node])
+        LogicalAnd.new([self, other.to_node])
       end
 
       def or(other)
-        AST::LogicalOr.new([self, other.to_node])
+        LogicalOr.new([self, other.to_node])
       end
     end
   end

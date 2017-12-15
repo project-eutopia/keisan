@@ -12,14 +12,14 @@ module Keisan
       end
 
       def !
-        AST::Boolean.new(!bool)
+        Boolean.new(!bool)
       end
 
       def and(other)
         other = other.to_node
         case other
-        when AST::Boolean
-          AST::Boolean.new(bool && other.bool)
+        when Boolean
+          Boolean.new(bool && other.bool)
         else
           super
         end
@@ -28,8 +28,8 @@ module Keisan
       def or(other)
         other = other.to_node
         case other
-        when AST::Boolean
-          AST::Boolean.new(bool || other.bool)
+        when Boolean
+          Boolean.new(bool || other.bool)
         else
           super
         end

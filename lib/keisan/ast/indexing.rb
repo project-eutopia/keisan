@@ -17,13 +17,13 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         @children = children.map {|child| child.evaluate(context)}
         @indexes = indexes.map {|index| index.evaluate(context)}
 
         case child
-        when AST::List
-          if @indexes.size == 1 && @indexes.first.is_a?(AST::Number)
+        when List
+          if @indexes.size == 1 && @indexes.first.is_a?(Number)
             return child.children[@indexes.first.value(context)].evaluate(context)
           end
         end
@@ -38,8 +38,8 @@ module Keisan
         @children = [child.simplify(context)]
 
         case child
-        when AST::List
-          if @indexes.size == 1 && @indexes.first.is_a?(AST::Number)
+        when List
+          if @indexes.size == 1 && @indexes.first.is_a?(Number)
             return child.children[@indexes.first.value(context)].simplify(context)
           end
         end

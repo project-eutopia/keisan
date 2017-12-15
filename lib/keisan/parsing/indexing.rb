@@ -7,7 +7,7 @@ module Keisan
       end
 
       def node_class
-        Keisan::AST::Indexing
+        AST::Indexing
       end
     end
   end

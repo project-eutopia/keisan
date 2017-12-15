@@ -18,8 +18,8 @@ module Keisan
 
         @children = [child.simplify(context)]
         case child
-        when AST::Number
-          AST::Number.new(Rational(1,child.value(context))).simplify(context)
+        when Number
+          Number.new(Rational(1,child.value(context))).simplify(context)
         else
           (child ** -1).simplify(context)
         end
@@ -27,12 +27,12 @@ module Keisan
 
       def differentiate(variable, context = nil)
         context ||= Context.new
-        AST::Times.new(
+        Times.new(
           [
-            AST::UnaryMinus.new(child.differentiate(variable, context)),
-            AST::UnaryInverse.new(
-              AST::Exponent.new([
-                child.deep_dup, AST::Number.new(2)
+            UnaryMinus.new(child.differentiate(variable, context)),
+            UnaryInverse.new(
+              Exponent.new([
+                child.deep_dup, Number.new(2)
               ])
             )
           ]

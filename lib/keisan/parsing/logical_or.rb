@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class LogicalOr < LogicalOperator
       def node_class
-        Keisan::AST::LogicalOr
+        AST::LogicalOr
       end
     end
   end
