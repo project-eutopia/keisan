@@ -23,11 +23,11 @@ module Keisan
         current = Keisan::AST::Null.new
 
         loop do
-          bool = ast_function.children[0].evaluate(context)
+          bool = ast_function.children[0].deep_dup.evaluate(context)
           case bool
           when Keisan::AST::Boolean
             break unless bool.value
-            current = ast_function.children[1].evaluate(context)
+            current = ast_function.children[1].deep_dup.evaluate(context)
           else
             raise Keisan::Exceptions::InvalidFunctionError.new("while condition must evaluate to a boolean")
           end
