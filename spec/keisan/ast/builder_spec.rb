@@ -100,4 +100,11 @@ RSpec.describe Keisan::AST::Builder do
       expect(ast.value).to eq 4
     end
   end
+
+  context "multi line" do
+    it "parses correctly" do
+      ast = described_class.new(string: "f(x;,;y;;) = 5+x; f(1+2,50)**2").ast
+      expect(ast.value).to eq 64
+    end
+  end
 end
