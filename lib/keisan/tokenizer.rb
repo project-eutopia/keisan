@@ -12,7 +12,8 @@ module Keisan
       Tokens::BitwiseOperator,
       Tokens::Assignment,
       Tokens::Comma,
-      Tokens::Dot
+      Tokens::Dot,
+      Tokens::LineSeparator
     ]
 
     TOKEN_REGEX = Regexp::new(
@@ -30,6 +31,7 @@ module Keisan
     def self.strip_whitespace_and_comments(expression)
       # Remove comments
       expression = expression.split("#").first || ""
+      expression = expression.gsub(/\n/, ";")
 
       # Do not allow whitespace between variables, numbers, and the like; they must be joined by operators
       raise Keisan::Exceptions::TokenizingError.new if expression.gsub(Tokens::String.regex, "").match /\w\s+\w/

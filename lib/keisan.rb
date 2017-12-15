@@ -73,6 +73,7 @@ require "keisan/tokens/arithmetic_operator"
 require "keisan/tokens/logical_operator"
 require "keisan/tokens/bitwise_operator"
 require "keisan/tokens/word"
+require "keisan/tokens/line_separator"
 
 require "keisan/tokenizer"
 
@@ -94,6 +95,7 @@ require "keisan/parsing/square_group"
 require "keisan/parsing/list"
 require "keisan/parsing/indexing"
 require "keisan/parsing/argument"
+require "keisan/parsing/line_separator"
 
 require "keisan/parsing/operator"
 

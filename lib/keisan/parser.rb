@@ -43,6 +43,10 @@ module Keisan
       end
     end
 
+    def is_start_of_line?
+      @components.empty? || @components.last.is_a?(Keisan::Parsing::LineSeparator)
+    end
+
     # Elements are groups of tokens separated by (non-unary) operators
     # The following are basic elements:
     # number
@@ -54,7 +58,9 @@ module Keisan
     # and any number of indexing groups (square groups) at the back
     #
     def add_token_to_components!(token)
-      if @components.empty? || @components[-1].is_a?(Parsing::Operator)
+      if token.is_a?(Tokens::LineSeparator)
+        @components << Keisan::Parsing::LineSeparator.new
+      elsif is_start_of_line? || @components[-1].is_a?(Parsing::Operator)
         # Expect an element or a unary operator
         if token.type == :operator
           # Here it must be a unary operator
