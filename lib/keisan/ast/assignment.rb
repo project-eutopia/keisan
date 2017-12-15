@@ -86,7 +86,7 @@ module Keisan
           Keisan::Functions::ExpressionFunction.new(
             lhs.name,
             argument_names,
-            rhs.simplify(function_definition_context),
+            rhs,
             context.transient_definitions
           )
         )

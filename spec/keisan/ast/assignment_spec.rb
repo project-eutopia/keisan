@@ -199,5 +199,13 @@ RSpec.describe Keisan::AST::Assignment do
         expect(evaluation.value(context)).to eq 16
       end
     end
+
+    context "multiple lines inside function with if" do
+      it "should work" do
+        calculator = Keisan::Calculator.new
+        calculator.evaluate("f(x) = if(true, x = x+1; 2*x)")
+        expect(calculator.evaluate("f(3)")).to eq 8
+      end
+    end
   end
 end
