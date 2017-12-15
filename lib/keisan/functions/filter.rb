@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Filter < Keisan::Function
+    class Filter < Function
       # Filters (list, variable, expression)
       # e.g. filter([1,2,3,4], x, x % 2 == 0)
       # should give [2,4]
@@ -20,19 +20,19 @@ module Keisan
       def simplify(ast_function, context = nil)
         list, variable, expression = list_variable_expression_for(ast_function, context)
 
-        context ||= Keisan::Context.new
+        context ||= Context.new
         local = context.spawn_child(transient: false, shadowed: [variable.name])
 
-        Keisan::AST::List.new(
+        AST::List.new(
           list.children.select do |element|
             local.register_variable!(variable, element)
             result = expression.evaluate(local)
 
             case result
-            when Keisan::AST::Boolean
+            when AST::Boolean
               result.value
             else
-              raise Keisan::Exceptions::InvalidFunctionError.new("Filter requires expression to be a logical expression")
+              raise Exceptions::InvalidFunctionError.new("Filter requires expression to be a logical expression")
             end
           end
         )
@@ -42,19 +42,19 @@ module Keisan
 
       def list_variable_expression_for(ast_function, context)
         unless ast_function.children.size == 3
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to filter")
+          raise Exceptions::InvalidFunctionError.new("Require 3 arguments to filter")
         end
 
         list = ast_function.children[0].simplify(context)
         variable = ast_function.children[1]
         expression = ast_function.children[2]
 
-        unless list.is_a?(Keisan::AST::List)
-          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to filter must be a list")
+        unless list.is_a?(AST::List)
+          raise Exceptions::InvalidFunctionError.new("First argument to filter must be a list")
         end
 
-        unless variable.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("Second argument to filter must be a variable")
+        unless variable.is_a?(AST::Variable)
+          raise Exceptions::InvalidFunctionError.new("Second argument to filter must be a variable")
         end
 
         [list, variable, expression]

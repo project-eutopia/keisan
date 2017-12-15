@@ -39,25 +39,25 @@ module Keisan
         # Commutative, so pull in operands of any `Plus` operators
         @children = children.inject([]) do |new_children, cur_child|
           case cur_child
-          when AST::Plus
+          when Plus
             new_children + cur_child.children
           else
             new_children << cur_child
           end
         end
 
-        if children.all? {|child| child.is_a?(Keisan::AST::String)}
-          return Keisan::AST::String.new(children.inject("") do |result, child|
+        if children.all? {|child| child.is_a?(String)}
+          return String.new(children.inject("") do |result, child|
             result + child.value
           end)
-        elsif children.all? {|child| child.is_a?(Keisan::AST::List)}
-          return Keisan::AST::List.new(children.inject([]) do |result, child|
+        elsif children.all? {|child| child.is_a?(List)}
+          return List.new(children.inject([]) do |result, child|
             result + child.value
           end)
         end
 
-        constants, non_constants = *children.partition {|child| child.is_a?(AST::Number)}
-        constant = constants.inject(AST::Number.new(0), &:+).simplify(context)
+        constants, non_constants = *children.partition {|child| child.is_a?(Number)}
+        constant = constants.inject(Number.new(0), &:+).simplify(context)
 
         if non_constants.empty?
           constant
@@ -72,15 +72,15 @@ module Keisan
       end
 
       def differentiate(variable, context = nil)
-        AST::Plus.new(children.map {|child| child.differentiate(variable, context)}).simplify(context)
+        Plus.new(children.map {|child| child.differentiate(variable, context)}).simplify(context)
       end
 
       private
 
       def convert_minus_to_plus!
         @parsing_operators.each.with_index do |parsing_operator, index|
-          if parsing_operator.is_a?(Keisan::Parsing::Minus)
-            @children[index+1] = Keisan::AST::UnaryMinus.new(@children[index+1])
+          if parsing_operator.is_a?(Parsing::Minus)
+            @children[index+1] = UnaryMinus.new(@children[index+1])
           end
         end
       end

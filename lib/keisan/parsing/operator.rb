@@ -14,7 +14,7 @@ module Keisan
       end
 
       def node_class
-        raise Keisan::Exceptions::NotImplementedError.new
+        raise Exceptions::NotImplementedError.new
       end
     end
   end

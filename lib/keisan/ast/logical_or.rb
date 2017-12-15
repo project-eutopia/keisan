@@ -14,7 +14,7 @@ module Keisan
       end
 
       def value(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         children[0].value(context) || children[1].value(context)
       end
     end

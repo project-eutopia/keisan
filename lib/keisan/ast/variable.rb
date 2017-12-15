@@ -8,12 +8,12 @@ module Keisan
       end
 
       def value(context = nil)
-        context = Keisan::Context.new if context.nil?
+        context = Context.new if context.nil?
         context.variable(name).value(context)
       end
 
       def unbound_variables(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         context.has_variable?(name) ? Set.new : Set.new([name])
       end
 
@@ -26,12 +26,12 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         if context.has_variable?(name)
           variable = context.variable(name)
           # The variable might just be a variable, i.e. probably in function definition
-          if variable.is_a?(AST::Node)
-            variable.is_a?(AST::Variable) ? variable : variable.evaluate(context)
+          if variable.is_a?(Node)
+            variable.is_a?(Variable) ? variable : variable.evaluate(context)
           else
             variable
           end
@@ -41,7 +41,7 @@ module Keisan
       end
 
       def simplify(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         if context.has_variable?(name)
           context.variable(name).to_node.simplify(context)
         else
@@ -58,7 +58,7 @@ module Keisan
       end
 
       def differentiate(variable, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
 
         if name == variable.name && !context.has_variable?(name)
           1.to_node

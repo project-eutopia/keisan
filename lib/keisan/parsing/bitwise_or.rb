@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class BitwiseOr < BitwiseOperator
       def node_class
-        Keisan::AST::BitwiseOr
+        AST::BitwiseOr
       end
     end
   end

@@ -8,7 +8,7 @@ module Keisan
       protected
 
       def self.derivative(argument)
-        Keisan::AST::Function.new([argument], "exp")
+        AST::Function.new([argument], "exp")
       end
     end
   end

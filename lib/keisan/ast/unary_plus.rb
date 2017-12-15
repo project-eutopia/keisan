@@ -11,8 +11,8 @@ module Keisan
 
       def simplify(context = nil)
         case child
-        when AST::Number
-          AST::Number.new(child.value(context)).simplify(context)
+        when Number
+          Number.new(child.value(context)).simplify(context)
         else
           super
         end

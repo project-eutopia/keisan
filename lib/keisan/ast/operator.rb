@@ -38,7 +38,7 @@ module Keisan
 
       def initialize(children = [], parsing_operators = [])
         unless parsing_operators.empty? || children.count == parsing_operators.count + 1
-          raise Keisan::Exceptions::ASTError.new("Mismatch of children and operators")
+          raise Exceptions::ASTError.new("Mismatch of children and operators")
         end
 
         children = Array.wrap(children)
@@ -80,11 +80,11 @@ module Keisan
       end
 
       def self.symbol
-        raise Keisan::Exceptions::NotImplementedError.new
+        raise Exceptions::NotImplementedError.new
       end
 
       def blank_value
-        raise Keisan::Exceptions::NotImplementedError.new
+        raise Exceptions::NotImplementedError.new
       end
 
       def value(context = nil)
@@ -103,7 +103,7 @@ module Keisan
       def to_s
         children.map do |child|
           case child
-          when AST::Operator
+          when Operator
             "(#{child.to_s})"
           else
             "#{child.to_s}"

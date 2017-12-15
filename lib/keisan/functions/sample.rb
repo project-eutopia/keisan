@@ -12,7 +12,7 @@ module Keisan
         when 1
           args.first.sample(random: context.random)
         else
-          raise Keisan::Exceptions::InvalidFunctionError.new
+          raise Exceptions::InvalidFunctionError.new
         end
       end
     end

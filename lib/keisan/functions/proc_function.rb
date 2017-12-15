@@ -1,10 +1,10 @@
 module Keisan
   module Functions
-    class ProcFunction < Keisan::Function
+    class ProcFunction < Function
       attr_reader :function_proc
 
       def initialize(name, function_proc)
-        raise Keisan::Exceptions::InvalidFunctionError.new unless function_proc.is_a?(Proc)
+        raise Exceptions::InvalidFunctionError.new unless function_proc.is_a?(Proc)
 
         super(name)
         @function_proc = function_proc
@@ -15,13 +15,13 @@ module Keisan
       end
 
       def value(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         argument_values = ast_function.children.map {|child| child.value(context)}
         call(context, *argument_values).value(context)
       end
 
       def evaluate(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
 
         ast_function.instance_variable_set(
           :@children,
@@ -43,7 +43,7 @@ module Keisan
           ast_function.children.map {|child| child.evaluate(context)}
         )
 
-        if ast_function.children.all? {|child| child.is_a?(Keisan::AST::ConstantLiteral)}
+        if ast_function.children.all? {|child| child.is_a?(AST::ConstantLiteral)}
           value(ast_function, context).to_node.simplify(context)
         else
           ast_function

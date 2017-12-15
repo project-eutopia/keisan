@@ -17,11 +17,11 @@ module Keisan
         context ||= Context.new
 
         case child
-        when AST::Number
-          AST::Number.new(-child.value(context)).simplify(context)
+        when Number
+          Number.new(-child.value(context)).simplify(context)
         else
-          AST::Times.new([
-            AST::Number.new(-1),
+          Times.new([
+            Number.new(-1),
             child
           ]).simplify(context)
         end
@@ -29,7 +29,7 @@ module Keisan
 
       def differentiate(variable, context = nil)
         context ||= Context.new
-        AST::Times.new([
+        Times.new([
           -1.to_node,
           child.differentiate(variable, context)
         ]).simplify(context)

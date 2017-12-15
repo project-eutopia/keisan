@@ -13,10 +13,10 @@ module Keisan
 
       def +(other)
         case other
-        when AST::String
-          AST::String.new(value + other.value)
+        when String
+          String.new(value + other.value)
         else
-          raise Keisan::Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
+          raise Exceptions::TypeError.new("#{other}'s type is invalid, #{other.class}")
         end
       end
 

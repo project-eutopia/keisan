@@ -7,19 +7,19 @@ module Keisan
     end
 
     def value(ast_function, context = nil)
-      raise Keisan::Exceptions::NotImplementedError.new
+      raise Exceptions::NotImplementedError.new
     end
 
     def evaluate(ast_function, context = nil)
-      raise Keisan::Exceptions::NotImplementedError.new
+      raise Exceptions::NotImplementedError.new
     end
 
     def simplify(ast_function, context = nil)
-      raise Keisan::Exceptions::NotImplementedError.new
+      raise Exceptions::NotImplementedError.new
     end
 
     def differentiate(ast_function, variable, context = nil)
-      raise Keisan::Exceptions::NotImplementedError.new
+      raise Exceptions::NotImplementedError.new
     end
   end
 end

@@ -20,7 +20,7 @@ module Keisan
     end
 
     def reset
-      @calculator = Keisan::Calculator.new
+      @calculator = Calculator.new
     end
 
     def start

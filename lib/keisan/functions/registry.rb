@@ -19,7 +19,7 @@ module Keisan
         end
 
         return default_registry[name] if @use_defaults && default_registry.has_name?(name)
-        raise Keisan::Exceptions::UndefinedFunctionError.new name
+        raise Exceptions::UndefinedFunctionError.new name
       end
 
       def locals
@@ -28,25 +28,25 @@ module Keisan
 
       def has?(name)
         !!self[name]
-      rescue Keisan::Exceptions::UndefinedFunctionError
+      rescue Exceptions::UndefinedFunctionError
         false
       end
 
       def register!(name, function, force: false)
-        raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen functions registry") if frozen?
+        raise Exceptions::UnmodifiableError.new("Cannot modify frozen functions registry") if frozen?
         name = name.to_s
 
         if !force && @use_defaults && default_registry.has_name?(name)
-          raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default function")
+          raise Exceptions::UnmodifiableError.new("Cannot overwrite default function")
         end
 
         case function
         when Proc
-          self[name] = Keisan::Functions::ProcFunction.new(name, function)
-        when Keisan::Function
+          self[name] = ProcFunction.new(name, function)
+        when Function
           self[name] = function
         else
-          raise Keisan::Exceptions::InvalidFunctionError.new
+          raise Exceptions::InvalidFunctionError.new
         end
       end
 

@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class LogicalNotNot < UnaryOperator
       def node_class
-        Keisan::AST::UnaryIdentity
+        AST::UnaryIdentity
       end
     end
   end

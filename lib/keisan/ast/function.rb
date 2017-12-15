@@ -9,12 +9,12 @@ module Keisan
       end
 
       def value(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         function_from_context(context).value(self, context)
       end
 
       def unbound_functions(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
 
         functions = children.inject(Set.new) do |res, child|
           res | child.unbound_functions(context)
@@ -24,7 +24,7 @@ module Keisan
       end
 
       def function_defined?(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         context.has_function?(name)
       end
 
@@ -34,7 +34,7 @@ module Keisan
 
       def ==(other)
         case other
-        when AST::Function
+        when Function
           name == other.name && super
         else
           false
@@ -42,7 +42,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
 
         if function_defined?(context)
           function_from_context(context).evaluate(self, context)
@@ -71,12 +71,12 @@ module Keisan
         function = function_from_context(context)
         function.differentiate(self, variable, context)
 
-      rescue Keisan::Exceptions::UndefinedFunctionError, Keisan::Exceptions::NotImplementedError
+      rescue Exceptions::UndefinedFunctionError, Exceptions::NotImplementedError
         unless unbound_variables(context).include?(variable.name)
-          return AST::Number.new(0)
+          return Number.new(0)
         end
 
-        AST::Function.new([self, variable], "diff")
+        self.class.new([self, variable], "diff")
       end
     end
   end

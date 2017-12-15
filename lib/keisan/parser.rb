@@ -4,13 +4,13 @@ module Keisan
 
     def initialize(string: nil, tokens: nil)
       if string.nil? && tokens.nil?
-        raise Keisan::Exceptions::InternalError.new("Invalid arguments")
+        raise Exceptions::InternalError.new("Invalid arguments")
       end
 
       if !string.nil?
         @tokens = Tokenizer.new(string).tokens
       else
-        raise Keisan::Exceptions::InternalError.new("Invalid argument: tokens = #{tokens}") if tokens.nil? || !tokens.is_a?(Array)
+        raise Exceptions::InternalError.new("Invalid argument: tokens = #{tokens}") if tokens.nil? || !tokens.is_a?(Array)
         @tokens = tokens
       end
 
@@ -21,7 +21,7 @@ module Keisan
     end
 
     def ast
-      @ast ||= Keisan::AST::Builder.new(parser: self).ast
+      @ast ||= AST::Builder.new(parser: self).ast
     end
 
     private
@@ -39,7 +39,7 @@ module Keisan
 
     def remove_unary_identity!
       @components = @components.select do |component|
-        !component.is_a?(Keisan::Parsing::Operator) || !(component.node_class <= Keisan::AST::UnaryIdentity)
+        !component.is_a?(Parsing::Operator) || !(component.node_class <= AST::UnaryIdentity)
       end
     end
 
@@ -78,7 +78,7 @@ module Keisan
         when :number, :string, :word, :group, :null, :boolean
           add_element_to_components!(token)
         else
-          raise Keisan::Exceptions::ParseError.new("Expected an element, received #{token.string}")
+          raise Exceptions::ParseError.new("Expected an element, received #{token.string}")
         end
 
       elsif @components[-1].is_a?(Parsing::Element)
@@ -89,10 +89,10 @@ module Keisan
         elsif token.type == :group && token.group_type == :square
           add_indexing_to_components!(token)
         elsif token.type == :dot
-          @components << Keisan::Parsing::Dot.new
+          @components << Parsing::Dot.new
         else
           # Expect an operator
-          raise Keisan::Exceptions::ParseError.new("Expected an operator, received #{token.string}") unless token.type == :operator
+          raise Exceptions::ParseError.new("Expected an operator, received #{token.string}") unless token.type == :operator
           add_operator_to_components!(token)
         end
 
@@ -102,7 +102,7 @@ module Keisan
         when :word
           @components[-1] = Parsing::DotWord.new(token.string)
         else
-          raise Keisan::Exceptions::ParseError.new("A word must follow a dot, received #{token.string}")
+          raise Exceptions::ParseError.new("A word must follow a dot, received #{token.string}")
         end
 
       elsif @components[-1].is_a?(Parsing::DotWord)
@@ -111,59 +111,59 @@ module Keisan
           name = @components[-1].name
           @components[-1] = Parsing::DotOperator.new(name, arguments_from_group(token))
         elsif token.type == :dot
-          @components << Keisan::Parsing::Dot.new
+          @components << Parsing::Dot.new
         elsif token.type == :group && token.group_type == :square
           add_indexing_to_components!(token)
         else
-          raise Keisan::Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
+          raise Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
         end
       else
-        raise Keisan::Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
+        raise Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
       end
     end
 
     def add_unary_operator_to_components!(token)
       case token.operator_type
       when :+
-        @components << Keisan::Parsing::UnaryPlus.new
+        @components << Parsing::UnaryPlus.new
       when :-
-        @components << Keisan::Parsing::UnaryMinus.new
+        @components << Parsing::UnaryMinus.new
       when :"~"
-        @components << Keisan::Parsing::BitwiseNot.new
+        @components << Parsing::BitwiseNot.new
       when :"~~"
-        @components << Keisan::Parsing::BitwiseNotNot.new
+        @components << Parsing::BitwiseNotNot.new
       when :"!"
-        @components << Keisan::Parsing::LogicalNot.new
+        @components << Parsing::LogicalNot.new
       when :"!!"
-        @components << Keisan::Parsing::LogicalNotNot.new
+        @components << Parsing::LogicalNotNot.new
       else
-        raise Keisan::Exceptions::ParseError.new("Unhandled unary operator type #{token.operator_type}")
+        raise Exceptions::ParseError.new("Unhandled unary operator type #{token.operator_type}")
       end
     end
 
     def add_element_to_components!(token)
       case token
-      when Keisan::Tokens::Number
-        @components << Keisan::Parsing::Number.new(token.value)
-      when Keisan::Tokens::String
-        @components << Keisan::Parsing::String.new(token.value)
-      when Keisan::Tokens::Null
-        @components << Keisan::Parsing::Null.new
-      when Keisan::Tokens::Word
-        @components << Keisan::Parsing::Variable.new(token.string)
-      when Keisan::Tokens::Boolean
-        @components << Keisan::Parsing::Boolean.new(token.value)
-      when Keisan::Tokens::Group
+      when Tokens::Number
+        @components << Parsing::Number.new(token.value)
+      when Tokens::String
+        @components << Parsing::String.new(token.value)
+      when Tokens::Null
+        @components << Parsing::Null.new
+      when Tokens::Word
+        @components << Parsing::Variable.new(token.string)
+      when Tokens::Boolean
+        @components << Parsing::Boolean.new(token.value)
+      when Tokens::Group
         case token.group_type
         when :round
-          @components << Keisan::Parsing::RoundGroup.new(token.sub_tokens)
+          @components << Parsing::RoundGroup.new(token.sub_tokens)
         when :square
           @components << Parsing::List.new(arguments_from_group(token))
         else
-          raise Keisan::Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
+          raise Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
         end
       else
-        raise Keisan::Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
+        raise Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
       end
     end
 
@@ -171,54 +171,54 @@ module Keisan
       case token.operator_type
       # Assignment
       when :"="
-        @components << Keisan::Parsing::Assignment.new
+        @components << Parsing::Assignment.new
       # Arithmetic
       when :+
-        @components << Keisan::Parsing::Plus.new
+        @components << Parsing::Plus.new
       when :-
-        @components << Keisan::Parsing::Minus.new
+        @components << Parsing::Minus.new
       when :*
-        @components << Keisan::Parsing::Times.new
+        @components << Parsing::Times.new
       when :/
-        @components << Keisan::Parsing::Divide.new
+        @components << Parsing::Divide.new
       when :**
-        @components << Keisan::Parsing::Exponent.new
+        @components << Parsing::Exponent.new
       when :%
-        @components << Keisan::Parsing::Modulo.new
+        @components << Parsing::Modulo.new
       # Bitwise
       when :"&"
-        @components << Keisan::Parsing::BitwiseAnd.new
+        @components << Parsing::BitwiseAnd.new
       when :"|"
-        @components << Keisan::Parsing::BitwiseOr.new
+        @components << Parsing::BitwiseOr.new
       when :"^"
-        @components << Keisan::Parsing::BitwiseXor.new
+        @components << Parsing::BitwiseXor.new
       when :"~"
-        @components << Keisan::Parsing::BitwiseNot.new
+        @components << Parsing::BitwiseNot.new
       when :"~~"
-        @components << Keisan::Parsing::BitwiseNotNot.new
+        @components << Parsing::BitwiseNotNot.new
       # Logical
       when :"=="
-        @components << Keisan::Parsing::LogicalEqual.new
+        @components << Parsing::LogicalEqual.new
       when :"!="
-        @components << Keisan::Parsing::LogicalNotEqual.new
+        @components << Parsing::LogicalNotEqual.new
       when :"&&"
-        @components << Keisan::Parsing::LogicalAnd.new
+        @components << Parsing::LogicalAnd.new
       when :"||"
-        @components << Keisan::Parsing::LogicalOr.new
+        @components << Parsing::LogicalOr.new
       when :"!"
-        @components << Keisan::Parsing::LogicalNot.new
+        @components << Parsing::LogicalNot.new
       when :"!!"
-        @components << Keisan::Parsing::LogicalNotNot.new
+        @components << Parsing::LogicalNotNot.new
       when :">"
-        @components << Keisan::Parsing::LogicalGreaterThan.new
+        @components << Parsing::LogicalGreaterThan.new
       when :"<"
-        @components << Keisan::Parsing::LogicalLessThan.new
+        @components << Parsing::LogicalLessThan.new
       when :">="
-        @components << Keisan::Parsing::LogicalGreaterThanOrEqualTo.new
+        @components << Parsing::LogicalGreaterThanOrEqualTo.new
       when :"<="
-        @components << Keisan::Parsing::LogicalLessThanOrEqualTo.new
+        @components << Parsing::LogicalLessThanOrEqualTo.new
       else
-        raise Keisan::Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
+        raise Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
       end
     end
 
@@ -235,7 +235,7 @@ module Keisan
       if token.sub_tokens.empty?
         []
       else
-        token.sub_tokens.split {|sub_token| sub_token.is_a?(Keisan::Tokens::Comma)}.map do |sub_tokens|
+        token.sub_tokens.split {|sub_token| sub_token.is_a?(Tokens::Comma)}.map do |sub_tokens|
           Parsing::Argument.new(sub_tokens)
         end
       end

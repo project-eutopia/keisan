@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Map < Keisan::Function
+    class Map < Function
       # Maps (list, variable, expression)
       # e.g. map([1,2,3], x, 2*x)
       # should give [2,4,6]
@@ -18,12 +18,12 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         list, variable, expression = list_variable_expression_for(ast_function, context)
 
         local = context.spawn_child(transient: false, shadowed: [variable.name])
 
-        Keisan::AST::List.new(
+        AST::List.new(
           list.children.map do |element|
             local.register_variable!(variable, element)
             expression.simplified(local)
@@ -35,19 +35,19 @@ module Keisan
 
       def list_variable_expression_for(ast_function, context)
         unless ast_function.children.size == 3
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 3 arguments to map")
+          raise Exceptions::InvalidFunctionError.new("Require 3 arguments to map")
         end
 
         list = ast_function.children[0].simplify(context)
         variable = ast_function.children[1]
         expression = ast_function.children[2]
 
-        unless list.is_a?(Keisan::AST::List)
-          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to map must be a list")
+        unless list.is_a?(AST::List)
+          raise Exceptions::InvalidFunctionError.new("First argument to map must be a list")
         end
 
-        unless variable.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("Second argument to map must be a variable")
+        unless variable.is_a?(AST::Variable)
+          raise Exceptions::InvalidFunctionError.new("Second argument to map must be a variable")
         end
 
         [list, variable, expression]

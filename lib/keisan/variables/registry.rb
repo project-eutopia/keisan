@@ -16,14 +16,14 @@ module Keisan
 
       def [](name)
         return @hash[name] if @hash.has_key?(name)
-        raise Keisan::Exceptions::UndefinedVariableError.new if @shadowed.include?(name)
+        raise Exceptions::UndefinedVariableError.new if @shadowed.include?(name)
 
         if @parent && (parent_value = @parent[name])
           return parent_value
         end
 
         return default_registry[name] if @use_defaults && default_registry.has_name?(name)
-        raise Keisan::Exceptions::UndefinedVariableError.new name
+        raise Exceptions::UndefinedVariableError.new name
       end
 
       def locals
@@ -32,17 +32,17 @@ module Keisan
 
       def has?(name)
         !self[name].nil?
-      rescue Keisan::Exceptions::UndefinedVariableError
+      rescue Exceptions::UndefinedVariableError
         false
       end
 
       def register!(name, value, force: false)
         name = name.to_s
-        name = name.name if name.is_a?(Keisan::AST::Variable)
+        name = name.name if name.is_a?(AST::Variable)
 
-        raise Keisan::Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
+        raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
         if !force && @use_defaults && default_registry.has_name?(name)
-          raise Keisan::Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
+          raise Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
         end
         self[name.to_s] = value.to_node
       end

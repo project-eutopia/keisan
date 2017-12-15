@@ -2,7 +2,7 @@ module Keisan
   module Parsing
     class LogicalEqual < LogicalOperator
       def node_class
-        Keisan::AST::LogicalEqual
+        AST::LogicalEqual
       end
     end
   end

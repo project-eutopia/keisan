@@ -14,7 +14,7 @@ module Keisan
         when 2
           context.random.rand(args.first...args.last)
         else
-          raise Keisan::Exceptions::InvalidFunctionError.new
+          raise Exceptions::InvalidFunctionError.new
         end
       end
     end

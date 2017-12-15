@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Reduce < Keisan::Function
+    class Reduce < Function
       # Reduces (list, initial, accumulator, variable, expression)
       # e.g. reduce([1,2,3,4], 0, total, x, total+x)
       # should give 10
@@ -18,7 +18,7 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
         list, initial, accumulator, variable, expression = list_initial_accumulator_variable_expression_for(ast_function, context)
 
         local = context.spawn_child(transient: false, shadowed: [accumulator.name, variable.name])
@@ -37,7 +37,7 @@ module Keisan
 
       def list_initial_accumulator_variable_expression_for(ast_function, context)
         unless ast_function.children.size == 5
-          raise Keisan::Exceptions::InvalidFunctionError.new("Require 5 arguments to reduce")
+          raise Exceptions::InvalidFunctionError.new("Require 5 arguments to reduce")
         end
 
         list = ast_function.children[0].simplify(context)
@@ -46,16 +46,16 @@ module Keisan
         variable = ast_function.children[3]
         expression = ast_function.children[4]
 
-        unless list.is_a?(Keisan::AST::List)
-          raise Keisan::Exceptions::InvalidFunctionError.new("First argument to reduce must be a list")
+        unless list.is_a?(AST::List)
+          raise Exceptions::InvalidFunctionError.new("First argument to reduce must be a list")
         end
 
-        unless accumulator.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("Third argument to reduce is accumulator and must be a variable")
+        unless accumulator.is_a?(AST::Variable)
+          raise Exceptions::InvalidFunctionError.new("Third argument to reduce is accumulator and must be a variable")
         end
 
-        unless variable.is_a?(Keisan::AST::Variable)
-          raise Keisan::Exceptions::InvalidFunctionError.new("Fourth argument to reduce is variable and must be a variable")
+        unless variable.is_a?(AST::Variable)
+          raise Exceptions::InvalidFunctionError.new("Fourth argument to reduce is variable and must be a variable")
         end
 
         [list, initial, accumulator, variable, expression]
