@@ -314,6 +314,23 @@ RSpec.describe Keisan::AST::Node do
     end
   end
 
+  describe "block" do
+    it "parses into a block" do
+      context = Keisan::Context.new
+
+      ast = Keisan::AST.parse("f(x) = {a = 2; x*a}")
+      ast.evaluate(context)
+
+      expect(context.has_variable?("a")).to eq false
+
+      ast = Keisan::AST.parse("f(3)")
+      expect(ast.value(context)).to eq 6
+
+      ast = Keisan::AST.parse("f(5)")
+      expect(ast.value(context)).to eq 10
+    end
+  end
+
   describe "diff" do
     context "calling `value`" do
       it "evaluates when can fully simplify" do

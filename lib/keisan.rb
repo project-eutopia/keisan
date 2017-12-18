@@ -14,6 +14,7 @@ require "keisan/ast/string"
 require "keisan/ast/null"
 require "keisan/ast/boolean"
 
+require "keisan/ast/block"
 require "keisan/ast/parent"
 require "keisan/ast/operator"
 require "keisan/ast/assignment"

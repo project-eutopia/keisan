@@ -146,8 +146,7 @@ module Keisan
         when Parsing::RoundGroup
           Builder.new(components: component.components).node
         when Parsing::CurlyGroup
-          # TODO add AST::Block node
-          Builder.new(components: component.components).node
+          Block.new(Builder.new(components: component.components).node)
         when Parsing::Function
           AST::Function.new(
             component.arguments.map {|parsing_argument|
