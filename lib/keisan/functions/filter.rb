@@ -5,11 +5,11 @@ module Keisan
       # e.g. filter([1,2,3,4], x, x % 2 == 0)
       # should give [2,4]
       def initialize
-        @name = "filter"
+        super("filter", 3)
       end
 
       def value(ast_function, context = nil)
-        evaluate(ast_function, context = nil)
+        evaluate(ast_function, context)
       end
 
       def evaluate(ast_function, context = nil)
@@ -18,9 +18,11 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        list, variable, expression = list_variable_expression_for(ast_function, context)
+        validate_arguments!(ast_function.children.count)
 
         context ||= Context.new
+        list, variable, expression = list_variable_expression_for(ast_function, context)
+
         local = context.spawn_child(transient: false, shadowed: [variable.name])
 
         AST::List.new(
@@ -41,10 +43,6 @@ module Keisan
       private
 
       def list_variable_expression_for(ast_function, context)
-        unless ast_function.children.size == 3
-          raise Exceptions::InvalidFunctionError.new("Require 3 arguments to filter")
-        end
-
         list = ast_function.children[0].simplify(context)
         variable = ast_function.children[1]
         expression = ast_function.children[2]
