@@ -159,6 +159,8 @@ module Keisan
           @components << Parsing::RoundGroup.new(token.sub_tokens)
         when :square
           @components << Parsing::List.new(arguments_from_group(token))
+        when :curly
+          @components << Parsing::CurlyGroup.new(token.sub_tokens)
         else
           raise Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
         end

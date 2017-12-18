@@ -127,45 +127,48 @@ module Keisan
 
       def node_of_component(component)
         case component
-        when Keisan::Parsing::Number
-          Keisan::AST::Number.new(component.value)
-        when Keisan::Parsing::String
-          Keisan::AST::String.new(component.value)
-        when Keisan::Parsing::Null
-          Keisan::AST::Null.new
-        when Keisan::Parsing::Variable
-          Keisan::AST::Variable.new(component.name)
-        when Keisan::Parsing::Boolean
-          Keisan::AST::Boolean.new(component.value)
-        when Keisan::Parsing::List
-          Keisan::AST::List.new(
+        when Parsing::Number
+          AST::Number.new(component.value)
+        when Parsing::String
+          AST::String.new(component.value)
+        when Parsing::Null
+          AST::Null.new
+        when Parsing::Variable
+          AST::Variable.new(component.name)
+        when Parsing::Boolean
+          AST::Boolean.new(component.value)
+        when Parsing::List
+          AST::List.new(
             component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
             }
           )
-        when Keisan::Parsing::Group
+        when Parsing::RoundGroup
           Builder.new(components: component.components).node
-        when Keisan::Parsing::Function
-          Keisan::AST::Function.new(
+        when Parsing::CurlyGroup
+          # TODO add AST::Block node
+          Builder.new(components: component.components).node
+        when Parsing::Function
+          AST::Function.new(
             component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
             },
             component.name
           )
-        when Keisan::Parsing::DotWord
-          Keisan::AST::Function.new(
+        when Parsing::DotWord
+          AST::Function.new(
             [node_of_component(component.target)],
             component.name
           )
-        when Keisan::Parsing::DotOperator
-          Keisan::AST::Function.new(
+        when Parsing::DotOperator
+          AST::Function.new(
             [node_of_component(component.target)] + component.arguments.map {|parsing_argument|
               Builder.new(components: parsing_argument.components).node
             },
             component.name
           )
         else
-          raise Keisan::Exceptions::ASTError.new("Unhandled component, #{component}")
+          raise Exceptions::ASTError.new("Unhandled component, #{component}")
         end
       end
 
