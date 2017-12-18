@@ -624,4 +624,11 @@ RSpec.describe Keisan::AST::Node do
       end
     end
   end
+
+  describe "block" do
+    it "concatenates with semi-colons" do
+      ast = Keisan::AST.parse("f(x) = {a = 1; x + 1}")
+      binding.pry
+    end
+  end
 end

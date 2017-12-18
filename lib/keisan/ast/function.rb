@@ -8,6 +8,10 @@ module Keisan
         super(arguments)
       end
 
+      def deep_dup
+        self.class.new(children.map(&:deep_dup), name)
+      end
+
       def value(context = nil)
         context ||= Keisan::Context.new
         function_from_context(context).value(self, context)

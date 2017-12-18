@@ -156,7 +156,11 @@ module Keisan
               Builder.new(components: parsing_argument.components).node
             }
           )
-        when Keisan::Parsing::Group
+        when Keisan::Parsing::RoundGroup
+          Builder.new(components: component.components).node
+        when Keisan::Parsing::CurlyGroup
+          binding.pry
+          # TODO add AST::Block node
           Builder.new(components: component.components).node
         when Keisan::Parsing::Function
           Keisan::AST::Function.new(

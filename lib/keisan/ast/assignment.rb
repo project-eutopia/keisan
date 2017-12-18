@@ -6,7 +6,12 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        context ||= Keisan::Context.new
+        context ||= Context.new
+        simplify(context)
+      end
+
+      def simplify(context = nil)
+        context ||= Context.new
 
         lhs = children.first
         rhs = children.last
@@ -20,8 +25,9 @@ module Keisan
         end
       end
 
-      def simplify(context = nil)
-        evaluate(context)
+      def evaluate_assignments(context = nil)
+        context ||= Context.new
+        simplify(context)
       end
 
       def unbound_variables(context = nil)
@@ -55,14 +61,15 @@ module Keisan
       def evaluate_variable(context, lhs, rhs)
         rhs = rhs.evaluate(context)
 
-        unless rhs.well_defined?
+        # binding.pry
+        unless rhs.well_defined?(context)
           raise Keisan::Exceptions::InvalidExpression.new("Right hand side of assignment to variable must be well defined")
         end
 
         rhs_value = rhs.value(context)
         context.register_variable!(lhs.name, rhs_value)
-        # Return the variable assigned value
-        rhs
+        # Return the variable
+        lhs
       end
 
       def evaluate_function(context, lhs, rhs)
@@ -91,7 +98,7 @@ module Keisan
           )
         )
 
-        rhs
+        lhs
       end
     end
   end

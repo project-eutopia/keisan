@@ -23,6 +23,7 @@ RSpec.describe Keisan::AST::Assignment do
         expect(context.has_function?("f")).to eq true
         expect(context.has_function?("g")).to eq true
 
+        binding.pry
         expect(Keisan::AST.parse("f(3)").evaluate(context)).to eq Keisan::AST::Number.new(6)
         expect(Keisan::AST.parse("g(3)").evaluate(context)).to eq Keisan::AST::Number.new(36)
       end
@@ -206,6 +207,14 @@ RSpec.describe Keisan::AST::Assignment do
         calculator.evaluate("f(x) = if(true, x = x+1; 2*x)")
         expect(calculator.evaluate("f(3)")).to eq 8
       end
+    end
+  end
+
+  describe "evaluate_assignments" do
+    it "returns the left hand side and evaluates" do
+      calculator = Keisan::Calculator.new
+      expect(calculator.ast("x = y = 2").evaluate_assignments.name).to eq "x"
+      expect(calculator.ast("f(a) = g(a) = a**2").evaluate_assignments.name).to eq "f"
     end
   end
 end

@@ -37,6 +37,10 @@ module Keisan
         value(context)
       end
 
+      def evaluate_assignments(context = nil)
+        self
+      end
+
       def differentiate(variable, context = nil)
         raise Keisan::Exceptions::NonDifferentiableError.new
       end

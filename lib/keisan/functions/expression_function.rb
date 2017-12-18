@@ -5,9 +5,10 @@ module Keisan
 
       def initialize(name, arguments, expression, transient_definitions)
         super(name, arguments.count)
-        @expression = expression.deep_dup
         @arguments = arguments
         @transient_definitions = transient_definitions
+
+        @expression = expression.deep_dup.evaluate_assignments(local_context_for)
       end
 
       def call(context, *args)

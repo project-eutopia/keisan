@@ -383,6 +383,21 @@ RSpec.describe Keisan::Tokenizer do
     end
   end
 
+  context "curly braces" do
+    it "matches as a group" do
+      tokenizer = described_class.new("x = {2;4}")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Assignment,
+        Keisan::Tokens::Group
+      ])
+
+      group = tokenizer.tokens[-1]
+      expect(group.group_type).to eq :curly
+    end
+  end
+
   context "dot operator" do
     it "parses correctly" do
       tokenizer = described_class.new("[1,2,3].size()")

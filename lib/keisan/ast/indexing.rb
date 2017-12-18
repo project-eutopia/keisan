@@ -8,6 +8,10 @@ module Keisan
         @indexes = indexes
       end
 
+      def deep_dup
+        self.class.new(child, indexes)
+      end
+
       def value(context = nil)
         return child.value(context).send(:[], *indexes.map {|index| index.value(context)})
       end

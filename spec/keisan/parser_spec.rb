@@ -103,6 +103,17 @@ RSpec.describe Keisan::Parser do
         expect(group.components[2].value).to eq 5
       end
 
+      context "curly bracket multilines" do
+        it "parses correctly" do
+          parser = described_class.new(string: "f(x) = {a = 1; x+a}")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Function,
+            Keisan::Parsing::Assignment,
+            Keisan::Parsing::CurlyGroup
+          ])
+        end
+      end
+
       context "square bracket indexing" do
         it "handles simple array" do
           parser = described_class.new(string: "[1,2]")

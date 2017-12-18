@@ -11,6 +11,12 @@ module Keisan
         @children = children
       end
 
+      def evaluate_assignments(context = nil)
+        context ||= Context.new
+        @children = children.each {|child| child.evaluate_assignments(context)}
+        self
+      end
+
       def unbound_variables(context = nil)
         context ||= Keisan::Context.new
         children.inject(Set.new) do |vars, child|
@@ -23,6 +29,10 @@ module Keisan
         children.inject(Set.new) do |fns, child|
           fns | child.unbound_functions(context)
         end
+      end
+
+      def deep_dup
+        self.class.new(children.map(&:deep_dup))
       end
 
       def ==(other)
