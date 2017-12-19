@@ -32,11 +32,11 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        self
+        child.evaluate(context)
       end
 
       def simplify(context = nil)
-        self
+        child.simplify(context)
       end
 
       def replace(variable, replacement)
