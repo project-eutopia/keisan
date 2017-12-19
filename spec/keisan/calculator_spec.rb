@@ -135,7 +135,7 @@ RSpec.describe Keisan::Calculator do
         expect(calculator.evaluate("f(3)")).to eq (60 + 3**2)
         calculator.evaluate("a = 3")
         calculator.evaluate("g(x) = 0")
-        expect(calculator.evaluate("f(3)")).to eq (60 + 3**2)
+        expect(calculator.evaluate("f(3)")).to eq (90 + 3**2)
       end
     end
 

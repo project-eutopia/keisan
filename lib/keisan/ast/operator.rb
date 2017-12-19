@@ -47,6 +47,14 @@ module Keisan
         @parsing_operators = parsing_operators
       end
 
+      def evaluate_assignments(context = nil)
+        context ||= Context.new
+        @children = children.map do |child|
+          child.evaluate_assignments(context)
+        end
+        self
+      end
+
       def self.associativity_of_priority(priority)
         ASSOCIATIVITY_OF_PRIORITY[priority]
       end

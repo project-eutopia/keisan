@@ -23,6 +23,10 @@ module Keisan
         context.has_function?(name) ? functions : functions | Set.new([name])
       end
 
+      def evaluate_assignments(context = nil)
+        self
+      end
+
       def function_defined?(context = nil)
         context ||= Context.new
         context.has_function?(name)

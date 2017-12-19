@@ -24,6 +24,10 @@ module Keisan
         evaluate(context)
       end
 
+      def evaluate_assignments(context = nil)
+        evaluate(context)
+      end
+
       def unbound_variables(context = nil)
         variables = super(context)
         if is_variable_definition?
@@ -86,7 +90,7 @@ module Keisan
           Functions::ExpressionFunction.new(
             lhs.name,
             argument_names,
-            rhs.simplify(function_definition_context),
+            rhs.evaluate_assignments(function_definition_context),
             context.transient_definitions
           )
         )
