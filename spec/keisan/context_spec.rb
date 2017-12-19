@@ -155,7 +155,7 @@ RSpec.describe Keisan::Context do
       expect(my_context.variable("x").value).to eq 3
 
       nontransient_context.register_variable!("x", 5)
-      expect(my_context.variable("x").value).to eq 3
+      expect(my_context.variable("x").value).to eq 5 # Bubbled up
       expect(nontransient_context.variable("x").value).to eq 5
     end
 
