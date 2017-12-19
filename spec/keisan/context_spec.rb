@@ -39,17 +39,23 @@ RSpec.describe Keisan::Context do
 
       child_context = my_context.spawn_child
       child_context.register_variable!("x", 5)
+      child_context.register_variable!("z", 9)
       child_context.register_function!("f", Proc.new {|x| x**3})
+      child_context.register_function!("h", Proc.new {|x| x**4})
 
-      expect(my_context.variable("x").value).to eq 2
+      expect(my_context.variable("x").value).to eq 5 # Updated in child
       expect(my_context.variable("y").value).to eq 7
-      expect(my_context.function("f").call(nil, 2).value).to eq 4
+      expect{my_context.variable("z").value}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+      expect(my_context.function("f").call(nil, 2).value).to eq 8 # Updated in child
       expect(my_context.function("g").call(nil, 2).value).to eq 1
+      expect{my_context.function("h").value}.to raise_error(Keisan::Exceptions::UndefinedFunctionError)
 
       expect(child_context.variable("x").value).to eq 5
       expect(child_context.variable("y").value).to eq 7
+      expect(child_context.variable("z").value).to eq 9
       expect(child_context.function("f").call(nil, 2).value).to eq 8
       expect(child_context.function("g").call(nil, 2).value).to eq 1
+      expect(child_context.function("h").call(nil, 2).value).to eq 16
     end
 
     it "can hide parent variables with shadowed argument" do
