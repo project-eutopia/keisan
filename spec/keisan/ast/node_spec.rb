@@ -214,6 +214,18 @@ RSpec.describe Keisan::AST::Node do
       end
     end
 
+    context "function taking a list" do
+      it "evaluates correctly" do
+        calculator = Keisan::Calculator.new
+
+        calculator.evaluate("f(a) = a.size()")
+        expect(calculator.evaluate("f([1,2,3,4,5])")).to eq 5
+
+        calculator.evaluate("g(a) = {a.size()}")
+        expect(calculator.evaluate("g([1,2,3,4,5])")).to eq 5
+      end
+    end
+
     context "numbers and variables" do
       it "simplifies the expression, leaving the varible alone" do
         ast = Keisan::AST.parse("10 + x + 5 + y")
@@ -311,6 +323,30 @@ RSpec.describe Keisan::AST::Node do
     it "is right associative" do
       ast = Keisan::AST.parse("x = y = z")
       expect(ast.to_s).to eq "x=(y=z)"
+    end
+  end
+
+  describe "block" do
+    it "parses into a block" do
+      context = Keisan::Context.new
+
+      ast = Keisan::AST.parse("f(x) = {a = 2; x*a}")
+      ast.evaluate(context)
+
+      expect(context.has_variable?("a")).to eq false
+
+      ast = Keisan::AST.parse("f(3)")
+      expect(ast.value(context)).to eq 6
+
+      ast = Keisan::AST.parse("f(5)")
+      expect(ast.value(context)).to eq 10
+    end
+
+    it "works nested" do
+      calculator = Keisan::Calculator.new
+
+      calculator.evaluate("my_sum(list) = {i = 0; total = 0; while(i < list.size, {total = total + list[i]; i = i+1}); total}")
+      expect(calculator.evaluate("my_sum([1,3,5,7])")).to eq 16
     end
   end
 

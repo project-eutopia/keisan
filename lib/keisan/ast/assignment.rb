@@ -77,12 +77,14 @@ module Keisan
         argument_names = lhs.children.map(&:name)
         function_definition_context = context.spawn_child(shadowed: argument_names, transient: true)
 
-        unless rhs.unbound_variables(context) <= Set.new(argument_names)
-          raise Exceptions::InvalidExpression.new("Unbound variables found in function definition")
-        end
-
-        unless context.allow_recursive || rhs.unbound_functions(context).empty?
-          raise Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
+        # Blocks might have local variable/function definitions
+        if !rhs.is_a?(Block)
+          unless rhs.unbound_variables(context) <= Set.new(argument_names)
+            raise Exceptions::InvalidExpression.new("Unbound variables found in function definition")
+          end
+          unless context.allow_recursive || rhs.unbound_functions(context).empty?
+            raise Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
+          end
         end
 
         context.register_function!(

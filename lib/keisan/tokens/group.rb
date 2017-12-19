@@ -1,7 +1,7 @@
 module Keisan
   module Tokens
     class Group < Token
-      REGEX = /(\((?:[^\[\]\(\)]*\g<1>*)*\)|\[(?:[^\[\]\(\)]*\g<1>*)*\])/
+      REGEX = /(\((?:[^\[\]\(\)\{\}]*\g<1>*)*\)|\[(?:[^\[\]\(\)\{\}]*\g<1>*)*\]|\{(?:[^\[\]\(\)\{\}]*\g<1>*)*\})/
 
       attr_reader :sub_tokens
 
@@ -21,6 +21,8 @@ module Keisan
           :round
         when "["
           :square
+        when "{"
+          :curly
         end
       end
     end
