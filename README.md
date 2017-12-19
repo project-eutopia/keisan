@@ -173,6 +173,29 @@ calculator.evaluate("my_fact(5)")
 #=> 120
 ```
 
+##### Multiple lines and blocks
+
+Keisan understands strings which contain multiple lines.  It will evaluate each line separately, and the last line will be the the result of the total evaluation.  Lines can be separated by newlines or semi-colons.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("x = 2; y = 5\n x+y")
+#=> 7
+```
+
+The use of curly braces `{}` can be used to create block which has a new closure where variable definitions are local to the block itself.  Inside a block, external variables are still visible and re-assignable, but new variable definitions remain local.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("x = 10; y = 20")
+calculator.evaluate("{a = 100; x = 15; a+x+y}")
+#=> 135
+calculator.evaluate("x")
+#=> 15
+calculator.evaluate("a")
+#=> Keisan::Exceptions::UndefinedVariableError: a
+```
+
 ##### Lists
 
 Just like in Ruby, lists can be defined using square brackets, and indexed using square brackets
@@ -251,6 +274,15 @@ There is also a useful ternary `if` function defined
 calculator = Keisan::Calculator.new
 calculator.evaluate("2 + if(1 > 0, 10, 29)")
 #=> 12
+```
+
+For looping, you can use the basic `while` loop, which has an expression that evaluates to a boolean as the first argument, and any expression in the second argument.  This works just like the normal `while` loop.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("my_sum(a_) = {i_ = 0; total_ = 0; while(i_ < a_.size, {total_ = total_ + a_[i_]; i_ = i_ + 1}); total_}")
+calculator.evaluate("my_sum([1,3,5,7,9])")
+#=> 25
 ```
 
 ##### Bitwise operations

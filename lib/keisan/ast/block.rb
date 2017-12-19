@@ -32,11 +32,13 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        child.evaluate(context)
+        local = get_local_context(context)
+        child.evaluate(local)
       end
 
       def simplify(context = nil)
-        child.simplify(context)
+        local = get_local_context(context)
+        child.simplify(local)
       end
 
       def replace(variable, replacement)

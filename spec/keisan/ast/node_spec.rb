@@ -348,6 +348,14 @@ RSpec.describe Keisan::AST::Node do
       calculator.evaluate("my_sum(list) = {i = 0; total = 0; while(i < list.size, {total = total + list[i]; i = i+1}); total}")
       expect(calculator.evaluate("my_sum([1,3,5,7])")).to eq 16
     end
+
+    it "has local variables" do
+      calculator = Keisan::Calculator.new
+      calculator.evaluate("x = 10; y = 20")
+      expect(calculator.evaluate("{a = 100; x = 15; a+x+y}")).to eq 135
+      expect(calculator.evaluate("x+y")).to eq 35
+      expect{calculator.evaluate("a")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+    end
   end
 
   describe "diff" do
