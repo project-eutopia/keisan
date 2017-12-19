@@ -16,6 +16,10 @@ module Keisan
         "(#{child.to_s})[#{indexes.map(&:to_s).join(',')}]"
       end
 
+      def evaluate_assignments(context = nil)
+        self
+      end
+
       def evaluate(context = nil)
         context ||= Context.new
         @children = children.map {|child| child.evaluate(context)}

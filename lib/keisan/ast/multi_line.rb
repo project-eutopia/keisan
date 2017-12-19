@@ -6,6 +6,14 @@ module Keisan
         evaluate(context).value(context)
       end
 
+      def evaluate_assignments(context = nil)
+        context ||= Context.new
+        @children = children.map do |child|
+          child.evaluate_assignments(context)
+        end
+        self
+      end
+
       def evaluate(context = nil)
         context ||= Keisan::Context.new
         @children = children.map {|child| child.evaluate(context)}

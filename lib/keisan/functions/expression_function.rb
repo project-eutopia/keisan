@@ -41,7 +41,7 @@ module Keisan
           local.register_variable!(arg_name, argument_values[i].evaluate(context))
         end
 
-        expression.evaluate(local)
+        expression.evaluated(local)
       end
 
       def simplify(ast_function, context = nil)
