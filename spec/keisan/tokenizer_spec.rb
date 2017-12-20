@@ -1,12 +1,6 @@
 require "spec_helper"
 
 RSpec.describe Keisan::Tokenizer do
-  context "invalid symbols" do
-    it "raises a TokenizingError" do
-      expect { described_class.new("1 1") }.to raise_error(Keisan::Exceptions::TokenizingError)
-    end
-  end
-
   context "numbers" do
     context "integer" do
       it "gets integers correctly" do
@@ -166,7 +160,7 @@ RSpec.describe Keisan::Tokenizer do
   context "nested groups" do
     context "empty group" do
       it "has no sub tokens" do
-        tokenizer = described_class.new("(  )")
+        tokenizer = described_class.new("()")
         expect(tokenizer.tokens.count).to eq 1
         token = tokenizer.tokens.first
         expect(token).to be_a(Keisan::Tokens::Group)
@@ -177,7 +171,7 @@ RSpec.describe Keisan::Tokenizer do
 
     context "mixed braces" do
       it "works as expected" do
-        tokenizer = described_class.new("1 + (x - [ 3+4 ] + 5) - [6,7](8)")
+        tokenizer = described_class.new("1+(x-[3+4]+5)-[6,7](8)")
 
         expect(tokenizer.tokens.map(&:class)).to match_array([
           Keisan::Tokens::Number,
@@ -230,7 +224,7 @@ RSpec.describe Keisan::Tokenizer do
     end
 
     it "has nested groups properly tokenized" do
-      tokenizer = described_class.new("1 + (2 + (3+4) + 5) + (6)")
+      tokenizer = described_class.new("1+(2+(3+4)+5)+(6)")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         Keisan::Tokens::Number,
@@ -265,7 +259,7 @@ RSpec.describe Keisan::Tokenizer do
     end
 
     it "handles non nested groups properly" do
-      tokenizer = described_class.new("(1 + 2) * (3 + 4)")
+      tokenizer = described_class.new("(1+2)*(3+4)")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         Keisan::Tokens::Group,
@@ -299,7 +293,7 @@ RSpec.describe Keisan::Tokenizer do
     end
 
     it "gets correct operators" do
-      tokenizer = described_class.new("!false || true && (1 < 2)")
+      tokenizer = described_class.new("!false || true && (1<2)")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         Keisan::Tokens::LogicalOperator,
@@ -333,7 +327,7 @@ RSpec.describe Keisan::Tokenizer do
 
   context "bitwise operators" do
     it "gets correct operators" do
-      tokenizer = described_class.new("~x ^ (7 | 2) & 4")
+      tokenizer = described_class.new("~x ^ (7|2) & 4")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
         Keisan::Tokens::BitwiseOperator,
@@ -469,6 +463,20 @@ RSpec.describe Keisan::Tokenizer do
       expect(tokenizer.tokens[0].value).to eq 1
       expect(tokenizer.tokens[2].string).to eq "x"
       expect(tokenizer.tokens[4].value).to eq 3
+    end
+  end
+
+  context "function call" do
+    it "parses correctly" do
+      tokenizer = described_class.new("foo bar 11, 22")
+
+      expect(tokenizer.tokens.map(&:class)).to eq([
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Number,
+        Keisan::Tokens::Comma,
+        Keisan::Tokens::Number
+      ])
     end
   end
 end
