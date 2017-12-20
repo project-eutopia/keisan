@@ -1,5 +1,7 @@
 module Keisan
   class Parser
+    KEYWORDS = %w(let).freeze
+
     attr_reader :tokens, :components
 
     def initialize(string: nil, tokens: nil)
@@ -16,8 +18,12 @@ module Keisan
 
       @components = []
 
-      parse_components!
-      remove_unary_identity!
+      if @tokens.first&.is_a?(Tokens::Word) && KEYWORDS.include?(@tokens.first.string)
+        parse_keyword!
+      else
+        parse_components!
+        remove_unary_identity!
+      end
     end
 
     def ast
@@ -25,6 +31,13 @@ module Keisan
     end
 
     private
+
+    def parse_keyword!
+      keyword = tokens.first.string
+      @components = [
+        Parsing::Function.new(keyword, Parsing::Argument.new(tokens[1..-1]))
+      ]
+    end
 
     def parse_components!
       @unparsed_tokens = tokens.dup
