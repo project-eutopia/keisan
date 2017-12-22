@@ -106,5 +106,10 @@ RSpec.describe Keisan::AST::Builder do
       ast = described_class.new(string: "f(x;,;y;;) = 5+x; f(1+2,50)**2").ast
       expect(ast.value).to eq 64
     end
+
+    it "works with blocks and new lines too" do
+      ast = described_class.new(string: "{let x = 5; x}").ast
+      expect(ast.to_s).to eq "{let(x=5);x}"
+    end
   end
 end
