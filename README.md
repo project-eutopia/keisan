@@ -280,7 +280,7 @@ For looping, you can use the basic `while` loop, which has an expression that ev
 
 ```ruby
 calculator = Keisan::Calculator.new
-calculator.evaluate("my_sum(a_) = {i_ = 0; total_ = 0; while(i_ < a_.size, {total_ = total_ + a_[i_]; i_ = i_ + 1}); total_}")
+calculator.evaluate("my_sum(a) = {let i = 0; let total = 0; while(i < a.size, {total = total + a[i]; i = i + 1}); total}")
 calculator.evaluate("my_sum([1,3,5,7,9])")
 #=> 25
 ```
