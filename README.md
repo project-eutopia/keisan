@@ -196,6 +196,16 @@ calculator.evaluate("a")
 #=> Keisan::Exceptions::UndefinedVariableError: a
 ```
 
+By default assigning to a variable or function will bubble up to the first definition available in the parent scopes.  To assign to a local variable, you can use the `let` keyword.  The difference is illustrated below.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("x = 1; {x = 2}; x")
+#=> 2
+calculator.evaluate("x = 11; {let x = 12}; x")
+#=> 11
+```
+
 ##### Lists
 
 Just like in Ruby, lists can be defined using square brackets, and indexed using square brackets
