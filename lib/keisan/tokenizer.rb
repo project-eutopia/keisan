@@ -33,12 +33,9 @@ module Keisan
       expression = expression.split("#").first || ""
       expression = expression.gsub(/\n/, ";")
 
-      # Do not allow whitespace between variables, numbers, and the like; they must be joined by operators
-      raise Exceptions::TokenizingError.new if expression.gsub(Tokens::String.regex, "").match /\w\s+\w/
-
       # Only strip whitespace outside of strings, e.g.
       # "1 + 2 + 'hello world'" => "1+2+'hello world'"
-      expression.split(Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, "") : s}.join
+      expression.split(Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, " ") : s}.join
     end
 
     private
@@ -51,10 +48,6 @@ module Keisan
         token_string = scan_result[i]
         tokenizing_check << token_string
         token_class = TOKEN_CLASSES[i].new(token_string)
-      end
-
-      unless tokenizing_check == @expression
-        raise Exceptions::TokenizingError.new("Expected \"#{@expression}\", tokenized \"#{tokenizing_check}\"")
       end
 
       tokens

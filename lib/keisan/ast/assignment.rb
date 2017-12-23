@@ -1,6 +1,13 @@
 module Keisan
   module AST
     class Assignment < Operator
+      attr_reader :local
+
+      def initialize(children = [], parsing_operators = [], local: false)
+        super(children, parsing_operators)
+        @local = local
+      end
+
       def self.symbol
         :"="
       end
@@ -64,7 +71,7 @@ module Keisan
         end
 
         rhs_value = rhs.value(context)
-        context.register_variable!(lhs.name, rhs_value)
+        context.register_variable!(lhs.name, rhs_value, local: local)
         # Return the variable assigned value
         rhs
       end
@@ -94,7 +101,8 @@ module Keisan
             argument_names,
             rhs.evaluate_assignments(function_definition_context),
             context.transient_definitions
-          )
+          ),
+          local: local
         )
 
         rhs

@@ -1,3 +1,5 @@
+require_relative "let"
+
 require_relative "if"
 require_relative "while"
 require_relative "diff"
@@ -41,6 +43,8 @@ module Keisan
       private
 
       def self.register_defaults!(registry)
+        registry.register!(:let, Let.new, force: true)
+
         registry.register!(:if, If.new, force: true)
         registry.register!(:while, While.new, force: true)
         registry.register!(:diff, Diff.new, force: true)

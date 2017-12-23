@@ -222,4 +222,40 @@ RSpec.describe Keisan::Context do
       expect(my_context.variable("x").value).to eq 123
     end
   end
+
+  describe "local variables/functions" do
+    context "variables" do
+      it "does not bubble up to definition defined at parent context" do
+        parent = described_class.new
+        child  = parent.spawn_child(transient: false)
+
+        parent.register_variable!("x", 1)
+        child.register_variable!("x", 2)
+
+        expect(parent.variable("x").value).to eq 2
+
+        child.register_variable!("x", 3, local: true)
+
+        expect(parent.variable("x").value).to eq 2
+        expect(child.variable("x").value).to eq 3
+      end
+    end
+
+    context "functions" do
+      it "does not bubble up to definition defined at parent context" do
+        parent = described_class.new
+        child  = parent.spawn_child(transient: false)
+
+        parent.register_function!("f", Proc.new {|x| 1})
+        child.register_function!("f", Proc.new {|x| 2})
+
+        expect(parent.function("f").call(nil, 100).value).to eq 2
+
+        child.register_function!("f", Proc.new {|x| 3}, local: true)
+
+        expect(parent.function("f").call(nil, 100).value).to eq 2
+        expect(child.function("f").call(nil, 100).value).to eq 3
+      end
+    end
+  end
 end

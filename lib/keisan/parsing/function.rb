@@ -5,7 +5,7 @@ module Keisan
 
       def initialize(name, arguments)
         @name = name
-        @arguments = arguments
+        @arguments = Array.wrap(arguments)
       end
     end
   end

@@ -61,8 +61,8 @@ module Keisan
       @variable_registry.has?(name)
     end
 
-    def register_variable!(name, value)
-      if !@variable_registry.shadowed.member?(name) && (transient? || @parent&.has_variable?(name))
+    def register_variable!(name, value, local: false)
+      if !@variable_registry.shadowed.member?(name) && (transient? || !local && @parent&.has_variable?(name))
         @parent.register_variable!(name, value)
       else
         @variable_registry.register!(name, value)
@@ -77,8 +77,8 @@ module Keisan
       @function_registry.has?(name)
     end
 
-    def register_function!(name, function)
-      if transient? || @parent&.has_function?(name)
+    def register_function!(name, function, local: false)
+      if transient? || !local && @parent&.has_function?(name)
         @parent.register_function!(name, function)
       else
         @function_registry.register!(name.to_s, function)

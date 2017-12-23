@@ -345,7 +345,7 @@ RSpec.describe Keisan::AST::Node do
     it "works nested" do
       calculator = Keisan::Calculator.new
 
-      calculator.evaluate("my_sum(list) = {i = 0; total = 0; while(i < list.size, {total = total + list[i]; i = i+1}); total}")
+      calculator.evaluate("my_sum(list) = {let i = 0; let total = 0; while(i < list.size, {total = total + list[i]; i = i+1}); total}")
       expect(calculator.evaluate("my_sum([1,3,5,7])")).to eq 16
     end
 
