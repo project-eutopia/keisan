@@ -18,7 +18,12 @@ module Keisan
       end
 
       def ==(other)
-        name == other.name
+        case other
+        when Variable
+          name == other.name
+        else
+          false
+        end
       end
 
       def to_s

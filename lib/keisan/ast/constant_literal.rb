@@ -5,6 +5,15 @@ module Keisan
         self
       end
 
+      def ==(other)
+        case other
+        when ConstantLiteral
+          value == other.value
+        else
+          false
+        end
+      end
+
       def to_s
         case value
         when Rational
