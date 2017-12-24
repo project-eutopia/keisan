@@ -11,6 +11,7 @@ require_relative "rand"
 require_relative "sample"
 require_relative "math_function"
 require_relative "cmath_function"
+require_relative "erf"
 require_relative "exp"
 require_relative "log"
 require_relative "sin"
@@ -56,9 +57,49 @@ module Keisan
         registry.register!(:reduce, Reduce.new, force: true)
         registry.register!(:inject, Reduce.new, force: true)
 
-        register_builtin_math!(registry)
+        register_math!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
+      end
+
+      def self.register_math!(registry)
+        register_builtin_math!(registry)
+        register_custom_math!(registry)
+      end
+
+      def self.register_builtin_math!(registry)
+        Math.methods(false).each do |method|
+          registry.register!(
+            method,
+            Proc.new {|*args|
+              args = args.map(&:value)
+              Math.send(method, *args)
+            },
+            force: true
+          )
+        end
+      end
+
+      def self.register_custom_math!(registry)
+        factorial = Proc.new {|n|
+          (1..n).inject(1) do |res, i|
+            res * i
+          end
+        }
+        nPk = Proc.new {|n, k|
+          factorial.call(n) / factorial.call(n-k)
+        }
+        nCk = Proc.new {|n, k|
+          factorial.call(n) / factorial.call(k) / factorial.call(n-k)
+        }
+
+        registry.register!(:factorial, factorial, force: true)
+        registry.register!(:nPk, nPk, force: true)
+        registry.register!(:permute, nPk, force: true)
+        registry.register!(:nCk, nCk, force: true)
+        registry.register!(:choose, nCk, force: true)
+
+        registry.register!(:erf, Erf.new, force: true)
 
         registry.register!(:exp, Exp.new, force: true)
         registry.register!(:log, Log.new, force: true)
@@ -83,19 +124,6 @@ module Keisan
         registry.register!(:abs, Abs.new, force: true)
         registry.register!(:real, Real.new, force: true)
         registry.register!(:imag, Imag.new, force: true)
-      end
-
-      def self.register_builtin_math!(registry)
-        Math.methods(false).each do |method|
-          registry.register!(
-            method,
-            Proc.new {|*args|
-              args = args.map(&:value)
-              Math.send(method, *args)
-            },
-            force: true
-          )
-        end
       end
 
       def self.register_array_methods!(registry)

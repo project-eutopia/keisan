@@ -113,6 +113,17 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
     end
   end
 
+  context "combinatorical methods" do
+    it "works as expected" do
+      calculator = Keisan::Calculator.new
+      expect(calculator.evaluate("factorial(4)").value).to eq 24
+      expect(calculator.evaluate("nPk(10, 2)").value).to eq 90
+      expect(calculator.evaluate("10.permute(2)").value).to eq 90
+      expect(calculator.evaluate("nCk(10, 2)").value).to eq 45
+      expect(calculator.evaluate("10.choose(2)").value).to eq 45
+    end
+  end
+
   context "transcendental methods" do
     it "has correct evaluation" do
       calculator = Keisan::Calculator.new
