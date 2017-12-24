@@ -140,4 +140,27 @@ require "keisan/calculator"
 require "keisan/evaluator"
 
 module Keisan
+  def self.calculator
+    @@calculator ||= Calculator.new
+  end
+
+  def self.reset
+    @@calculator = nil
+  end
+
+  def self.[](expression)
+    simplify(expression)
+  end
+
+  def self.evaluate(expression)
+    calculator.evaluate(expression)
+  end
+
+  def self.simplify(expression)
+    calculator.simplify(expression)
+  end
+
+  def self.ast(expression)
+    calculator.ast(expression)
+  end
 end
