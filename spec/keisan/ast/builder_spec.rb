@@ -111,5 +111,32 @@ RSpec.describe Keisan::AST::Builder do
       ast = described_class.new(string: "{let x = 5; x}").ast
       expect(ast.to_s).to eq "{let(x=5);x}"
     end
+
+    it "parses with complex multi-line blocks with empty lines" do
+      calculator = Keisan::Calculator.new
+      ast = calculator.evaluate(<<-KEISAN
+                           x = 1
+                           f(y) = y**2
+
+                           foo(bar) = if (bar >= 0, bar, bar.abs() - 1)
+      KEISAN
+                         )
+
+      expect(calculator.evaluate("foo(-2)")).to eq 1
+    end
+
+    it "gives error with unmatched brace" do
+      calculator = Keisan::Calculator.new
+      expect {
+        calculator.evaluate(<<-KEISAN
+                             if (x >= 0, {
+                               pos[x]
+                             }, {
+                               neg[x.abs()-1]
+                             }
+                           KEISAN
+        )
+      }.to raise_error(Keisan::Exceptions::ParseError)
+    end
   end
 end
