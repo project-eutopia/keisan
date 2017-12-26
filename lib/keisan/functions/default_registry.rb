@@ -11,6 +11,7 @@ require_relative "rand"
 require_relative "sample"
 require_relative "math_function"
 require_relative "cmath_function"
+require_relative "erf"
 require_relative "exp"
 require_relative "log"
 require_relative "sin"
@@ -56,33 +57,14 @@ module Keisan
         registry.register!(:reduce, Reduce.new, force: true)
         registry.register!(:inject, Reduce.new, force: true)
 
-        register_builtin_math!(registry)
+        register_math!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
+      end
 
-        registry.register!(:exp, Exp.new, force: true)
-        registry.register!(:log, Log.new, force: true)
-
-        registry.register!(:sin, Sin.new, force: true)
-        registry.register!(:cos, Cos.new, force: true)
-        registry.register!(:tan, Tan.new, force: true)
-        registry.register!(:cot, Cot.new, force: true)
-        registry.register!(:sec, Sec.new, force: true)
-        registry.register!(:csc, Csc.new, force: true)
-
-        registry.register!(:sinh, Sinh.new, force: true)
-        registry.register!(:cosh, Cosh.new, force: true)
-        registry.register!(:tanh, Tanh.new, force: true)
-        registry.register!(:coth, Coth.new, force: true)
-        registry.register!(:sech, Sech.new, force: true)
-        registry.register!(:csch, Csch.new, force: true)
-
-        registry.register!(:sqrt, Sqrt.new, force: true)
-        registry.register!(:cbrt, Cbrt.new, force: true)
-
-        registry.register!(:abs, Abs.new, force: true)
-        registry.register!(:real, Real.new, force: true)
-        registry.register!(:imag, Imag.new, force: true)
+      def self.register_math!(registry)
+        register_builtin_math!(registry)
+        register_custom_math!(registry)
       end
 
       def self.register_builtin_math!(registry)
@@ -95,6 +77,33 @@ module Keisan
             },
             force: true
           )
+        end
+      end
+
+      CUSTOM_MATH_FUNCTIONS = %i(erf exp log sin cos tan cot sec csc sinh cosh tanh coth sech csch sqrt cbrt abs real imag).freeze
+
+      def self.register_custom_math!(registry)
+        factorial = Proc.new {|n|
+          (1..n).inject(1) do |res, i|
+            res * i
+          end
+        }
+        nPk = Proc.new {|n, k|
+          factorial.call(n) / factorial.call(n-k)
+        }
+        nCk = Proc.new {|n, k|
+          factorial.call(n) / factorial.call(k) / factorial.call(n-k)
+        }
+
+        registry.register!(:factorial, factorial, force: true)
+        registry.register!(:nPk, nPk, force: true)
+        registry.register!(:permute, nPk, force: true)
+        registry.register!(:nCk, nCk, force: true)
+        registry.register!(:choose, nCk, force: true)
+
+        CUSTOM_MATH_FUNCTIONS.each do |method|
+          klass = Keisan::Functions.const_get(method.to_s.capitalize)
+          registry.register!(method, klass.new, force: true)
         end
       end
 
