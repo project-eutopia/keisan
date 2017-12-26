@@ -124,5 +124,19 @@ RSpec.describe Keisan::AST::Builder do
 
       expect(calculator.evaluate("foo(-2)")).to eq 1
     end
+
+    it "gives error with unmatched brace" do
+      calculator = Keisan::Calculator.new
+      expect {
+        calculator.evaluate(<<-KEISAN
+                             if (x >= 0, {
+                               pos[x]
+                             }, {
+                               neg[x.abs()-1]
+                             }
+                           KEISAN
+        )
+      }.to raise_error(Keisan::Exceptions::ParseError)
+    end
   end
 end
