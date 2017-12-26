@@ -33,6 +33,15 @@ RSpec.describe Keisan::Calculator do
     it "can concatenate lists using +" do
       expect(calculator.evaluate("[3, 5] + [10, 11]")).to eq [3, 5, 10, 11]
     end
+
+    it "can change elements of lists" do
+      calculator.evaluate("a = [[1,2,3], [4,5,6], [7,8,9]]")
+      calculator.evaluate("a[0] = 10")
+      calculator.evaluate("a[1] = [40,50,60]")
+      calculator.evaluate("a[2][0] = 11")
+
+      expect(calculator.evaluate("a")).to eq([10, [40,50,60], [11,8,9]])
+    end
   end
 
   describe "#simplify" do

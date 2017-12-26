@@ -23,7 +23,8 @@ module Keisan
         elsif is_function_definition?
           evaluate_function(context, lhs, rhs)
         else
-          raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
+          # Try cell assignment
+          evaluate_cell_assignment(context, lhs, rhs)
         end
       end
 
@@ -62,6 +63,18 @@ module Keisan
       end
 
       private
+
+      def evaluate_cell_assignment(context, lhs, rhs)
+        lhs = lhs.evaluate(context)
+        unless lhs.is_a?(Cell)
+          raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
+        end
+
+        rhs = rhs.evaluate(context)
+
+        lhs.node = rhs
+        rhs
+      end
 
       def evaluate_variable(context, lhs, rhs)
         rhs = rhs.evaluate(context)

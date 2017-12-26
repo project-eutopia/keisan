@@ -8,8 +8,8 @@ module Keisan
       end
 
       def value(context = nil)
-        context = Context.new if context.nil?
-        context.variable(name).value(context)
+        context ||= Context.new
+        variable_node_from_context(context).value(context)
       end
 
       def unbound_variables(context = nil)
@@ -33,7 +33,8 @@ module Keisan
       def evaluate(context = nil)
         context ||= Context.new
         if context.has_variable?(name)
-          variable = context.variable(name)
+          variable = variable_node_from_context(context)
+
           # The variable might just be a variable, i.e. probably in function definition
           if variable.is_a?(Node)
             variable.is_a?(Variable) ? variable : variable.evaluate(context)
@@ -70,6 +71,16 @@ module Keisan
         else
           0.to_node
         end
+      end
+
+      private
+
+      def variable_node_from_context(context)
+        variable = context.variable(name)
+        if variable.is_a?(Cell)
+          variable = variable.node
+        end
+        variable
       end
     end
   end

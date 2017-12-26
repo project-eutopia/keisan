@@ -44,7 +44,7 @@ module Keisan
         if !force && @use_defaults && default_registry.has_name?(name)
           raise Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
         end
-        self[name.to_s] = value.to_node
+        self[name.to_s] = AST::Cell.new(value.to_node)
       end
 
       protected

@@ -216,6 +216,10 @@ calculator.evaluate("[2, 3, 5, 8]")
 #=> [2, 3, 5, 8]
 calculator.evaluate("[[1,2,3],[4,5,6],[7,8,9]][1][2]")
 #=> 6
+calculator.evaluate("a = [1,2,3]")
+calculator.evaluate("a[1] = 22")
+calculator.evaluate("a")
+#=> [1, 22, 3]
 ```
 
 They can also be concatenated using the `+` operator

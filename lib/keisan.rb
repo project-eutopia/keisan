@@ -5,6 +5,7 @@ require "keisan/version"
 require "keisan/exceptions"
 
 require "keisan/ast/node"
+require "keisan/ast/cell"
 
 require "keisan/ast/literal"
 require "keisan/ast/variable"

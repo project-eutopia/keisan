@@ -25,14 +25,11 @@ module Keisan
         @children = children.map {|child| child.evaluate(context)}
         @indexes = indexes.map {|index| index.evaluate(context)}
 
-        case child
-        when List
-          if @indexes.size == 1 && @indexes.first.is_a?(Number)
-            return child.children[@indexes.first.value(context)].evaluate(context)
-          end
+        if list = extract_list
+          list.children[@indexes.first.value(context)]
+        else
+          self
         end
-
-        self
       end
 
       def simplify(context = nil)
@@ -41,19 +38,28 @@ module Keisan
         @indexes = indexes.map {|index| index.simplify(context)}
         @children = [child.simplify(context)]
 
-        case child
-        when List
-          if @indexes.size == 1 && @indexes.first.is_a?(Number)
-            return child.children[@indexes.first.value(context)].simplify(context)
-          end
+        if list = extract_list
+          Cell.new(list.children[@indexes.first.value(context)].simplify(context))
+        else
+          self
         end
-
-        self
       end
 
       def replace(variable, replacement)
         super
         @indexes = indexes.map {|index| index.replace(variable, replacement)}
+      end
+
+      private
+
+      def extract_list
+        if child.is_a?(List)
+          child
+        elsif child.is_a?(Cell) && child.node.is_a?(List)
+          child.node
+        else
+          nil
+        end
       end
     end
   end
