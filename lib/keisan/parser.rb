@@ -44,7 +44,7 @@ module Keisan
       line_parsers.each.with_index do |line_parser, i|
         @components += line_parser.components
         if i < line_parsers.count - 1
-          @components << Keisan::Parsing::LineSeparator.new
+          @components << Parsing::LineSeparator.new
         end
       end
     end
@@ -74,7 +74,7 @@ module Keisan
     end
 
     def is_start_of_line?
-      @components.empty? || @components.last.is_a?(Keisan::Parsing::LineSeparator)
+      @components.empty? || @components.last.is_a?(Parsing::LineSeparator)
     end
 
     # Elements are groups of tokens separated by (non-unary) operators
@@ -89,7 +89,7 @@ module Keisan
     #
     def add_token_to_components!(token)
       if token.is_a?(Tokens::LineSeparator)
-        @components << Keisan::Parsing::LineSeparator.new
+        @components << Parsing::LineSeparator.new
       elsif is_start_of_line? || @components[-1].is_a?(Parsing::Operator)
         # Expect an element or a unary operator
         if token.type == :operator
@@ -109,10 +109,10 @@ module Keisan
           add_indexing_to_components!(token)
         elsif token.type == :dot
           @components << Parsing::Dot.new
-        else
-          # Expect an operator
-          raise Exceptions::ParseError.new("Expected an operator, received #{token.string}") unless token.type == :operator
+        elsif token.type == :operator
           add_operator_to_components!(token)
+        else
+          raise Exceptions::ParseError.new("Expected an operator, received #{token.string}")
         end
 
       elsif @components[-1].is_a?(Parsing::Dot)
@@ -125,24 +125,35 @@ module Keisan
         end
 
       elsif @components[-1].is_a?(Parsing::DotWord)
-        # Expect a round group
-        if token.type == :group && token.group_type == :round
-          name = @components[-1].name
-          @components[-1] = Parsing::DotOperator.new(name, arguments_from_group(token))
-        # Or indexing
-        elsif token.type == :group && token.group_type == :square
-          add_indexing_to_components!(token)
-        # Or another operation
-        elsif token.type == :dot
-          @components << Keisan::Parsing::Dot.new
-        # Or an operator
-        elsif token.type == :operator
-          add_operator_to_components!(token)
-        else
-          raise Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
-        end
+        add_token_after_dot_word!(token)
+
       else
         raise Exceptions::ParseError.new("Token cannot be parsed, #{token.string}")
+      end
+    end
+
+    def add_token_after_dot_word!(token)
+      case token.type
+      when :group
+        case token.group_type
+        when :round
+          # Here it is a method call
+          name = @components[-1].name
+          @components[-1] = Parsing::DotOperator.new(name, arguments_from_group(token))
+        when :square
+          # Here we are indexing after method call
+          add_indexing_to_components!(token)
+        else
+          raise Exceptions::ParseError.new("Cannot take curly braces after function call")
+        end
+      when :dot
+        # Chaining method calls
+        @components << Parsing::Dot.new
+      when :operator
+        # End of method call, move on to operator
+        add_operator_to_components!(token)
+      else
+        raise Exceptions::ParseError.new("Expected arguments to dot operator, received #{token.string}")
       end
     end
 
