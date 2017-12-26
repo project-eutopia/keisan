@@ -30,10 +30,10 @@ RSpec.describe "Turing machine" do
                          }
 
                          run_machine(machine) = {
-                           state = 0
-                           index = 0
+                           let state = 0
+                           let index = 0
 
-                           running = true
+                           let running = true
 
                            while(running, {
                              value = tape_value(index)
@@ -52,13 +52,51 @@ RSpec.describe "Turing machine" do
                              if (state < 0, running = false)
                            })
                          }
+
+                         busy_beaver_score(machine) = {
+                           run_machine(machine)
+                           let score = 0
+
+                           let i = 0
+                           while (i < tape_positive.size(), score = score + tape_positive[i]; i = i+1)
+
+                           let i = 0
+                           while (i < tape_negative.size(), score = score + tape_negative[i]; i = i+1)
+
+                           score
+                         }
     KEISAN
                        )
   end
 
   it "3-state busy beaver" do
     calculator.evaluate("machine = [[[1, 1, 1], [1, -1, 2]], [[1, -1, 0], [1, 1, 1]], [[1, -1, 1], [1, 0, -1]]]")
-    calculator.evaluate("run_machine(machine)")
-    expect(calculator.evaluate("(tape_positive + tape_negative).inject(0, total, value, total + value)").value).to eq 6
+    expect(calculator.evaluate("busy_beaver_score(machine)")).to eq 6
+  end
+
+  it "4-state busy beaver" do
+    calculator.evaluate(
+      <<-KEISAN
+        machine = [
+          [
+            [1, 1, 1],
+            [1, -1, 1]
+          ],
+          [
+            [1, -1, 0],
+            [0, -1, 2]
+          ],
+          [
+            [1, 1, -1],
+            [1, -1, 3]
+          ],
+          [
+            [1, 1, 3],
+            [0, 1, 0]
+          ]
+        ]
+      KEISAN
+    )
+    expect(calculator.evaluate("busy_beaver_score(machine)")).to eq 13
   end
 end
