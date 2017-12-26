@@ -34,7 +34,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
-        self
+        value(context)
       end
 
       def evaluate_assignments(context = nil)

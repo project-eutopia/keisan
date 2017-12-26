@@ -1,6 +1,26 @@
 require "spec_helper"
 
 RSpec.describe Keisan::Parser do
+  it "either string or tokens" do
+    expect{described_class.new}.to raise_error Keisan::Exceptions::InternalError
+  end
+
+  describe "ast" do
+    it "returns the AST representation of the string" do
+      parser = described_class.new(string: "1+x")
+      ast = parser.ast
+      expect(ast).to be_a(Keisan::AST::Plus)
+      expect(ast.children[0].value).to eq 1
+      expect(ast.children[1].name).to eq "x"
+    end
+  end
+
+  describe "invalid expressions" do
+    it "raises an error" do
+      expect{described_class.new(string: "x..size()")}.to raise_error Keisan::Exceptions::ParseError
+    end
+  end
+
   describe "components" do
     context "simple operations" do
       it "has correct components" do
@@ -227,6 +247,30 @@ RSpec.describe Keisan::Parser do
 
           fn = parser.components.first
           expect(fn.arguments).to match_array([])
+        end
+      end
+
+      describe "postfix notation" do
+        it "parses with or without brackets" do
+          parser = described_class.new(string: "a.size")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::DotWord
+          ])
+
+          parser = described_class.new(string: "a.size()")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::DotOperator
+          ])
+
+          parser = described_class.new(string: "a.size+nil")
+          expect(parser.components.map(&:class)).to match_array([
+            Keisan::Parsing::Variable,
+            Keisan::Parsing::DotWord,
+            Keisan::Parsing::Plus,
+            Keisan::Parsing::Null
+          ])
         end
       end
 

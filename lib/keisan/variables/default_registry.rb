@@ -1,11 +1,6 @@
 module Keisan
   module Variables
     class DefaultRegistry < Registry
-      def initialize
-        @hash = {}
-        @parent = self.class.registry
-      end
-
       VARIABLES = {
         "PI" => Math::PI,
         "E" => Math::E,

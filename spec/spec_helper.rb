@@ -1,3 +1,6 @@
+require 'coveralls'
+Coveralls.wear!
+
 require "bundler/setup"
 require "keisan"
 require "pry"

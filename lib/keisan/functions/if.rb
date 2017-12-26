@@ -6,19 +6,7 @@ module Keisan
       end
 
       def value(ast_function, context = nil)
-        context ||= Context.new
-
-        unless (2..3).cover? ast_function.children.size
-          raise Exceptions::InvalidFunctionError.new("Require 2 or 3 arguments to if")
-        end
-
-        bool = ast_function.children[0].value(context)
-
-        if bool
-          ast_function.children[1].value(context)
-        else
-          ast_function.children.size == 3 ? ast_function.children[2].value(context) : nil
-        end
+        evaluate(ast_function, context)
       end
 
       def evaluate(ast_function, context = nil)
