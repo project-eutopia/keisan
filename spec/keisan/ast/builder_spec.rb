@@ -111,5 +111,18 @@ RSpec.describe Keisan::AST::Builder do
       ast = described_class.new(string: "{let x = 5; x}").ast
       expect(ast.to_s).to eq "{let(x=5);x}"
     end
+
+    it "parses with complex multi-line blocks with empty lines" do
+      calculator = Keisan::Calculator.new
+      ast = calculator.evaluate(<<-KEISAN
+                           x = 1
+                           f(y) = y**2
+
+                           foo(bar) = if (bar >= 0, bar, bar.abs() - 1)
+      KEISAN
+                         )
+
+      expect(calculator.evaluate("foo(-2)")).to eq 1
+    end
   end
 end
