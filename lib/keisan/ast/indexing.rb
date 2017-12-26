@@ -26,7 +26,7 @@ module Keisan
         @indexes = indexes.map {|index| index.evaluate(context)}
 
         if list = extract_list
-          Cell.new(list.children[@indexes.first.value(context)].simplify(context))
+          list.children[@indexes.first.value(context)]
         else
           self
         end
