@@ -1,6 +1,6 @@
 module Keisan
   module Functions
-    class Erf < CMathFunction
+    class Erf < MathFunction
       def initialize
         super("erf")
       end
