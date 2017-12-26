@@ -1,10 +1,10 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Cell do
-  describe "delegation of methods" do
-    let(:node) { Keisan::AST::Node.new }
-    let(:cell) { described_class.new(node) }
+  let(:node) { Keisan::AST::Node.new }
+  let(:cell) { described_class.new(node) }
 
+  describe "delegation of methods" do
     %i(unbound_variables unbound_functions value evaluate simplify evaluate_assignments to_s).each do |method|
       it "delegates #{method} to internal node" do
         expect(node).to receive(method)
@@ -23,6 +23,12 @@ RSpec.describe Keisan::AST::Cell do
       number = Keisan::AST::Number.new(5)
       expect(node).to receive(:replace).with(variable, number)
       cell.replace(variable, number)
+    end
+  end
+
+  describe "#to_node" do
+    it "returns internal node" do
+      expect(cell.to_node).to eq node
     end
   end
 end
