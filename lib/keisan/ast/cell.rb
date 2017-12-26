@@ -1,7 +1,7 @@
 module Keisan
   module AST
     class Cell < Node
-      attr_reader :node
+      attr_accessor :node
 
       def initialize(node)
         @node = node
@@ -50,6 +50,10 @@ module Keisan
 
       def to_s
         node.to_s
+      end
+
+      def to_node
+        node
       end
     end
   end
