@@ -192,6 +192,16 @@ RSpec.describe Keisan::AST::Assignment do
           end
         end
       end
+
+      context "multi-line RHS" do
+        it "evaluates the whole line" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("f(x) = (12; 24)")
+          expect(calculator.evaluate("f(3)").value).to eq 24
+          calculator.evaluate("g(x) = (x = x + 1; x**2)")
+          expect(calculator.evaluate("g(3)").value).to eq 16
+        end
+      end
     end
 
     context "function that uses previously defined variable" do
