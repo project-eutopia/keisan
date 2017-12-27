@@ -36,14 +36,15 @@ module Keisan
         false
       end
 
+      def modifiable?(name)
+        !frozen? && has?(name)
+      end
+
       def register!(name, value, force: false)
         name = name.to_s
         name = name.name if name.is_a?(AST::Variable)
 
         raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
-        if !force && @use_defaults && default_registry.has_name?(name)
-          raise Exceptions::UnmodifiableError.new("Cannot overwrite default variable")
-        end
         self[name.to_s] = AST::Cell.new(value.to_node)
       end
 
