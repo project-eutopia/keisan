@@ -51,8 +51,15 @@ module Keisan
 
     def parse_keyword!
       keyword = tokens.first.string
+      arguments = if tokens[1].is_a?(Tokens::Group)
+                    tokens[1].sub_tokens.split {|token| token.is_a?(Tokens::Comma)}.map {|argument_tokens|
+                      Parsing::Argument.new(argument_tokens)
+                    }
+                  else
+                    Parsing::Argument.new(tokens[1..-1])
+                  end
       @components = [
-        Parsing::Function.new(keyword, Parsing::Argument.new(tokens[1..-1]))
+        Parsing::Function.new(keyword, arguments)
       ]
     end
 

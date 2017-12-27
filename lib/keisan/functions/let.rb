@@ -1,13 +1,12 @@
 module Keisan
   module Functions
-    class Let < Keisan::Function
+    class Let < Function
       def initialize
-        super("let", Range.new(1,2))
+        super("let", ::Range.new(1,2))
       end
 
       def value(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
-        assignment(ast_function).value(context)
+        evaluate(ast_function, context)
       end
 
       def evaluate(ast_function, context = nil)
@@ -16,8 +15,7 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
-        assignment(ast_function).simplify(context)
+        evaluate(ast_function, context)
       end
 
       private

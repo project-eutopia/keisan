@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/project-eutopia/keisan.png?branch=master)](https://travis-ci.org/project-eutopia/keisan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Hakiri](https://hakiri.io/github/project-eutopia/keisan/master.svg)](https://hakiri.io/github/project-eutopia/keisan)
+[![Maintainability](https://api.codeclimate.com/v1/badges/760e213d5ea81bca4480/maintainability)](https://codeclimate.com/github/project-eutopia/keisan/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/project-eutopia/keisan/badge.svg?branch=master)](https://coveralls.io/github/project-eutopia/keisan?branch=master)
 
 Keisan ([計算, to calculate](https://en.wiktionary.org/wiki/%E8%A8%88%E7%AE%97#Japanese)) is a Ruby library for parsing equations into an abstract syntax tree.  This allows for safe evaluation of string representations of mathematical/logical expressions.  It also has support for variables, functions, conditionals, and loops, making it a Turing complete programming language.

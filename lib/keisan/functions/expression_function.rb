@@ -98,12 +98,6 @@ module Keisan
         end
       end
 
-      def verify_argument_size!(argument_size)
-        unless @arguments.count == argument_size
-          raise Exceptions::InvalidFunctionError.new("Invalid number of arguments for #{name} function")
-        end
-      end
-
       def local_context_for(context = nil)
         context ||= Context.new
         context.spawn_child(definitions: @transient_definitions, shadowed: @arguments, transient: true)
