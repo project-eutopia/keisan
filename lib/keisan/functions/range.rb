@@ -6,37 +6,12 @@ module Keisan
       end
 
       def call(context, *args)
-        case args.count
-        when 1
-          (0...args[0]).to_a
-        when 2
-          (args[0]...args[1]).to_a
-        when 3
-          current = args[0]
-          final = args[1]
-          shift = args[2]
+        start, finish, shift = start_finish_shift_from_args(*args)
 
-          if shift == 0 or !shift.is_a?(Integer)
-            raise Keisan::Exceptions::InvalidFunctionError.new("range's 3rd argument must be non-zero integer")
-          end
-
-          result = []
-
-          if shift > 0
-            while current < final
-              result << current
-              current += shift
-            end
-          else
-            while current > final
-              result << current
-              current += shift
-            end
-          end
-
-          result
+        if shift == 1
+          start_finish_range(start, finish)
         else
-          raise Keisan::Exceptions::InvalidFunctionError.new("range takes 1 to 3 arguments")
+          start_finish_shift_range(start, finish, shift)
         end
       end
 
@@ -61,6 +36,37 @@ module Keisan
           Keisan::AST::List.new(call(context, *simplified_children.map(&:value)))
         else
           Keisan::AST::Function.new(simplified_children, "range")
+        end
+      end
+
+      private
+
+      def start_finish_shift_from_args(*args)
+        case args.count
+        when 1
+          [0, args[0], 1]
+        when 2
+          [args[0], args[1], 1]
+        when 3
+          [args[0], args[1], args[2]]
+        else
+          [0, 0, 0]
+        end
+      end
+
+      def start_finish_range(start, finish)
+        (start...finish).to_a
+      end
+
+      def start_finish_shift_range(start, finish, shift)
+        if shift == 0 or !shift.is_a?(Integer)
+          raise Keisan::Exceptions::InvalidFunctionError.new("shift argument for Range must be non-zero integer")
+        end
+
+        if shift > 0
+          (start...finish).select {|i| (i - start) % shift == 0}
+        else
+          (finish+1...start+1).select {|i| (i - finish) % shift == 0}.reverse
         end
       end
     end
