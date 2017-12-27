@@ -661,5 +661,26 @@ RSpec.describe Keisan::Parser do
         ])
       end
     end
+
+    context "hash definition" do
+      it "parses the hash correctly" do
+        parser = described_class.new(string: "{'foo': 1, 'bar': x**2 + 1}")
+
+        expect(parser.components.map(&:class)).to eq([Keisan::Parsing::Hash])
+
+        expect(parser.components.first.key_value_pairs[0][0].value).to eq "foo"
+        expect(parser.components.first.key_value_pairs[0][1]).to be_a(Keisan::Parsing::RoundGroup)
+        expect(parser.components.first.key_value_pairs[1][0].value).to eq "bar"
+        expect(parser.components.first.key_value_pairs[1][1]).to be_a(Keisan::Parsing::RoundGroup)
+
+        expect(parser.components.first.key_value_pairs[1][1].components.map(&:class)).to eq([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::Exponent,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::Plus,
+          Keisan::Parsing::Number
+        ])
+      end
+    end
   end
 end

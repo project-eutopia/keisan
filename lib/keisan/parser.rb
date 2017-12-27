@@ -202,7 +202,11 @@ module Keisan
         when :square
           @components << Parsing::List.new(arguments_from_group(token))
         when :curly
-          @components << Parsing::CurlyGroup.new(token.sub_tokens)
+          if token.sub_tokens.any? {|token| token.is_a?(Tokens::Colon)}
+            @components << Parsing::Hash.new(token.sub_tokens.split {|token| token.is_a?(Tokens::Comma)})
+          else
+            @components << Parsing::CurlyGroup.new(token.sub_tokens)
+          end
         else
           raise Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
         end
