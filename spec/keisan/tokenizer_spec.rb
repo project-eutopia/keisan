@@ -479,4 +479,19 @@ RSpec.describe Keisan::Tokenizer do
       ])
     end
   end
+
+  context "hash definition" do
+    it "parses correctly" do
+      tokenizer = described_class.new("{'foo': 'bar'}")
+
+      expect(tokenizer.tokens.map(&:class)).to eq([
+        Keisan::Tokens::Group
+      ])
+      expect(tokenizer.tokens.first.sub_tokens.map(&:class)).to eq([
+        Keisan::Tokens::String,
+        Keisan::Tokens::Colon,
+        Keisan::Tokens::String
+      ])
+    end
+  end
 end

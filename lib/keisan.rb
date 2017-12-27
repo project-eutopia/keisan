@@ -65,6 +65,7 @@ require "keisan/context"
 
 require "keisan/token"
 require "keisan/tokens/comma"
+require "keisan/tokens/colon"
 require "keisan/tokens/dot"
 require "keisan/tokens/group"
 require "keisan/tokens/number"

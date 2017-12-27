@@ -12,6 +12,7 @@ module Keisan
       Tokens::BitwiseOperator,
       Tokens::Assignment,
       Tokens::Comma,
+      Tokens::Colon,
       Tokens::Dot,
       Tokens::LineSeparator
     ]
