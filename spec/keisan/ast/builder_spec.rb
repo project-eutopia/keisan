@@ -77,6 +77,15 @@ RSpec.describe Keisan::AST::Builder do
       my_context.register_function!("f", Proc.new { [3,5,7] })
       expect(described_class.new(string: "f()").ast.value(my_context)).to eq [3,5,7]
       expect(described_class.new(string: "f()[1]").ast.value(my_context)).to eq 5
+      expect(described_class.new(string: "[1,2,3][3]").ast.value(my_context)).to eq nil
+    end
+  end
+
+  context "hash" do
+    it "properly parses" do
+      expect(described_class.new(string: "{'foo': 1+2, 'bar': 3*4}['foo']").ast.value).to eq 3
+      expect(described_class.new(string: "{'foo': 1+2, 'bar': 3*4}['bar']").ast.value).to eq 12
+      expect(described_class.new(string: "{'foo': 1+2, 'bar': 3*4}['baz']").ast.value).to eq nil
     end
   end
 

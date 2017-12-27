@@ -26,23 +26,18 @@ module Keisan
         @indexes = indexes.map {|index| index.evaluate(context)}
 
         if list = extract_list
-          list.children[@indexes.first.value(context)]
+          element = list.children[@indexes.first.value(context)]
+          element.nil? ? null_cell : element
+        elsif hash = extract_hash
+          element = hash[@indexes.first.value(context)]
+          element.nil? ? null_cell : element
         else
           self
         end
       end
 
       def simplify(context = nil)
-        context ||= Context.new
-
-        @indexes = indexes.map {|index| index.simplify(context)}
-        @children = [child.simplify(context)]
-
-        if list = extract_list
-          Cell.new(list.children[@indexes.first.value(context)].simplify(context))
-        else
-          self
-        end
+        evaluate(context)
       end
 
       def replace(variable, replacement)
@@ -52,10 +47,24 @@ module Keisan
 
       private
 
+      def null_cell
+        AST::Cell.new(AST::Null.new)
+      end
+
       def extract_list
         if child.is_a?(List)
           child
         elsif child.is_a?(Cell) && child.node.is_a?(List)
+          child.node
+        else
+          nil
+        end
+      end
+
+      def extract_hash
+        if child.is_a?(AST::Hash)
+          child
+        elsif child.is_a?(Cell) && child.node.is_a?(AST::Hash)
           child.node
         else
           nil

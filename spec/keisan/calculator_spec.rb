@@ -44,6 +44,34 @@ RSpec.describe Keisan::Calculator do
     end
   end
 
+  context "hash operations" do
+    it "evaluates hashes" do
+      expect(calculator.evaluate("{'a': 1, 'b': 2}")).to eq({"a" => 1, "b" => 2})
+    end
+
+    it "can index hashes" do
+      expect(calculator.evaluate("{'foo': 1, 'bar': 2}['foo']")).to eq 1
+      expect(calculator.evaluate("{'foo': 1, 'bar': 2}['b'+'ar']")).to eq 2
+      expect(calculator.evaluate("{'foo': 1, 'bar': 2}['baz']")).to eq nil
+    end
+
+    it "can change elements of hashes" do
+      calculator.evaluate("h = {'foo': 100, 'bar': 200}")
+
+      expect {
+        calculator.evaluate("h['foo'] = nil")
+      }.to change {
+        calculator.evaluate("h['foo']")
+      }.from(100).to(nil)
+
+      expect {
+        calculator.evaluate("h['baz'] = 300")
+      }.to change {
+        calculator.evaluate("h['baz']")
+      }.from(nil).to(300)
+    end
+  end
+
   describe "#simplify" do
     it "allows for undefined variables to still exist and returns a string representation of the expression" do
       expect{calculator.evaluate("0*x+1")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)

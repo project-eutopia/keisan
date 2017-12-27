@@ -436,7 +436,7 @@ RSpec.describe Keisan::AST::Node do
     context "arithmetic operations" do
       it "prints out the AST as a string expression, wrapping operators in brackets" do
         ast = Keisan::AST.parse("-15 + x**4 * 3 + sin(y)*(1+(-1))+f(z+1,w+1)[2]")
-        expect(ast.simplified.to_s).to eq "-15+(3*(x**4))+((f(1+z,1+w))[2])"
+        expect(ast.simplified.to_s).to eq "-15+(3*(x**4))+((f(z+1,w+1))[2])"
         expect(Keisan::AST.parse(ast.to_s)).to eq ast
       end
     end
