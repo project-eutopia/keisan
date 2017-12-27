@@ -27,10 +27,10 @@ module Keisan
 
         if list = extract_list
           element = list.children[@indexes.first.value(context)]
-          element.nil? ? null_cell : element
+          element.nil? ? AST::Null.new : element
         elsif hash = extract_hash
           element = hash[@indexes.first.value(context)]
-          element.nil? ? null_cell : element
+          element.nil? ? AST::Null.new : element
         else
           self
         end
@@ -46,10 +46,6 @@ module Keisan
       end
 
       private
-
-      def null_cell
-        AST::Cell.new(AST::Null.new)
-      end
 
       def extract_list
         if child.is_a?(List)

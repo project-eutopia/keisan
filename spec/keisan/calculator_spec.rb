@@ -39,6 +39,7 @@ RSpec.describe Keisan::Calculator do
       calculator.evaluate("a[0] = 10")
       calculator.evaluate("a[1] = [40,50,60]")
       calculator.evaluate("a[2][0] = 11")
+      expect{calculator.evaluate("a[3] = 5")}.to raise_error(Keisan::Exceptions::InvalidExpression)
 
       expect(calculator.evaluate("a")).to eq([10, [40,50,60], [11,8,9]])
     end
