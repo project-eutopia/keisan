@@ -48,6 +48,7 @@ require "keisan/ast/logical_less_than_or_equal_to"
 require "keisan/ast/logical_greater_than_or_equal_to"
 require "keisan/ast/function"
 require "keisan/ast/list"
+require "keisan/ast/hash"
 require "keisan/ast/indexing"
 
 require "keisan/ast/line_builder"
