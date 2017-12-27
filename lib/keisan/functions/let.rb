@@ -6,8 +6,7 @@ module Keisan
       end
 
       def value(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
-        assignment(ast_function).value(context)
+        evaluate(ast_function, context)
       end
 
       def evaluate(ast_function, context = nil)
@@ -16,8 +15,7 @@ module Keisan
       end
 
       def simplify(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
-        assignment(ast_function).simplify(context)
+        evaluate(ast_function, context)
       end
 
       private
