@@ -3,5 +3,20 @@
 require "bundler/setup"
 require "keisan"
 require "keisan/repl"
+require "keisan/interpreter"
 
-Keisan::Repl.new.start
+if ARGV.count == 0
+  Keisan::Repl.new.start
+else
+  file_name = nil
+  allow_recursive = false
+
+  ARGV.each do |arg|
+    if arg == "--allow_recursive"
+      allow_recursive = true
+    else
+      file_name = arg
+    end
+  end
+  Keisan::Interpreter.new(allow_recursive: allow_recursive).run(file_name)
+end

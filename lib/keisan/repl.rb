@@ -1,4 +1,3 @@
-require "pry"
 require "readline"
 
 module Keisan
