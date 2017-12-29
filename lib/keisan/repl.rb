@@ -1,3 +1,4 @@
+require "coderay"
 require "readline"
 
 module Keisan

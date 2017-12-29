@@ -21,13 +21,20 @@ module Keisan
     end
 
     def run_from_file(file_name)
-      run_on_content File.open(file_name) do |file|
-        file.read
-      end
+      run_on_content(
+        File.exists?(file_name) ? File.open(file_name) do |file|
+          file.read
+        end : ""
+      )
     end
 
     def run_on_content(content)
-      calculator.evaluate(content)
+      content = content.strip
+      if content.nil? || content.empty?
+        Repl.new.start
+      else
+        calculator.evaluate(content)
+      end
     end
   end
 end

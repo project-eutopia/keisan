@@ -14,4 +14,5 @@ ARGV.each do |arg|
     file_name = arg
   end
 end
+
 Keisan::Interpreter.new(allow_recursive: allow_recursive).run(file_name)
