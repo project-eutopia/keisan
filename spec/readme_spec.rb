@@ -13,7 +13,7 @@ RSpec.describe "README.md" do
       digest = Digest::SHA256.hexdigest(content)
 
       # cat README.md | sha256sum
-      expected_digest = "ceca07925099af54db28079b7ae408bbf1d478ebe96c26c0deb1c1b0a458e194"
+      expected_digest = "ec824b6fb3574ec4c5ffab47e4c39c86573fad0f3fd7c73a8c24e55c32fee9fc"
       if digest != expected_digest
         raise "Invalid README file detected with SHA256 digest of #{digest}. Use command `cat README.md | sha256sum` to get correct digest if your changes to the README are safe. Aborting README test."
       end
@@ -25,7 +25,11 @@ RSpec.describe "README.md" do
 
         outputs = code_block.map do |line|
           begin
-            eval(line, b)
+            # Capture output of any `puts` statements
+            $stdout = StringIO.new
+            result = eval(line, b)
+            $stdout = STDOUT
+            result
           rescue Keisan::Exceptions::BaseError => e
             e
           end

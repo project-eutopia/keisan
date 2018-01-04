@@ -425,6 +425,14 @@ calculator.evaluate("replace(diff(f(2*t, t+1), t), t, 3)")
 #=> 1+8*3
 ```
 
+There is also a `puts` function that can be used to output the result of an expression to STDOUT.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("x = 5")
+calculator.evaluate("puts x**2") # prints "25\n" to STDOUT
+```
+
 ### Adding custom variables and functions
 
 The `Keisan::Calculator` class has a single `Keisan::Context` object in its `context` attribute.  This class is used to store local variables and functions.  These can be stored using either the `define_variable!` or `define_function!` methods, or by using the assignment operator `=` in an expression that is evaluated.  As an example of pre-defining some variables and functions, see the following
