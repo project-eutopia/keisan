@@ -12,6 +12,7 @@ module Keisan
       def evaluate(ast_function, context = nil)
         validate_arguments!(ast_function.children.count)
         puts ast_function.children.first.evaluate(context).to_s
+        Keisan::AST::Null.new
       end
 
       def simplify(ast_function, context = nil)
