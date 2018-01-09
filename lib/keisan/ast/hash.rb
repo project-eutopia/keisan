@@ -49,7 +49,7 @@ module Keisan
       end
 
       def to_s
-        "{#{@hash.map {|k,v| "'#{k}': #{v}"}.join(',')}}"
+        "{#{@hash.map {|k,v| "'#{k}': #{v}"}.join(', ')}}"
       end
 
       private

@@ -60,16 +60,26 @@ RSpec.describe Keisan::Calculator do
       calculator.evaluate("h = {'foo': 100, 'bar': 200}")
 
       expect {
-        calculator.evaluate("h['foo'] = nil")
+        calculator.evaluate("h['foo'] = 99")
       }.to change {
         calculator.evaluate("h['foo']")
-      }.from(100).to(nil)
+      }.from(100).to(99)
 
       expect {
         calculator.evaluate("h['baz'] = 300")
       }.to change {
         calculator.evaluate("h['baz']")
       }.from(nil).to(300)
+
+      calculator.evaluate("my_string = 'fo'")
+      expect(calculator.evaluate("h[my_string + 'o']")).to eq 99
+    end
+
+    describe "#to_s" do
+      it "outputs correct hash format" do
+        hash_string = "{'a': 1, 'b': 2}"
+        expect(calculator.ast(hash_string).to_s).to eq hash_string
+      end
     end
   end
 
