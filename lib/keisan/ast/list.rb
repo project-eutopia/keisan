@@ -14,10 +14,7 @@ module Keisan
       end
 
       def simplify(context = nil)
-        context ||= Context.new
-        super(context)
-        cellify!
-        self
+        evaluate(context)
       end
 
       def value(context = nil)

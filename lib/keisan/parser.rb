@@ -196,18 +196,26 @@ module Keisan
       when Tokens::Boolean
         @components << Parsing::Boolean.new(token.value)
       when Tokens::Group
-        case token.group_type
-        when :round
-          @components << Parsing::RoundGroup.new(token.sub_tokens)
-        when :square
-          @components << Parsing::List.new(arguments_from_group(token))
-        when :curly
-          @components << Parsing::CurlyGroup.new(token.sub_tokens)
-        else
-          raise Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
-        end
+        add_group_element_components!(token)
       else
         raise Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
+      end
+    end
+
+    def add_group_element_components!(token)
+      case token.group_type
+      when :round
+        @components << Parsing::RoundGroup.new(token.sub_tokens)
+      when :square
+        @components << Parsing::List.new(arguments_from_group(token))
+      when :curly
+        if token.sub_tokens.any? {|token| token.is_a?(Tokens::Colon)}
+          @components << Parsing::Hash.new(token.sub_tokens.split {|token| token.is_a?(Tokens::Comma)})
+        else
+          @components << Parsing::CurlyGroup.new(token.sub_tokens)
+        end
+      else
+        raise Exceptions::ParseError.new("Unhandled group type #{token.group_type}")
       end
     end
 

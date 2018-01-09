@@ -66,9 +66,20 @@ module KeisanArray
   end
 end
 
+module KeisanHash
+  def to_node
+    Keisan::AST::Hash.new(map {|k,v| [k.to_node, v.to_node]})
+  end
+
+  def value(context = nil)
+    self
+  end
+end
+
 class Numeric; prepend KeisanNumeric; end
 class String; prepend KeisanString; end
 class TrueClass; prepend KeisanTrueClass; end
 class FalseClass; prepend KeisanFalseClass; end
 class NilClass; prepend KeisanNilClass; end
 class Array; prepend KeisanArray; end
+class Hash; prepend KeisanHash; end

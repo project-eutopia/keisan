@@ -143,6 +143,15 @@ module Keisan
               Builder.new(components: parsing_argument.components).node
             }
           )
+        when Parsing::Hash
+          AST::Hash.new(
+            component.key_value_pairs.map {|key_value_pair|
+              [
+                Builder.new(components: [key_value_pair[0]]).node,
+                Builder.new(components: key_value_pair[1].components).node
+              ]
+            }
+          )
         when Parsing::RoundGroup
           Builder.new(components: component.components).node
         when Parsing::CurlyGroup

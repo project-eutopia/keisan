@@ -39,8 +39,47 @@ RSpec.describe Keisan::Calculator do
       calculator.evaluate("a[0] = 10")
       calculator.evaluate("a[1] = [40,50,60]")
       calculator.evaluate("a[2][0] = 11")
+      expect{calculator.evaluate("a[3] = 5")}.to raise_error(Keisan::Exceptions::InvalidExpression)
 
       expect(calculator.evaluate("a")).to eq([10, [40,50,60], [11,8,9]])
+    end
+  end
+
+  context "hash operations" do
+    it "evaluates hashes" do
+      expect(calculator.evaluate("{'a': 1, 'b': 2}")).to eq({"a" => 1, "b" => 2})
+    end
+
+    it "can index hashes" do
+      expect(calculator.evaluate("{'foo': 1, 'bar': 2}['foo']")).to eq 1
+      expect(calculator.evaluate("{'foo': 1, 'bar': 2}['b'+'ar']")).to eq 2
+      expect(calculator.evaluate("{'foo': 1, 'bar': 2}['baz']")).to eq nil
+    end
+
+    it "can change elements of hashes" do
+      calculator.evaluate("h = {'foo': 100, 'bar': 200}")
+
+      expect {
+        calculator.evaluate("h['foo'] = 99")
+      }.to change {
+        calculator.evaluate("h['foo']")
+      }.from(100).to(99)
+
+      expect {
+        calculator.evaluate("h['baz'] = 300")
+      }.to change {
+        calculator.evaluate("h['baz']")
+      }.from(nil).to(300)
+
+      calculator.evaluate("my_string = 'fo'")
+      expect(calculator.evaluate("h[my_string + 'o']")).to eq 99
+    end
+
+    describe "#to_s" do
+      it "outputs correct hash format" do
+        hash_string = "{'a': 1, 'b': 2}"
+        expect(calculator.ast(hash_string).to_s).to eq hash_string
+      end
     end
   end
 
