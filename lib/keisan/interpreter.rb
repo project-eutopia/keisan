@@ -1,3 +1,5 @@
+require "keisan/repl"
+
 module Keisan
   class Interpreter
     attr_reader :calculator
@@ -17,7 +19,7 @@ module Keisan
     private
 
     def run_from_stdin
-      run_on_content STDIN.read
+      run_on_content STDIN.tty? ? "" : STDIN.read
     end
 
     def run_from_file(file_name)
