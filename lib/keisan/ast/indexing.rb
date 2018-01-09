@@ -25,15 +25,7 @@ module Keisan
         @children = children.map {|child| child.evaluate(context)}
         @indexes = indexes.map {|index| index.evaluate(context)}
 
-        if list = extract_list
-          element = list.children[@indexes.first.value(context)]
-          element.nil? ? AST::Null.new : element
-        elsif hash = extract_hash
-          element = hash[@indexes.first.value(context)]
-          element.nil? ? AST::Null.new : element
-        else
-          self
-        end
+        evaluate_list(context) || evaluate_hash(context) || self
       end
 
       def simplify(context = nil)
@@ -46,6 +38,20 @@ module Keisan
       end
 
       private
+
+      def evaluate_list(context)
+        if list = extract_list
+          element = list.children[@indexes.first.value(context)]
+          element.nil? ? AST::Null.new : element
+        end
+      end
+
+      def evaluate_hash(context)
+        if hash = extract_hash
+          element = hash[@indexes.first.value(context)]
+          element.nil? ? AST::Null.new : element
+        end
+      end
 
       def extract_list
         if child.is_a?(List)
