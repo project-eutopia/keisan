@@ -270,6 +270,25 @@ calculator.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")
 #=> 120
 ```
 
+##### Hashes
+
+Keisan also supports associative arrays (hashes), which map strings to some value.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("my_hash = {'foo': 3*4, \"bar\": \"hello world\"}")
+calculator.evaluate("my_hash['foo']")
+#=> 12
+calculator.evaluate("s = 'ba'")
+calculator.evaluate("my_hash[s + 'r']")
+#=> "hello world"
+calculator.evaluate("my_hash['baz']")
+#=> nil
+calculator.evaluate("my_hash['baz'] = 999")
+calculator.evaluate("my_hash['baz']")
+#=> 999
+```
+
 ##### Logical operations
 
 `keisan` understands basic boolean logic operators, like `<`, `<=`, `>`, `>=`, `&&`, `||`, `!`, so calculations like the following are possible
