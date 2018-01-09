@@ -57,8 +57,8 @@ module Keisan
       def stringify_and_cellify!
         @hash = ::Hash[
           @hash.map do |key, val|
-            key = key.is_a?(AST::String) ? key.value : key
-            val = val.is_a?(Cell) ? val : Cell.new(val)
+            key = key.value if key.is_a?(AST::String)
+            val = Cell.new(val) unless val.is_a?(Cell)
             [key, val]
           end
         ]
