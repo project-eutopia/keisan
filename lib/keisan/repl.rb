@@ -1,4 +1,4 @@
-require "pry"
+require "coderay"
 require "readline"
 
 module Keisan
