@@ -17,6 +17,25 @@ RSpec.describe Keisan::Context do
     expect(my_context.function("sin")).to be_a(Keisan::Function)
   end
 
+  describe "freeze" do
+    it "freezes associated registries" do
+      frozen_context = described_class.new
+      frozen_context.register_variable!("x", 1)
+      frozen_context.register_function!("f", Proc.new {|x| x})
+      frozen_context.freeze
+
+      child_context = frozen_context.spawn_child
+      child_context.register_variable!("x", 2)
+      child_context.register_function!("f", Proc.new {|x| 2*x})
+
+      expect(frozen_context.variable("x").value).to eq 1
+      expect(child_context.variable("x").value).to eq 2
+
+      expect(frozen_context.function("f").call(nil, 3).value).to eq 3
+      expect(child_context.function("f").call(nil, 3).value).to eq 6
+    end
+  end
+
   describe "spawn_child" do
     it "has parent context's variables and functions" do
       my_context = described_class.new
