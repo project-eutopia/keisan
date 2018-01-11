@@ -30,9 +30,8 @@ module Keisan
     end
 
     def self.strip_whitespace_and_comments(expression)
-      # Remove comments
-      expression = expression.split("#").first || ""
-      expression = expression.gsub(/\n/, ";")
+      expression = normalize_line_delimiters(expression)
+      expression = remove_comments(expression)
 
       # Only strip whitespace outside of strings, e.g.
       # "1 + 2 + 'hello world'" => "1+2+'hello world'"
@@ -40,6 +39,14 @@ module Keisan
     end
 
     private
+
+    def self.normalize_line_delimiters(expression)
+      expression.gsub(/\n/, ";")
+    end
+
+    def self.remove_comments(expression)
+      expression.gsub(/#[^;]*/, "")
+    end
 
     def tokenize!
       tokenizing_check = ""
