@@ -24,22 +24,25 @@ module Keisan
     attr_reader :expression, :tokens
 
     def initialize(expression)
-      @expression = self.class.strip_whitespace_and_comments(expression)
+      @expression = self.class.normalize_expression(expression)
       @scan = @expression.scan(TOKEN_REGEX)
       @tokens = tokenize!
     end
 
-    def self.strip_whitespace_and_comments(expression)
-      # Remove comments
-      expression = expression.split("#").first || ""
-      expression = expression.gsub(/\n/, ";")
-
-      # Only strip whitespace outside of strings, e.g.
-      # "1 + 2 + 'hello world'" => "1+2+'hello world'"
-      expression.split(Tokens::String.regex).map.with_index {|s,i| i.even? ? s.gsub(/\s+/, " ") : s}.join
+    def self.normalize_expression(expression)
+      expression = normalize_line_delimiters(expression)
+      expression = remove_comments(expression)
     end
 
     private
+
+    def self.normalize_line_delimiters(expression)
+      expression.gsub(/\n/, ";")
+    end
+
+    def self.remove_comments(expression)
+      expression.gsub(/#[^;]*/, "")
+    end
 
     def tokenize!
       tokenizing_check = ""
