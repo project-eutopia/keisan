@@ -14,6 +14,12 @@ module Keisan
       @allow_recursive = true
     end
 
+    def freeze
+      super
+      @function_registry.freeze
+      @variable_registry.freeze
+    end
+
     # A transient context does not persist variables and functions in this context, but
     # rather store them one level higher in the parent context.  When evaluating a string,
     # the entire operation is done in a transient context that is unique from the calculators
@@ -61,8 +67,12 @@ module Keisan
       @variable_registry.has?(name)
     end
 
+    def variable_is_modifiable?(name)
+      @variable_registry.modifiable?(name)
+    end
+
     def register_variable!(name, value, local: false)
-      if !@variable_registry.shadowed.member?(name) && (transient? || !local && @parent&.has_variable?(name))
+      if !@variable_registry.shadowed.member?(name) && (transient? || !local && @parent&.variable_is_modifiable?(name))
         @parent.register_variable!(name, value)
       else
         @variable_registry.register!(name, value)
@@ -77,8 +87,12 @@ module Keisan
       @function_registry.has?(name)
     end
 
+    def function_is_modifiable?(name)
+      @function_registry.modifiable?(name)
+    end
+
     def register_function!(name, function, local: false)
-      if transient? || !local && @parent&.has_function?(name)
+      if transient? || !local && @parent&.function_is_modifiable?(name)
         @parent.register_function!(name, function)
       else
         @function_registry.register!(name.to_s, function)

@@ -11,6 +11,14 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
     expect { registry.register!(:bad, Proc.new { false }) }.to raise_error(Keisan::Exceptions::UnmodifiableError)
   end
 
+  it "creates local function when conflicting with function in default registry" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("sin(theta) = theta")
+
+    expect(calculator.evaluate("sin(1)").value).to eq 1
+    expect(registry["sin"].call(nil, 1).value).to eq Math.sin(1)
+  end
+
   context "array methods" do
     it "works as expected" do
       expect(registry["min"].name).to eq "min"

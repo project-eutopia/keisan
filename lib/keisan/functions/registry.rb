@@ -32,13 +32,13 @@ module Keisan
         false
       end
 
+      def modifiable?(name)
+        !frozen? && has?(name)
+      end
+
       def register!(name, function, force: false)
         raise Exceptions::UnmodifiableError.new("Cannot modify frozen functions registry") if frozen?
         name = name.to_s
-
-        if !force && @use_defaults && default_registry.has_name?(name)
-          raise Exceptions::UnmodifiableError.new("Cannot overwrite default function")
-        end
 
         case function
         when Proc
