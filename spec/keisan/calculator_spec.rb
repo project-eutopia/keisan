@@ -23,6 +23,13 @@ RSpec.describe Keisan::Calculator do
     expect(calculator.evaluate("2*f(x) + 4", x: 3, f: Proc.new {|x| x**2})).to eq 2*9+4
   end
 
+  context "direct concatenation is multiplication" do
+    it "works as expected in regular math notation" do
+      calculator.evaluate("x = 2; y = 3; z = 4")
+      expect(calculator.evaluate("(x+1)(y + 2z)")).to eq (2+1)*(3+2*4)
+    end
+  end
+
   context "list operations" do
     it "evaluates lists" do
       expect(calculator.evaluate("[2, 3, 5, 8]")).to eq [2,3,5,8]

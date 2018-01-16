@@ -80,6 +80,7 @@ require "keisan/tokens/logical_operator"
 require "keisan/tokens/bitwise_operator"
 require "keisan/tokens/word"
 require "keisan/tokens/line_separator"
+require "keisan/tokens/unknown"
 
 require "keisan/tokenizer"
 
