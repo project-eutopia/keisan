@@ -145,7 +145,7 @@ RSpec.describe Keisan::AST::Builder do
                              }
                            KEISAN
         )
-      }.to raise_error(Keisan::Exceptions::ParseError)
+      }.to raise_error(Keisan::Exceptions::TokenizingError)
     end
   end
 end

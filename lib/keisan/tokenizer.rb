@@ -14,7 +14,8 @@ module Keisan
       Tokens::Comma,
       Tokens::Colon,
       Tokens::Dot,
-      Tokens::LineSeparator
+      Tokens::LineSeparator,
+      Tokens::Unknown
     ]
 
     TOKEN_REGEX = Regexp::new(
@@ -45,16 +46,15 @@ module Keisan
     end
 
     def tokenize!
-      tokenizing_check = ""
-
-      tokens = @scan.map do |scan_result|
+      @scan.map do |scan_result|
         i = scan_result.find_index {|token| !token.nil?}
         token_string = scan_result[i]
-        tokenizing_check << token_string
-        token_class = TOKEN_CLASSES[i].new(token_string)
+        token = TOKEN_CLASSES[i].new(token_string)
+        if token.is_a?(Tokens::Unknown)
+          raise Keisan::Exceptions::TokenizingError.new("Unexpected token: \"#{token.string}\"")
+        end
+        token
       end
-
-      tokens
     end
   end
 end
