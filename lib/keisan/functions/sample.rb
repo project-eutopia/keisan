@@ -3,15 +3,17 @@ module Keisan
     class Sample < ProcFunction
       def initialize
         @name = "sample"
-        @arity = 1
+        @arity = ::Range.new(1, 2)
       end
 
-      # Single argument: integer in range [0, max)
-      # Double argument: integer in range [min, max)
+      # Single argument: list to sample element from
+      # Double argument: list and number of elements to sample
       def call(context, *args)
         case args.size
         when 1
           args.first.sample(random: context.random)
+        when 2
+          args[0].sample(args[1], random: context.random)
         else
           raise Exceptions::InvalidFunctionError.new
         end

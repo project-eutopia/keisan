@@ -105,6 +105,9 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
         expect(0...4).to cover Keisan::Calculator.new.evaluate("rand(4)")
         expect(3...8).to cover Keisan::Calculator.new.evaluate("rand(3, 8)")
         expect(a).to include Keisan::Calculator.new.evaluate("sample(#{a})")
+        sampled = Keisan::Calculator.new.evaluate("sample(#{a}, 2)")
+        expect(sampled.count).to eq 2
+        expect(Set.new(sampled).subset?(Set.new a)).to eq true
       end
     end
 
