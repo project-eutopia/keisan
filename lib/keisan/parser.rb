@@ -119,7 +119,9 @@ module Keisan
         elsif token.type == :operator
           add_operator_to_components!(token)
         else
-          raise Exceptions::ParseError.new("Expected an operator, received #{token.string}")
+          # Concatenation is multiplication
+          @components << Parsing::Times.new
+          add_token_to_components!(token)
         end
 
       elsif @components[-1].is_a?(Parsing::Dot)

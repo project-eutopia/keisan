@@ -64,6 +64,15 @@ RSpec.describe Keisan::AST::Builder do
     end
   end
 
+  context "concatenation is multiplication" do
+    it "converts concatenated elements to multiplication" do
+      expect(described_class.new(string: "5x").ast.to_s).to eq "5*x"
+      expect(described_class.new(string: "5(1+2y)").ast.to_s).to eq "5*(1+(2*y))"
+      # Function notation takes priority
+      expect(described_class.new(string: "x(y z)").ast.to_s).to eq "x(y*z)"
+    end
+  end
+
   context "function" do
     it "properly parses" do
       expect(described_class.new(string: "sin(PI)").ast.value).to be_within(1e-10).of(0)
