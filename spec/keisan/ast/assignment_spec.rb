@@ -217,5 +217,38 @@ RSpec.describe Keisan::AST::Assignment do
         expect(evaluation.value(context)).to eq 16
       end
     end
+
+    context "compound operator/assignments" do
+      context "when simple variable on lhs" do
+        it "raises an error for new variables" do
+          calculator = Keisan::Calculator.new
+          expect{calculator.evaluate("x += 1")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+        end
+
+        it "can increment existing variables" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("x = 1")
+          calculator.evaluate("x += 2")
+          expect(calculator.evaluate("x").value).to eq 3
+        end
+      end
+
+      context "when list, so accessing cells stored within variable" do
+        it "can increment elements" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("a = [1,2,3]")
+          calculator.evaluate("a[1] += 10")
+          expect(calculator.evaluate("a").value).to eq [1,12,3]
+        end
+      end
+
+      context "when function" do
+        it "raises an error" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("f(x) = 1")
+          expect{calculator.evaluate("f(x) += 2")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+        end
+      end
+    end
   end
 end

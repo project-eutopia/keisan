@@ -1,6 +1,7 @@
 module Keisan
   class Token
     attr_reader :string
+
     def initialize(string)
       raise Exceptions::InvalidToken.new(string) unless string.match(regex)
       @string = string

@@ -1,15 +1,20 @@
 module Keisan
   module AST
     class Assignment < Operator
-      attr_reader :local
+      attr_reader :local, :compound_operator
 
-      def initialize(children = [], parsing_operators = [], local: false)
+      def initialize(children = [], parsing_operators = [], local: false, compound_operator: nil)
         super(children, parsing_operators)
         @local = local
+        @compound_operator = compound_operator
       end
 
       def self.symbol
         :"="
+      end
+
+      def symbol
+        :"#{compound_operator}="
       end
 
       def evaluate(context = nil)
@@ -71,6 +76,9 @@ module Keisan
         end
 
         rhs = rhs.evaluate(context)
+        if compound_operator
+          rhs = rhs.send(compound_operator, lhs.node).evaluate(context)
+        end
 
         lhs.node = rhs
         rhs
@@ -84,12 +92,21 @@ module Keisan
         end
 
         rhs_value = rhs.value(context)
+        if compound_operator
+          raise Exceptions::InvalidExpression.new("Compound assignment requires variable #{lhs.name} to already exist") unless context.has_variable?(lhs.name)
+          rhs_value = context.variable(lhs.name).value.send(compound_operator, rhs_value)
+        end
+
         context.register_variable!(lhs.name, rhs_value, local: local)
         # Return the variable assigned value
         rhs
       end
 
       def evaluate_function(context, lhs, rhs)
+        if compound_operator
+          raise Exceptions::InvalidExpression.new("Cannot do compound assignment on functions")
+        end
+
         unless lhs.children.all? {|arg| arg.is_a?(Variable)}
           raise Exceptions::InvalidExpression.new("Left hand side function must have variables as arguments")
         end

@@ -109,6 +109,7 @@ require "keisan/parsing/line_separator"
 require "keisan/parsing/operator"
 
 require "keisan/parsing/assignment"
+require "keisan/parsing/compound_assignment"
 
 require "keisan/parsing/unary_operator"
 require "keisan/parsing/unary_plus"
