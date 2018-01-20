@@ -4,7 +4,7 @@ module Keisan
       # Optional arithmetic/bitwise operators in front of equals
       # Negative lookahead at end to prevent collision with "=="
       # TODO: Handle ||= and &&= operators?
-      REGEX = /((?:\*\*|\+|\-|\*|\/)?\=(?!\=))/
+      REGEX = /((?:\*\*|\+|\-|\*|\/|\%|\&|\||\^)?\=(?!\=))/
 
       def self.regex
         REGEX
@@ -15,7 +15,7 @@ module Keisan
       end
 
       def compound_operator
-        string[0] == "=" ? nil : string[0].to_sym
+        string[0] == "=" ? nil : string[0...-1].to_sym
       end
     end
   end

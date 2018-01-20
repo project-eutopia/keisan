@@ -225,20 +225,30 @@ RSpec.describe Keisan::AST::Assignment do
           expect{calculator.evaluate("x += 1")}.to raise_error(Keisan::Exceptions::InvalidExpression)
         end
 
-        it "can increment existing variables" do
+        it "can do compound operations" do
           calculator = Keisan::Calculator.new
           calculator.evaluate("x = 1")
-          calculator.evaluate("x += 2")
-          expect(calculator.evaluate("x").value).to eq 3
+
+          expect{calculator.evaluate("x += 2")}.to change{calculator.evaluate("x").value}.from(1).to(3)
+          expect{calculator.evaluate("x -= 1")}.to change{calculator.evaluate("x").value}.from(3).to(2)
+          expect{calculator.evaluate("x *= 6")}.to change{calculator.evaluate("x").value}.from(2).to(12)
+          expect{calculator.evaluate("x /= 2")}.to change{calculator.evaluate("x").value}.from(12).to(6)
+          expect{calculator.evaluate("x **= 2")}.to change{calculator.evaluate("x").value}.from(6).to(36)
+          expect{calculator.evaluate("x %= 5")}.to change{calculator.evaluate("x").value}.from(36).to(1)
+          expect{calculator.evaluate("x |= 5")}.to change{calculator.evaluate("x").value}.from(1).to(5)
+          expect{calculator.evaluate("x ^= 3")}.to change{calculator.evaluate("x").value}.from(5).to(6)
+          expect{calculator.evaluate("x &= 12")}.to change{calculator.evaluate("x").value}.from(6).to(4)
         end
       end
 
       context "when list, so accessing cells stored within variable" do
-        it "can increment elements" do
+        it "can modify elements" do
           calculator = Keisan::Calculator.new
           calculator.evaluate("a = [1,2,3]")
           calculator.evaluate("a[1] += 10")
-          expect(calculator.evaluate("a").value).to eq [1,12,3]
+          calculator.evaluate("a[1] *= 2")
+          calculator.evaluate("a[1] &= 10")
+          expect(calculator.evaluate("a").value).to eq [1,8,3]
         end
       end
 
