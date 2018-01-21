@@ -231,45 +231,29 @@ module Keisan
       end
     end
 
+    OPERATOR_TO_PARSING_CLASS = {
+      :+    => Parsing::Plus,
+      :-    => Parsing::Minus,
+      :*    => Parsing::Times,
+      :/    => Parsing::Divide,
+      :**   => Parsing::Exponent,
+      :%    => Parsing::Modulo,
+      :"&"  => Parsing::BitwiseAnd,
+      :"|"  => Parsing::BitwiseOr,
+      :"^"  => Parsing::BitwiseXor,
+      :"==" => Parsing::LogicalEqual,
+      :"!=" => Parsing::LogicalNotEqual,
+      :"&&" => Parsing::LogicalAnd,
+      :"||" => Parsing::LogicalOr,
+      :">"  => Parsing::LogicalGreaterThan,
+      :"<"  => Parsing::LogicalLessThan,
+      :">=" => Parsing::LogicalGreaterThanOrEqualTo,
+      :"<=" => Parsing::LogicalLessThanOrEqualTo
+    }.freeze
+
     def operator_to_component(operator)
-      case operator
-      # Arithmetic
-      when :+
-        Parsing::Plus.new
-      when :-
-        Parsing::Minus.new
-      when :*
-        Parsing::Times.new
-      when :/
-        Parsing::Divide.new
-      when :**
-        Parsing::Exponent.new
-      when :%
-        Parsing::Modulo.new
-      # Bitwise
-      when :"&"
-        Parsing::BitwiseAnd.new
-      when :"|"
-        Parsing::BitwiseOr.new
-      when :"^"
-        Parsing::BitwiseXor.new
-      # Logical
-      when :"=="
-        Parsing::LogicalEqual.new
-      when :"!="
-        Parsing::LogicalNotEqual.new
-      when :"&&"
-        Parsing::LogicalAnd.new
-      when :"||"
-        Parsing::LogicalOr.new
-      when :">"
-        Parsing::LogicalGreaterThan.new
-      when :"<"
-        Parsing::LogicalLessThan.new
-      when :">="
-        Parsing::LogicalGreaterThanOrEqualTo.new
-      when :"<="
-        Parsing::LogicalLessThanOrEqualTo.new
+      if klass = OPERATOR_TO_PARSING_CLASS[operator]
+        klass.new
       else
         raise Exceptions::ParseError.new("Unhandled operator type #{operator}")
       end

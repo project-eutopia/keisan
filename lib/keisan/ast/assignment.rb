@@ -127,21 +127,19 @@ module Keisan
       end
 
       def evaluate_variable_or_assignment(context, lhs, rhs)
-        if !context.has_variable?(lhs.name) || context.variable(lhs.name).false?
-          rhs = rhs.evaluate(context)
-          rhs_value = rhs.value(context)
-          context.register_variable!(lhs.name, rhs_value)
-          rhs
-        else
+        if lhs.variable_truthy?(context)
           lhs
+        else
+          rhs = rhs.evaluate(context)
+          context.register_variable!(lhs.name, rhs.value(context))
+          rhs
         end
       end
 
       def evaluate_variable_and_assignment(context, lhs, rhs)
-        if context.has_variable?(lhs.name) && context.variable(lhs.name).true?
+        if lhs.variable_truthy?(context)
           rhs = rhs.evaluate(context)
-          rhs_value = rhs.value(context)
-          context.register_variable!(lhs.name, rhs_value)
+          context.register_variable!(lhs.name, rhs.value(context))
           rhs
         else
           context.register_variable!(lhs.name, nil) unless context.has_variable?(lhs.name)

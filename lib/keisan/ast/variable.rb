@@ -7,6 +7,10 @@ module Keisan
         @name = name
       end
 
+      def variable_truthy?(context)
+        context.has_variable?(name) && context.variable(name).true?
+      end
+
       def value(context = nil)
         context ||= Context.new
         variable_node_from_context(context).value(context)
