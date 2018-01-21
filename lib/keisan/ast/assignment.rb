@@ -162,39 +162,42 @@ module Keisan
       end
 
       def evaluate_function_assignment(context, lhs, rhs)
-        if compound_operator
-          raise Exceptions::InvalidExpression.new("Cannot do compound assignment on functions")
-        end
+        raise Exceptions::InvalidExpression.new("Cannot do compound assignment on functions") if compound_operator
 
         unless lhs.children.all? {|arg| arg.is_a?(Variable)}
           raise Exceptions::InvalidExpression.new("Left hand side function must have variables as arguments")
         end
 
         argument_names = lhs.children.map(&:name)
-        function_definition_context = context.spawn_child(shadowed: argument_names, transient: true)
 
-        # Blocks might have local variable/function definitions
-        if !rhs.is_a?(Block)
-          unless rhs.unbound_variables(context) <= Set.new(argument_names)
-            raise Exceptions::InvalidExpression.new("Unbound variables found in function definition")
-          end
-          unless context.allow_recursive || rhs.unbound_functions(context).empty?
-            raise Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
-          end
-        end
+        verify_rhs_of_function_assignment_is_valid!(context, rhs, argument_names)
 
         context.register_function!(
           lhs.name,
           Functions::ExpressionFunction.new(
             lhs.name,
             argument_names,
-            rhs.evaluate_assignments(function_definition_context),
+            rhs.evaluate_assignments(context.spawn_child(shadowed: argument_names, transient: true)),
             context.transient_definitions
           ),
           local: local
         )
 
         rhs
+      end
+
+      def verify_rhs_of_function_assignment_is_valid!(context, rhs, argument_names)
+        # Blocks might have local variable/function definitions, so skip check
+        return if rhs.is_a?(Block)
+
+        # Only variables that can appear are those that are arguments to the function
+        unless rhs.unbound_variables(context) <= Set.new(argument_names)
+          raise Exceptions::InvalidExpression.new("Unbound variables found in function definition")
+        end
+        # Cannot have undefined functions unless allowed by context
+        unless context.allow_recursive || rhs.unbound_functions(context).empty?
+          raise Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
+        end
       end
     end
   end
