@@ -152,7 +152,7 @@ RSpec.describe Keisan::Calculator do
 
   describe "defining variables" do
     it "raises an error if there is an undefined variable" do
-      expect{calculator.evaluate("x = y")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+      expect{calculator.evaluate("x = y")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
     end
 
     it "can define variables" do

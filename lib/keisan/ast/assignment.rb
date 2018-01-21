@@ -24,9 +24,9 @@ module Keisan
         rhs = children.last
 
         if is_variable_definition?
-          evaluate_variable(context, lhs, rhs)
+          evaluate_variable_assignment(context, lhs, rhs)
         elsif is_function_definition?
-          evaluate_function(context, lhs, rhs)
+          evaluate_function_assignment(context, lhs, rhs)
         else
           # Try cell assignment
           evaluate_cell_assignment(context, lhs, rhs)
@@ -75,6 +75,37 @@ module Keisan
           raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
         end
 
+        case compound_operator
+        when :"||"
+          evaluate_cell_or_assignment(context, lhs, rhs)
+        when :"&&"
+          evaluate_cell_and_assignment(context, lhs, rhs)
+        else
+          evaluate_cell_non_logical_assignment(context, lhs, rhs)
+        end
+      end
+
+      def evaluate_cell_or_assignment(context, lhs, rhs)
+        if lhs.false?
+          rhs = rhs.evaluate(context)
+          lhs.node = rhs
+          rhs
+        else
+          lhs
+        end
+      end
+
+      def evaluate_cell_and_assignment(context, lhs, rhs)
+        if lhs.true?
+          rhs = rhs.evaluate(context)
+          lhs.node = rhs
+          rhs
+        else
+          lhs
+        end
+      end
+
+      def evaluate_cell_non_logical_assignment(context, lhs, rhs)
         rhs = rhs.evaluate(context)
         if compound_operator
           rhs = rhs.send(compound_operator, lhs.node).evaluate(context)
@@ -84,14 +115,44 @@ module Keisan
         rhs
       end
 
-      def evaluate_variable(context, lhs, rhs)
-        rhs = rhs.evaluate(context)
-
-        unless rhs.well_defined?
-          raise Exceptions::InvalidExpression.new("Right hand side of assignment to variable must be well defined")
+      def evaluate_variable_assignment(context, lhs, rhs)
+        case compound_operator
+        when :"||"
+          evaluate_variable_or_assignment(context, lhs, rhs)
+        when :"&&"
+          evaluate_variable_and_assignment(context, lhs, rhs)
+        else
+          evaluate_variable_non_logical_assignment(context, lhs, rhs)
         end
+      end
 
+      def evaluate_variable_or_assignment(context, lhs, rhs)
+        if !context.has_variable?(lhs.name) || context.variable(lhs.name).false?
+          rhs = rhs.evaluate(context)
+          rhs_value = rhs.value(context)
+          context.register_variable!(lhs.name, rhs_value)
+          rhs
+        else
+          lhs
+        end
+      end
+
+      def evaluate_variable_and_assignment(context, lhs, rhs)
+        if context.has_variable?(lhs.name) && context.variable(lhs.name).true?
+          rhs = rhs.evaluate(context)
+          rhs_value = rhs.value(context)
+          context.register_variable!(lhs.name, rhs_value)
+          rhs
+        else
+          context.register_variable!(lhs.name, nil) unless context.has_variable?(lhs.name)
+          lhs
+        end
+      end
+
+      def evaluate_variable_non_logical_assignment(context, lhs, rhs)
+        rhs = rhs.evaluate(context)
         rhs_value = rhs.value(context)
+
         if compound_operator
           raise Exceptions::InvalidExpression.new("Compound assignment requires variable #{lhs.name} to already exist") unless context.has_variable?(lhs.name)
           rhs_value = context.variable(lhs.name).value.send(compound_operator, rhs_value)
@@ -102,7 +163,7 @@ module Keisan
         rhs
       end
 
-      def evaluate_function(context, lhs, rhs)
+      def evaluate_function_assignment(context, lhs, rhs)
         if compound_operator
           raise Exceptions::InvalidExpression.new("Cannot do compound assignment on functions")
         end

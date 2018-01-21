@@ -7,6 +7,10 @@ module Keisan
       def value(context = nil)
         nil
       end
+
+      def true?
+        false
+      end
     end
   end
 end

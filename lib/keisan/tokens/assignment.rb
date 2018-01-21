@@ -1,10 +1,23 @@
 module Keisan
   module Tokens
     class Assignment < Operator
-      # Optional arithmetic/bitwise operators in front of equals
-      # Negative lookahead at end to prevent collision with "=="
-      # TODO: Handle ||= and &&= operators?
-      REGEX = /((?:\*\*|\+|\-|\*|\/|\%|\&|\||\^)?\=(?!\=))/
+      REGEX = /(
+        (?: # possible compound operators in front of equals
+         \|\| |
+         \&\& |
+         \*\* |
+         \+ |
+         \- |
+         \* |
+         \/ |
+         \% |
+         \& |
+         \| |
+         \^
+        )?
+        \=
+        (?!\=) # negative lookahead to prevent matching ==
+      )/x
 
       def self.regex
         REGEX

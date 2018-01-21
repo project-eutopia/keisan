@@ -57,6 +57,15 @@ module Keisan
         self
       end
 
+      # Will only return False for AST::Boolean(false) and AST::Null
+      def true?
+        true
+      end
+
+      def false?
+        !true?
+      end
+
       def +(other)
         Plus.new(
           [self, other.to_node]
