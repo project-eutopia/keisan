@@ -8,7 +8,7 @@ module Keisan
 
       def evaluate(context = nil)
         context ||= Context.new
-        super(context)
+        @children = children.map {|child| child.is_a?(Cell) ? child : child.evaluate(context)}
         cellify!
         self
       end

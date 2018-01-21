@@ -25,7 +25,11 @@ module Keisan
 
         @hash = ::Hash[
           @hash.map do |key, val|
-            [key, Cell.new(val.evaluate(context))]
+            if val.is_a?(Cell)
+              [key, val]
+            else
+              [key, Cell.new(val.evaluate(context))]
+            end
           end
         ]
 

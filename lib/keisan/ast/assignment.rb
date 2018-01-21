@@ -88,7 +88,7 @@ module Keisan
       def evaluate_cell_or_assignment(context, lhs, rhs)
         if lhs.false?
           rhs = rhs.evaluate(context)
-          lhs.node = rhs
+          lhs.node = rhs.is_a?(Cell) ? rhs.node.deep_dup : rhs
           rhs
         else
           lhs
@@ -98,7 +98,7 @@ module Keisan
       def evaluate_cell_and_assignment(context, lhs, rhs)
         if lhs.true?
           rhs = rhs.evaluate(context)
-          lhs.node = rhs
+          lhs.node = rhs.is_a?(Cell) ? rhs.node.deep_dup : rhs
           rhs
         else
           lhs
@@ -111,7 +111,7 @@ module Keisan
           rhs = rhs.send(compound_operator, lhs.node).evaluate(context)
         end
 
-        lhs.node = rhs
+        lhs.node = rhs.is_a?(Cell) ? rhs.node.deep_dup : rhs
         rhs
       end
 
