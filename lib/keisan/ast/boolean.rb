@@ -11,6 +11,10 @@ module Keisan
         bool
       end
 
+      def true?
+        false
+      end
+
       def !
         Boolean.new(!bool)
       end

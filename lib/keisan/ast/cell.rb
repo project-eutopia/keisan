@@ -28,6 +28,14 @@ module Keisan
         node.value(context)
       end
 
+      def true?
+        node.true?
+      end
+
+      def false?
+        node.false?
+      end
+
       def evaluate(context = nil)
         node.evaluate(context)
       end

@@ -222,10 +222,19 @@ module Keisan
           @nodes.insert(index, replacement_node)
           @priorities.insert(index, -1)
         elsif operator.is_a?(Keisan::Parsing::Operator)
-          replacement_node = operator.node_class.new(
-            children = [@nodes[index-1],@nodes[index+1]],
-            parsing_operators = [operator]
-          )
+          if operator.is_a?(Keisan::Parsing::CompoundAssignment)
+            replacement_node = operator.node_class.new(
+              children = [@nodes[index-1],@nodes[index+1]],
+              parsing_operators = [operator],
+              compound_operator: operator.compound_operator
+            )
+          else
+            replacement_node = operator.node_class.new(
+              children = [@nodes[index-1],@nodes[index+1]],
+              parsing_operators = [operator]
+            )
+          end
+
           @nodes.delete_if.with_index {|node, i| i >= index-1 && i <= index+1}
           @priorities.delete_if.with_index {|node, i| i >= index-1 && i <= index+1}
           @nodes.insert(index-1, replacement_node)

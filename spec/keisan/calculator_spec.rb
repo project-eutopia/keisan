@@ -52,6 +52,17 @@ RSpec.describe Keisan::Calculator do
 
       expect(calculator.evaluate("a")).to eq([10, [40,50,60], [11,8,9]])
     end
+
+    it "can change elements of lists using other list elements" do
+      calculator.evaluate("a = [[1,2,3], [4,5,6], [7,8,9]]")
+
+      calculator.evaluate("a[0][0] = a[1][1]")
+      expect(calculator.evaluate("a")).to eq([[5,2,3], [4,5,6], [7,8,9]])
+
+      calculator.evaluate("a[2] = a[0]")
+      calculator.evaluate("a[2][0] = 10")
+      expect(calculator.evaluate("a")).to eq([[5,2,3], [4,5,6], [10,2,3]])
+    end
   end
 
   context "hash operations" do
@@ -82,6 +93,15 @@ RSpec.describe Keisan::Calculator do
 
       calculator.evaluate("my_string = 'fo'")
       expect(calculator.evaluate("h[my_string + 'o']")).to eq 99
+    end
+
+    it "can change elements of hashes using other list elements" do
+      calculator.evaluate("h = {'a': 1, 'b': 2, 'c': 3}")
+
+      calculator.evaluate("h['a'] = h['c']")
+      expect(calculator.evaluate("h").value).to eq ({"a" => 3, "b" => 2, "c" => 3})
+      calculator.evaluate("h['a'] = h['b']")
+      expect(calculator.evaluate("h").value).to eq ({"a" => 2, "b" => 2, "c" => 3})
     end
 
     describe "#to_s" do
@@ -152,7 +172,7 @@ RSpec.describe Keisan::Calculator do
 
   describe "defining variables" do
     it "raises an error if there is an undefined variable" do
-      expect{calculator.evaluate("x = y")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+      expect{calculator.evaluate("x = y")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
     end
 
     it "can define variables" do

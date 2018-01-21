@@ -225,46 +225,45 @@ module Keisan
       case token.operator_type
       # Assignment
       when :"="
-        @components << Parsing::Assignment.new
-      # Arithmetic
-      when :+
-        @components << Parsing::Plus.new
-      when :-
-        @components << Parsing::Minus.new
-      when :*
-        @components << Parsing::Times.new
-      when :/
-        @components << Parsing::Divide.new
-      when :**
-        @components << Parsing::Exponent.new
-      when :%
-        @components << Parsing::Modulo.new
-      # Bitwise
-      when :"&"
-        @components << Parsing::BitwiseAnd.new
-      when :"|"
-        @components << Parsing::BitwiseOr.new
-      when :"^"
-        @components << Parsing::BitwiseXor.new
-      # Logical
-      when :"=="
-        @components << Parsing::LogicalEqual.new
-      when :"!="
-        @components << Parsing::LogicalNotEqual.new
-      when :"&&"
-        @components << Parsing::LogicalAnd.new
-      when :"||"
-        @components << Parsing::LogicalOr.new
-      when :">"
-        @components << Parsing::LogicalGreaterThan.new
-      when :"<"
-        @components << Parsing::LogicalLessThan.new
-      when :">="
-        @components << Parsing::LogicalGreaterThanOrEqualTo.new
-      when :"<="
-        @components << Parsing::LogicalLessThanOrEqualTo.new
+        add_assignment_to_components!(token)
       else
-        raise Exceptions::ParseError.new("Unhandled operator type #{token.operator_type}")
+        @components << operator_to_component(token.operator_type)
+      end
+    end
+
+    OPERATOR_TO_PARSING_CLASS = {
+      :+    => Parsing::Plus,
+      :-    => Parsing::Minus,
+      :*    => Parsing::Times,
+      :/    => Parsing::Divide,
+      :**   => Parsing::Exponent,
+      :%    => Parsing::Modulo,
+      :"&"  => Parsing::BitwiseAnd,
+      :"|"  => Parsing::BitwiseOr,
+      :"^"  => Parsing::BitwiseXor,
+      :"==" => Parsing::LogicalEqual,
+      :"!=" => Parsing::LogicalNotEqual,
+      :"&&" => Parsing::LogicalAnd,
+      :"||" => Parsing::LogicalOr,
+      :">"  => Parsing::LogicalGreaterThan,
+      :"<"  => Parsing::LogicalLessThan,
+      :">=" => Parsing::LogicalGreaterThanOrEqualTo,
+      :"<=" => Parsing::LogicalLessThanOrEqualTo
+    }.freeze
+
+    def operator_to_component(operator)
+      if klass = OPERATOR_TO_PARSING_CLASS[operator]
+        klass.new
+      else
+        raise Exceptions::ParseError.new("Unhandled operator type #{operator}")
+      end
+    end
+
+    def add_assignment_to_components!(token)
+      if compound_operator = token.compound_operator
+        @components << Parsing::CompoundAssignment.new(compound_operator)
+      else
+        @components << Parsing::Assignment.new
       end
     end
 

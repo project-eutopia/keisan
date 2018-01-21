@@ -217,5 +217,124 @@ RSpec.describe Keisan::AST::Assignment do
         expect(evaluation.value(context)).to eq 16
       end
     end
+
+    context "compound operator/assignments" do
+      context "when simple variable on lhs" do
+        it "raises an error for new variables" do
+          calculator = Keisan::Calculator.new
+          expect{calculator.evaluate("x += 1")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+        end
+
+        it "can do compound operations" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("x = 1")
+
+          expect{calculator.evaluate("x += 2")}.to change{calculator.evaluate("x").value}.from(1).to(3)
+          expect{calculator.evaluate("x -= 1")}.to change{calculator.evaluate("x").value}.from(3).to(2)
+          expect{calculator.evaluate("x *= 6")}.to change{calculator.evaluate("x").value}.from(2).to(12)
+          expect{calculator.evaluate("x /= 2")}.to change{calculator.evaluate("x").value}.from(12).to(6)
+          expect{calculator.evaluate("x **= 2")}.to change{calculator.evaluate("x").value}.from(6).to(36)
+          expect{calculator.evaluate("x %= 5")}.to change{calculator.evaluate("x").value}.from(36).to(1)
+          expect{calculator.evaluate("x |= 5")}.to change{calculator.evaluate("x").value}.from(1).to(5)
+          expect{calculator.evaluate("x ^= 3")}.to change{calculator.evaluate("x").value}.from(5).to(6)
+          expect{calculator.evaluate("x &= 12")}.to change{calculator.evaluate("x").value}.from(6).to(4)
+        end
+
+        it "can do ||= operation" do
+          calculator = Keisan::Calculator.new
+
+          # Not yet defined, it simply sets it
+          calculator.evaluate("x ||= 10")
+          expect(calculator.evaluate("x").value).to eq 10
+
+          # Already defined and truthy, it does nothing
+          expect{calculator.evaluate("x ||= 20")}.not_to change{calculator.evaluate("x").value}
+
+          # Already defined and falsey, it changes the value
+          calculator.evaluate("x = false")
+          expect{calculator.evaluate("x ||= 30")}.to change{calculator.evaluate("x").value}.from(false).to(30)
+          calculator.evaluate("x = nil")
+          expect{calculator.evaluate("x ||= 40")}.to change{calculator.evaluate("x").value}.from(nil).to(40)
+        end
+
+        it "can do &&= operation" do
+          calculator = Keisan::Calculator.new
+
+          # Not yet defined, it short-circuits and sets it to nil
+          calculator.evaluate("x &&= (y = 10)")
+          expect(calculator.evaluate("x").value).to eq nil
+          expect(calculator.context.has_variable?("y")).to eq false
+
+          # Already defined and truthy, it changes to the RHS
+          calculator.evaluate("x = 10")
+          expect{calculator.evaluate("x &&= 20")}.to change{calculator.evaluate("x").value}.from(10).to(20)
+
+          # Already defined and falsey, it short-circuits and leaves untouched
+          calculator.evaluate("x = false")
+          expect{calculator.evaluate("x &&= (y = 10)")}.not_to change{calculator.context.has_variable?("y")}.from(false)
+          expect(calculator.evaluate("x").value).to eq false
+          calculator.evaluate("x = nil")
+          expect{calculator.evaluate("x &&= (y = 10)")}.not_to change{calculator.context.has_variable?("y")}.from(false)
+          expect(calculator.evaluate("x").value).to eq nil
+        end
+      end
+
+      context "when list, so accessing cells stored within variable" do
+        it "can modify elements" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("a = [1,2,3]")
+          calculator.evaluate("a[1] += 10")
+          calculator.evaluate("a[1] *= 2")
+          calculator.evaluate("a[1] &= 10")
+          expect(calculator.evaluate("a").value).to eq [1,8,3]
+
+          calculator.evaluate("h = {'a': 2, 'b': 5}")
+          calculator.evaluate("h['a'] += 10")
+          calculator.evaluate("h['a'] *= 2")
+          calculator.evaluate("h['a'] &= 10")
+          expect(calculator.evaluate("h").value).to eq({"a" => 8, "b" => 5})
+        end
+
+        it "can do ||= operation" do
+          calculator = Keisan::Calculator.new
+
+          calculator.evaluate("a = [nil,false,0]")
+          calculator.evaluate("a[0] ||= 1")
+          calculator.evaluate("a[1] ||= 2")
+          calculator.evaluate("a[2] ||= 3")
+          expect(calculator.evaluate("a").value).to eq [1,2,0]
+
+          calculator.evaluate("h = {'a': nil, 'b': false, 'c': 0}")
+          calculator.evaluate("h['a'] ||= 1")
+          calculator.evaluate("h['b'] ||= 2")
+          calculator.evaluate("h['c'] ||= 3")
+          expect(calculator.evaluate("h").value).to eq({"a" => 1, "b" => 2, "c" => 0})
+        end
+
+        it "can do &&= operation" do
+          calculator = Keisan::Calculator.new
+
+          calculator.evaluate("a = [nil,false,0]")
+          calculator.evaluate("a[0] &&= 1")
+          calculator.evaluate("a[1] &&= 2")
+          calculator.evaluate("a[2] &&= 3")
+          expect(calculator.evaluate("a").value).to eq [nil,false,3]
+
+          calculator.evaluate("h = {'a': nil, 'b': false, 'c': 0}")
+          calculator.evaluate("h['a'] &&= 1")
+          calculator.evaluate("h['b'] &&= 2")
+          calculator.evaluate("h['c'] &&= 3")
+          expect(calculator.evaluate("h").value).to eq({"a" => nil, "b" => false, "c" => 3})
+        end
+      end
+
+      context "when function" do
+        it "raises an error" do
+          calculator = Keisan::Calculator.new
+          calculator.evaluate("f(x) = 1")
+          expect{calculator.evaluate("f(x) += 2")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+        end
+      end
+    end
   end
 end
