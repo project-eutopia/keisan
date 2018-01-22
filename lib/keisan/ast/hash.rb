@@ -3,12 +3,12 @@ module Keisan
     class Hash < Node
       def initialize(key_value_pairs)
         @hash = ::Hash[key_value_pairs]
-        stringify_and_cellify!
+        valueify_and_cellify!
       end
 
       def [](key)
         key = key.to_node
-        return nil unless key.is_a?(AST::String)
+        return nil unless key.is_a?(AST::ConstantLiteral)
 
         if val = @hash[key.value]
           val
@@ -21,7 +21,7 @@ module Keisan
 
       def evaluate(context = nil)
         context ||= Context.new
-        stringify_and_cellify!
+        valueify_and_cellify!
 
         @hash = ::Hash[
           @hash.map do |key, val|
@@ -46,7 +46,6 @@ module Keisan
 
         ::Hash[
           @hash.map {|key, val|
-            raise Exceptions::InvalidExpression.new("Keisan::AST::Hash#value must have all keys evaluate to strings") unless key.is_a?(::String)
             [key, val.value(context)]
           }
         ]
@@ -68,10 +67,10 @@ module Keisan
 
       private
 
-      def stringify_and_cellify!
+      def valueify_and_cellify!
         @hash = ::Hash[
           @hash.map do |key, val|
-            key = key.value if key.is_a?(AST::String)
+            key = key.value
             val = Cell.new(val) unless val.is_a?(Cell)
             [key, val]
           end

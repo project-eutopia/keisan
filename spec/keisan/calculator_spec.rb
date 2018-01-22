@@ -104,6 +104,14 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("h").value).to eq ({"a" => 2, "b" => 2, "c" => 3})
     end
 
+    it "can use anything as keys" do
+      calculator.evaluate("h = {'a': 1, 10: 2, true: 3}")
+      expect(calculator.evaluate("h").value).to eq({"a" => 1, 10 => 2, true => 3})
+      calculator.evaluate("h[10] = h[true]")
+      calculator.evaluate("h[true] = 'hello'")
+      expect(calculator.evaluate("h").value).to eq({"a" => 1, 10 => 3, true => "hello"})
+    end
+
     describe "#to_s" do
       it "outputs correct hash format" do
         hash_string = "{'a': 1, 'b': 2}"
