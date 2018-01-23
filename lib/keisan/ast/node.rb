@@ -57,6 +57,10 @@ module Keisan
         self
       end
 
+      def to_cell
+        AST::Cell.new(self)
+      end
+
       # Will only return False for AST::Boolean(false) and AST::Null
       def true?
         true

@@ -26,6 +26,14 @@ module Keisan
         "[#{children.map(&:to_s).join(',')}]"
       end
 
+      def to_cell
+        AST::Cell.new(
+          self.class.new(
+            @children.map(&:to_cell)
+          )
+        )
+      end
+
       private
 
       def cellify!

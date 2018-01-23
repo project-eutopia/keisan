@@ -56,6 +56,16 @@ module Keisan
         "{#{@hash.map {|k,v| "'#{k}': #{v}"}.join(', ')}}"
       end
 
+      def to_cell
+        h = self.class.new([])
+        h.instance_variable_set(:@hash, ::Hash[
+          @hash.map do |key, value|
+            [key, value.to_cell]
+          end
+        ])
+        h
+      end
+
       private
 
       def stringify_and_cellify!
