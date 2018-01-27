@@ -30,22 +30,12 @@ module Keisan
 
       def equal(other)
         other = other.to_node
-        case other
-        when AST::String
-          Boolean.new(value == other.value)
-        else
-          super
-        end
+        other.is_a?(AST::String) ? Boolean.new(value == other.value) : super
       end
 
       def not_equal(other)
         other = other.to_node
-        case other
-        when AST::String
-          Boolean.new(value != other.value)
-        else
-          super
-        end
+        other.is_a?(AST::String) ? Boolean.new(value != other.value) : super
       end
     end
   end

@@ -14,22 +14,12 @@ module Keisan
 
       def equal(other)
         other = other.to_node
-        case other
-        when AST::Null
-          Boolean.new(value == other.value)
-        else
-          super
-        end
+        other.is_a?(AST::Null) ? Boolean.new(value == other.value) : super
       end
 
       def not_equal(other)
         other = other.to_node
-        case other
-        when AST::Null
-          Boolean.new(value != other.value)
-        else
-          super
-        end
+        other.is_a?(AST::Null) ? Boolean.new(value != other.value) : super
       end
     end
   end
