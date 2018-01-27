@@ -2,8 +2,7 @@ module Keisan
   module AST
     class Hash < Node
       def initialize(key_value_pairs)
-        @hash = ::Hash[key_value_pairs]
-        @hash = ::Hash[@hash.map {|k,v| [k.value, v]}]
+        @hash = ::Hash[key_value_pairs.map(&:to_a).map {|k,v| [k.value, v.to_node]}]
       end
 
       def [](key)
@@ -23,7 +22,7 @@ module Keisan
             if val.is_a?(Cell)
               [key, val]
             else
-              [key, Cell.new(val.evaluate(context))]
+              [key, val.evaluate(context)]
             end
           end
         ]
