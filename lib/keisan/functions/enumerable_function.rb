@@ -17,7 +17,6 @@ module Keisan
         context ||= Context.new
 
         operand, arguments, expression = operand_arguments_expression_for(ast_function, context)
-        operand = operand.simplify(context)
 
         case operand
         when AST::List
