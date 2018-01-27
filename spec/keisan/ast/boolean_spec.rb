@@ -24,4 +24,22 @@ RSpec.describe Keisan::AST::Boolean do
       expect(res.value).to eq true
     end
   end
+
+  describe "logical operations" do
+    it "can do == and != checks" do
+      positive_equal     = described_class.new(true).equal     described_class.new(true)
+      negative_equal     = described_class.new(true).equal     described_class.new(false)
+      positive_not_equal = described_class.new(true).not_equal described_class.new(false)
+      negative_not_equal = described_class.new(true).not_equal described_class.new(true)
+
+      expect(positive_equal).to be_a(Keisan::AST::Boolean)
+      expect(positive_equal.value).to eq true
+      expect(negative_equal).to be_a(Keisan::AST::Boolean)
+      expect(negative_equal.value).to eq false
+      expect(positive_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(positive_not_equal.value).to eq true
+      expect(negative_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(negative_not_equal.value).to eq false
+    end
+  end
 end

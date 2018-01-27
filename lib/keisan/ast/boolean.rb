@@ -38,6 +38,26 @@ module Keisan
           super
         end
       end
+
+      def equal(other)
+        other = other.to_node
+        case other
+        when AST::Boolean
+          Boolean.new(value == other.value)
+        else
+          super
+        end
+      end
+
+      def not_equal(other)
+        other = other.to_node
+        case other
+        when AST::Boolean
+          Boolean.new(value != other.value)
+        else
+          super
+        end
+      end
     end
   end
 end
