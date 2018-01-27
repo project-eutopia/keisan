@@ -56,6 +56,10 @@ module Keisan
         node.replace(variable, replacement)
       end
 
+      def to_cell
+        self.class.new(node.to_cell)
+      end
+
       def to_s
         node.to_s
       end

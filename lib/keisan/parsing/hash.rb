@@ -16,8 +16,20 @@ module Keisan
         raise Exceptions::ParseError.new("Invalid hash") unless key.size == 1 && value.size >= 1
 
         key = key.first
-        raise Exceptions::ParseError.new("Invalid hash (keys must be strings)") unless key.is_a?(Tokens::String)
-        [Parsing::String.new(key.value), Parsing::RoundGroup.new(value)]
+        if allowed_key?(key)
+          [Parsing::String.new(key.value), Parsing::RoundGroup.new(value)]
+        else
+          raise Exceptions::ParseError.new("Invalid hash (keys must be constants)")
+        end
+      end
+
+      def allowed_key?(key)
+        case key
+        when Tokens::String, Tokens::Boolean, Tokens::Null, Tokens::Number
+          true
+        else
+          false
+        end
       end
     end
   end

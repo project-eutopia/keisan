@@ -71,6 +71,7 @@ module Keisan
 
       def evaluate_cell_assignment(context, lhs, rhs)
         lhs = lhs.evaluate(context)
+
         unless lhs.is_a?(Cell)
           raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
         end

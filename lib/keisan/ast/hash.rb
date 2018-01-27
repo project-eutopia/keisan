@@ -3,25 +3,20 @@ module Keisan
     class Hash < Node
       def initialize(key_value_pairs)
         @hash = ::Hash[key_value_pairs]
-        stringify_and_cellify!
+        @hash = ::Hash[@hash.map {|k,v| [k.value, v]}]
       end
 
       def [](key)
         key = key.to_node
-        return nil unless key.is_a?(AST::String)
+        return nil unless key.is_a?(AST::ConstantLiteral)
 
-        if val = @hash[key.value]
-          val
-        else
-          Cell.new(Null.new).tap do |cell|
-            @hash[key.value] = cell
-          end
+        @hash[key.value] || Cell.new(Null.new).tap do |cell|
+          @hash[key.value] = cell
         end
       end
 
       def evaluate(context = nil)
         context ||= Context.new
-        stringify_and_cellify!
 
         @hash = ::Hash[
           @hash.map do |key, val|
@@ -46,26 +41,23 @@ module Keisan
 
         ::Hash[
           @hash.map {|key, val|
-            raise Exceptions::InvalidExpression.new("Keisan::AST::Hash#value must have all keys evaluate to strings") unless key.is_a?(::String)
             [key, val.value(context)]
           }
         ]
       end
 
       def to_s
-        "{#{@hash.map {|k,v| "'#{k}': #{v}"}.join(', ')}}"
+        "{#{@hash.map {|k,v| "#{k.is_a?(::String) ? "'#{k}'" : k}: #{v}"}.join(', ')}}"
       end
 
-      private
-
-      def stringify_and_cellify!
-        @hash = ::Hash[
-          @hash.map do |key, val|
-            key = key.value if key.is_a?(AST::String)
-            val = Cell.new(val) unless val.is_a?(Cell)
-            [key, val]
+      def to_cell
+        h = self.class.new([])
+        h.instance_variable_set(:@hash, ::Hash[
+          @hash.map do |key, value|
+            [key, value.to_cell]
           end
-        ]
+        ])
+        AST::Cell.new(h)
       end
     end
   end

@@ -63,6 +63,17 @@ RSpec.describe Keisan::Calculator do
       calculator.evaluate("a[2][0] = 10")
       expect(calculator.evaluate("a")).to eq([[5,2,3], [4,5,6], [10,2,3]])
     end
+
+    it "can mix lists and hashes" do
+      calculator.evaluate("a = [5, 11, {'a': 20, 'b': 33}]")
+      calculator.evaluate("h = {'c': [1,2,3], 'd': 4}")
+
+      calculator.evaluate("a[2]['c'] = h['d']")
+      calculator.evaluate("a[2]['a'] = h['c'][0]")
+      expect(calculator.evaluate("a").value).to eq [5, 11, {"a" => 1, "b" => 33, "c" => 4}]
+      calculator.evaluate("h['c'][1] = a[2]['b']")
+      expect(calculator.evaluate("h").value).to eq({"c" => [1,33,3], "d" => 4})
+    end
   end
 
   context "hash operations" do
@@ -102,6 +113,14 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("h").value).to eq ({"a" => 3, "b" => 2, "c" => 3})
       calculator.evaluate("h['a'] = h['b']")
       expect(calculator.evaluate("h").value).to eq ({"a" => 2, "b" => 2, "c" => 3})
+    end
+
+    it "can use anything as keys" do
+      calculator.evaluate("h = {'a': 1, 10: 2, true: 3}")
+      expect(calculator.evaluate("h").value).to eq({"a" => 1, 10 => 2, true => 3})
+      calculator.evaluate("h[10] = h[true]")
+      calculator.evaluate("h[true] = 'hello'")
+      expect(calculator.evaluate("h").value).to eq({"a" => 1, 10 => 3, true => "hello"})
     end
 
     describe "#to_s" do

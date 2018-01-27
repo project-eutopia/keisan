@@ -45,7 +45,7 @@ module Keisan
         name = name.name if name.is_a?(AST::Variable)
 
         raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
-        self[name.to_s] = AST::Cell.new(value.to_node)
+        self[name.to_s] = value.to_node.to_cell
       end
 
       protected
