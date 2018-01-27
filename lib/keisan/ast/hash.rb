@@ -1,6 +1,8 @@
 module Keisan
   module AST
     class Hash < Node
+      include Enumerable
+
       def initialize(key_value_pairs)
         @hash = ::Hash[key_value_pairs.map(&:to_a).map {|k,v| [k.value, v.to_node]}]
       end
@@ -32,6 +34,18 @@ module Keisan
 
       def simplify(context = nil)
         evaluate(context)
+      end
+
+      def each(&block)
+        @hash.each(&block)
+      end
+
+      def keys
+        @hash.keys
+      end
+
+      def values
+        @hash.values
       end
 
       def value(context = nil)

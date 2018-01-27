@@ -24,6 +24,10 @@ module Keisan
         "[#{children.map(&:to_s).join(',')}]"
       end
 
+      def to_a
+        @children.map(&:value)
+      end
+
       def to_cell
         AST::Cell.new(
           self.class.new(
