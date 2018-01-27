@@ -37,10 +37,6 @@ module Keisan
         value(context)
       end
 
-      def cell_evaluate(context = nil)
-        self
-      end
-
       def evaluate_assignments(context = nil)
         self
       end

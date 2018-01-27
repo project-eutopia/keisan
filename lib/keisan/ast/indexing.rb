@@ -28,14 +28,6 @@ module Keisan
         evaluate_list(context) || evaluate_hash(context) || self
       end
 
-      def cell_evaluate(context = nil)
-        context ||= Context.new
-        @children = children.map {|child| child.cell_evaluate(context)}
-        @indexes = indexes.map {|index| index.evaluate(context)}
-
-        evaluate_list(context) || evaluate_hash(context) || self
-      end
-
       def simplify(context = nil)
         evaluate(context)
       end
