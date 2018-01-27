@@ -78,9 +78,17 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
         it "filters the list given the logical expression" do
           expect{Keisan::Calculator.new.evaluate("filter(10, x, x > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("filter([-1,0,1], 4, x > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect(Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x > 0)")).to eq [1]
           expect(Keisan::Calculator.new.evaluate("select([1,2,3,4], x, x % 2 == 0)")).to eq [2,4]
           expect(Keisan::Calculator.new.simplify("[1,3,5].filter(x, x == 3)").to_s).to eq "[3]"
+        end
+
+        it "filters the hash given the logical expression" do
+          expect{Keisan::Calculator.new.evaluate("filter(10, k, v, v > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, 2, k > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect(Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k == 'a')")).to eq({"a" => 1})
         end
       end
 
