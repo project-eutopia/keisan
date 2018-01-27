@@ -9,6 +9,7 @@ require_relative "range"
 require_relative "map"
 require_relative "filter"
 require_relative "reduce"
+require_relative "to_h"
 require_relative "rand"
 require_relative "sample"
 require_relative "math_function"
@@ -59,6 +60,7 @@ module Keisan
         registry.register!(:select, Filter.new, force: true)
         registry.register!(:reduce, Reduce.new, force: true)
         registry.register!(:inject, Reduce.new, force: true)
+        registry.register!(:to_h, ToH.new, force: true)
 
         register_math!(registry)
         register_array_methods!(registry)
