@@ -27,6 +27,16 @@ module Keisan
           "\"#{value}\""
         end
       end
+
+      def equal(other)
+        other = other.to_node
+        other.is_a?(AST::String) ? Boolean.new(value == other.value) : super
+      end
+
+      def not_equal(other)
+        other = other.to_node
+        other.is_a?(AST::String) ? Boolean.new(value != other.value) : super
+      end
     end
   end
 end

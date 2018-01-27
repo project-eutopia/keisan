@@ -1,27 +1,22 @@
+require "keisan/functions/enumerable_function"
+
 module Keisan
   module Functions
-    class Map < Function
-      # Maps (list, variable, expression)
-      # e.g. map([1,2,3], x, 2*x)
-      # should give [2,4,6]
+    class Map < EnumerableFunction
+      # Maps
+      # (list, variable, expression)
+      # (hash, key, value, expression)
       def initialize
-        super("map", 3)
+        super("map")
       end
 
-      def value(ast_function, context = nil)
-        evaluate(ast_function, context)
-      end
+      private
 
-      def evaluate(ast_function, context = nil)
-        context ||= Context.new
-        simplify(ast_function, context).evaluate(context)
-      end
-
-      def simplify(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
-
-        context ||= Context.new
-        list, variable, expression = list_variable_expression_for(ast_function, context)
+      def evaluate_list(list, arguments, expression, context)
+        unless arguments.count == 1
+          raise Exceptions::InvalidFunctionError.new("Map on list must take 3 arguments")
+        end
+        variable = arguments.first
 
         local = context.spawn_child(transient: false, shadowed: [variable.name])
 
@@ -33,22 +28,21 @@ module Keisan
         )
       end
 
-      private
-
-      def list_variable_expression_for(ast_function, context)
-        list = ast_function.children[0].simplify(context)
-        variable = ast_function.children[1]
-        expression = ast_function.children[2]
-
-        unless list.is_a?(AST::List)
-          raise Exceptions::InvalidFunctionError.new("First argument to map must be a list")
+      def evaluate_hash(hash, arguments, expression, context)
+        unless arguments.count == 2
+          raise Exceptions::InvalidFunctionError.new("Map on hash must take 4 arguments")
         end
+        key, value = arguments[0..1]
 
-        unless variable.is_a?(AST::Variable)
-          raise Exceptions::InvalidFunctionError.new("Second argument to map must be a variable")
-        end
+        local = context.spawn_child(transient: false, shadowed: [key.name, value.name])
 
-        [list, variable, expression]
+        AST::List.new(
+          hash.map do |cur_key, cur_value|
+            local.register_variable!(key, cur_key)
+            local.register_variable!(value, cur_value)
+            expression.simplified(local)
+          end
+        )
       end
     end
   end

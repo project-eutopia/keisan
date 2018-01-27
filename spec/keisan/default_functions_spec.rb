@@ -57,6 +57,14 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect(Keisan::Calculator.new.evaluate("[1,3,5].map(x, [x, 2*x]).to_h")).to eq({1 => 2, 3 => 6, 5 => 10})
         end
 
+        it "maps the hash to the given expression" do
+          calculator = Keisan::Calculator.new
+          expect(calculator.evaluate("{'a': 1, 'b': 2}.map(k, v, {let k = k+k; [k, 2v]}).to_h").value).to eq({
+            "aa" => 2,
+            "bb" => 4
+          })
+        end
+
         it "shadows variable definitions" do
           calculator = Keisan::Calculator.new
           calculator.evaluate("x = 5")
@@ -70,19 +78,34 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
         it "filters the list given the logical expression" do
           expect{Keisan::Calculator.new.evaluate("filter(10, x, x > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("filter([-1,0,1], 4, x > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect(Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x > 0)")).to eq [1]
           expect(Keisan::Calculator.new.evaluate("select([1,2,3,4], x, x % 2 == 0)")).to eq [2,4]
           expect(Keisan::Calculator.new.simplify("[1,3,5].filter(x, x == 3)").to_s).to eq "[3]"
         end
+
+        it "filters the hash given the logical expression" do
+          expect{Keisan::Calculator.new.evaluate("filter(10, k, v, v > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, 2, k > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect(Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k == 'a')")).to eq({"a" => 1})
+        end
       end
 
       describe "#reduce" do
-        it "reduces the list given expression" do
+        it "reduces the list given an expression" do
           expect{Keisan::Calculator.new.evaluate("reduce(1, 2, 3)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("reduce([-1,0,1], 4, 1, x, x+total)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
 
           expect(Keisan::Calculator.new.simplify("reduce([1,2,3], init, total, x, total+x)").to_s).to eq "6+init"
           expect(Keisan::Calculator.new.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")).to eq 120
+        end
+
+        it "reduces the hash given an expression" do
+          expect{Keisan::Calculator.new.evaluate("reduce(1, 2, 3)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("reduce({'a': 1, 'b': 2}, 0, 1, 2, 333)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("reduce({'a': 1, 'b': 2}, 0, total, cur, total+cur)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect(Keisan::Calculator.new.evaluate("reduce({'a': 10, 'bb': 20}, 0, total, key, value, total+value+key.size**2)")).to eq 35
         end
       end
 

@@ -22,11 +22,19 @@ RSpec.describe Keisan::AST::String do
     end
   end
 
-  describe "operations" do
-    it "should reduce to a single string" do
-      res = Keisan::AST::String.new("hello ") + Keisan::AST::String.new("world")
-      expect(res).to be_a(described_class)
-      expect(res.value).to eq "hello world"
+  describe "addition" do
+    context "when operating on string" do
+      it "should reduce to a single string" do
+        res = Keisan::AST::String.new("hello ") + Keisan::AST::String.new("world")
+        expect(res).to be_a(described_class)
+        expect(res.value).to eq "hello world"
+      end
+    end
+
+    context "when operating on number" do
+      it "should raise an error" do
+        expect{Keisan::AST::String.new("hello ") + Keisan::AST::Number.new(1)}.to raise_error(Keisan::Exceptions::TypeError)
+      end
     end
   end
 
@@ -35,6 +43,30 @@ RSpec.describe Keisan::AST::String do
       calculator = Keisan::Calculator.new
       result = calculator.simplify("'hello ' + 'world'")
       expect(result.to_s).to eq "\"hello world\""
+    end
+  end
+
+  describe "logical operations" do
+    it "can do == and != checks" do
+      positive_equal     = described_class.new("a").equal     described_class.new("a")
+      negative_equal     = described_class.new("a").equal     described_class.new("b")
+      positive_not_equal = described_class.new("a").not_equal described_class.new("b")
+      negative_not_equal = described_class.new("a").not_equal described_class.new("a")
+
+      expect(positive_equal).to be_a(Keisan::AST::Boolean)
+      expect(positive_equal.value).to eq true
+      expect(negative_equal).to be_a(Keisan::AST::Boolean)
+      expect(negative_equal.value).to eq false
+      expect(positive_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(positive_not_equal.value).to eq true
+      expect(negative_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(negative_not_equal.value).to eq false
+
+      equal_other     = described_class.new("a").equal     Keisan::AST::Number.new(1)
+      not_equal_other = described_class.new("a").not_equal Keisan::AST::Number.new(1)
+
+      expect(equal_other).to be_a(Keisan::AST::LogicalEqual)
+      expect(not_equal_other).to be_a(Keisan::AST::LogicalNotEqual)
     end
   end
 end

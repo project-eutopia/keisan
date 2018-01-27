@@ -21,22 +21,22 @@ module Keisan
 
       def and(other)
         other = other.to_node
-        case other
-        when Boolean
-          Boolean.new(bool && other.bool)
-        else
-          super
-        end
+        other.is_a?(Boolean) ? Boolean.new(bool && other.bool) : super
       end
 
       def or(other)
         other = other.to_node
-        case other
-        when Boolean
-          Boolean.new(bool || other.bool)
-        else
-          super
-        end
+        other.is_a?(Boolean) ? Boolean.new(bool || other.bool) : super
+      end
+
+      def equal(other)
+        other = other.to_node
+        other.is_a?(Boolean) ? Boolean.new(value == other.value) : super
+      end
+
+      def not_equal(other)
+        other = other.to_node
+        other.is_a?(Boolean) ? Boolean.new(value != other.value) : super
       end
     end
   end
