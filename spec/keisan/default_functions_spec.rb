@@ -93,12 +93,19 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       end
 
       describe "#reduce" do
-        it "reduces the list given expression" do
+        it "reduces the list given an expression" do
           expect{Keisan::Calculator.new.evaluate("reduce(1, 2, 3)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("reduce([-1,0,1], 4, 1, x, x+total)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
 
           expect(Keisan::Calculator.new.simplify("reduce([1,2,3], init, total, x, total+x)").to_s).to eq "6+init"
           expect(Keisan::Calculator.new.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")).to eq 120
+        end
+
+        it "reduces the hash given an expression" do
+          expect{Keisan::Calculator.new.evaluate("reduce(1, 2, 3)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("reduce({'a': 1, 'b': 2}, 0, 1, 2, 333)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect{Keisan::Calculator.new.evaluate("reduce({'a': 1, 'b': 2}, 0, total, cur, total+cur)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+          expect(Keisan::Calculator.new.evaluate("reduce({'a': 10, 'bb': 20}, 0, total, key, value, total+value+key.size**2)")).to eq 35
         end
       end
 
