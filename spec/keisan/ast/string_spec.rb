@@ -37,4 +37,22 @@ RSpec.describe Keisan::AST::String do
       expect(result.to_s).to eq "\"hello world\""
     end
   end
+
+  describe "logical operations" do
+    it "can do == and != checks" do
+      positive_equal     = described_class.new("a").equal     described_class.new("a")
+      negative_equal     = described_class.new("a").equal     described_class.new("b")
+      positive_not_equal = described_class.new("a").not_equal described_class.new("b")
+      negative_not_equal = described_class.new("a").not_equal described_class.new("a")
+
+      expect(positive_equal).to be_a(Keisan::AST::Boolean)
+      expect(positive_equal.value).to eq true
+      expect(negative_equal).to be_a(Keisan::AST::Boolean)
+      expect(negative_equal.value).to eq false
+      expect(positive_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(positive_not_equal.value).to eq true
+      expect(negative_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(negative_not_equal.value).to eq false
+    end
+  end
 end
