@@ -70,7 +70,8 @@ module Keisan
       private
 
       def evaluate_cell_assignment(context, lhs, rhs)
-        lhs = lhs.evaluate(context)
+        lhs = lhs.cell_evaluate(context) if lhs.is_a?(AST::Indexing)
+
         unless lhs.is_a?(Cell)
           raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
         end

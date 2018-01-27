@@ -50,6 +50,11 @@ module Keisan
         end
       end
 
+      def cell_evaluate(context = nil)
+        context ||= Context.new
+        context.variable(name)
+      end
+
       def simplify(context = nil)
         context ||= Context.new
         if context.has_variable?(name)

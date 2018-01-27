@@ -282,14 +282,18 @@ RSpec.describe Keisan::AST::Assignment do
       context "when list, so accessing cells stored within variable" do
         it "can modify elements" do
           calculator = Keisan::Calculator.new
+          calculator.evaluate("ll = [[1,2],[3,4]]")
+          calculator.evaluate("ll[0*0][0] += ll[1][1*1]")
+          expect(calculator.evaluate("ll").value).to eq [[5,2],[3,4]]
+
           calculator.evaluate("a = [1,2,3]")
           calculator.evaluate("a[1] += 10")
-          calculator.evaluate("a[1] *= 2")
+          calculator.evaluate("a[1] *= 2a[0]")
           calculator.evaluate("a[1] &= 10")
           expect(calculator.evaluate("a").value).to eq [1,8,3]
 
           calculator.evaluate("h = {'a': 2, 'b': 5}")
-          calculator.evaluate("h['a'] += 10")
+          calculator.evaluate("h['a'] += 2*h['b']")
           calculator.evaluate("h['a'] *= 2")
           calculator.evaluate("h['a'] &= 10")
           expect(calculator.evaluate("h").value).to eq({"a" => 8, "b" => 5})

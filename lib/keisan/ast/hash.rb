@@ -3,7 +3,7 @@ module Keisan
     class Hash < Node
       def initialize(key_value_pairs)
         @hash = ::Hash[key_value_pairs]
-        valueify_and_cellify!
+        @hash = ::Hash[@hash.map {|k,v| [k.value, v]}]
       end
 
       def [](key)
@@ -21,7 +21,6 @@ module Keisan
 
       def evaluate(context = nil)
         context ||= Context.new
-        valueify_and_cellify!
 
         @hash = ::Hash[
           @hash.map do |key, val|
@@ -52,7 +51,7 @@ module Keisan
       end
 
       def to_s
-        "{#{@hash.map {|k,v| "'#{k}': #{v}"}.join(', ')}}"
+        "{#{@hash.map {|k,v| "#{k.is_a?(::String) ? "'#{k}'" : k}: #{v}"}.join(', ')}}"
       end
 
       def to_cell
@@ -62,19 +61,7 @@ module Keisan
             [key, value.to_cell]
           end
         ])
-        h
-      end
-
-      private
-
-      def valueify_and_cellify!
-        @hash = ::Hash[
-          @hash.map do |key, val|
-            key = key.value
-            val = Cell.new(val) unless val.is_a?(Cell)
-            [key, val]
-          end
-        ]
+        AST::Cell.new(h)
       end
     end
   end

@@ -3,13 +3,11 @@ module Keisan
     class List < Parent
       def initialize(children = [])
         super(children)
-        cellify!
       end
 
       def evaluate(context = nil)
         context ||= Context.new
         @children = children.map {|child| child.is_a?(Cell) ? child : child.evaluate(context)}
-        cellify!
         self
       end
 

@@ -57,7 +57,7 @@ module Keisan
       end
 
       def to_cell
-        self.class.new(node)
+        self.class.new(node.to_cell)
       end
 
       def to_s
