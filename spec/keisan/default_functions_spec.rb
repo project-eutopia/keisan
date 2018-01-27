@@ -54,6 +54,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect(Keisan::Calculator.new.evaluate("collect([1,3,5], x, 2*x)")).to eq [2,6,10]
           expect(Keisan::Calculator.new.simplify("[1,3,5].map(x, y*x**2)").to_s).to eq "[y,9*y,25*y]"
           expect(Keisan::Calculator.new.evaluate("map([1,3,5], x, [x, 2*x])")).to eq [[1,2], [3,6], [5,10]]
+          expect(Keisan::Calculator.new.evaluate("[1,3,5].map(x, [x, 2*x]).to_h")).to eq({1 => 2, 3 => 6, 5 => 10})
         end
 
         it "shadows variable definitions" do
