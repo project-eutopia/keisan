@@ -1,11 +1,11 @@
 module Keisan
   module Functions
     class Map < Function
-      # Maps (list, variable, expression)
-      # e.g. map([1,2,3], x, 2*x)
-      # should give [2,4,6]
+      # Maps
+      # (list, variable, expression)
+      # (hash, key, value, expression)
       def initialize
-        super("map", 3)
+        super("map", ::Range.new(3,4))
       end
 
       def value(ast_function, context = nil)
@@ -13,15 +13,29 @@ module Keisan
       end
 
       def evaluate(ast_function, context = nil)
+        validate_arguments!(ast_function.children.count)
         context ||= Context.new
-        simplify(ast_function, context).evaluate(context)
+
+        operand, arguments, expression = operand_arguments_expression_for(ast_function, context)
+
+        case arguments.count
+        when 1
+          evaluate_list(operand, arguments[0], expression, context)
+        when 2
+          evaluate_hash(operand, arguments[0], arguments[1], expression, context)
+        end
       end
 
       def simplify(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
+        evaluate(ast_function, context)
+      end
 
-        context ||= Context.new
-        list, variable, expression = list_variable_expression_for(ast_function, context)
+      private
+
+      def evaluate_list(list, variable, expression, context)
+        unless list.is_a?(AST::List)
+          raise Exceptions::InvalidFunctionError.new("Map with 3 arguments must work on list")
+        end
 
         local = context.spawn_child(transient: false, shadowed: [variable.name])
 
@@ -33,22 +47,32 @@ module Keisan
         )
       end
 
-      private
-
-      def list_variable_expression_for(ast_function, context)
-        list = ast_function.children[0].simplify(context)
-        variable = ast_function.children[1]
-        expression = ast_function.children[2]
-
-        unless list.is_a?(AST::List)
-          raise Exceptions::InvalidFunctionError.new("First argument to map must be a list")
+      def evaluate_hash(hash, key, value, expression, context)
+        unless hash.is_a?(AST::Hash)
+          raise Exceptions::InvalidFunctionError.new("Map with 4 arguments must work on hash")
         end
 
-        unless variable.is_a?(AST::Variable)
-          raise Exceptions::InvalidFunctionError.new("Second argument to map must be a variable")
+        local = context.spawn_child(transient: false, shadowed: [key.name, value.name])
+
+        AST::List.new(
+          hash.map do |cur_key, cur_value|
+            local.register_variable!(key, cur_key)
+            local.register_variable!(value, cur_value)
+            expression.simplified(local)
+          end
+        )
+      end
+
+      def operand_arguments_expression_for(ast_function, context)
+        operand = ast_function.children[0].simplify(context)
+        arguments = ast_function.children[1...-1]
+        expression = ast_function.children[-1]
+
+        unless arguments.all? {|argument| argument.is_a?(AST::Variable)}
+          raise Exceptions::InvalidFunctionError.new("Middle arguments to map must be variables")
         end
 
-        [list, variable, expression]
+        [operand, arguments, expression]
       end
     end
   end

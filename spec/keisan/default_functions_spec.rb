@@ -57,6 +57,14 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect(Keisan::Calculator.new.evaluate("[1,3,5].map(x, [x, 2*x]).to_h")).to eq({1 => 2, 3 => 6, 5 => 10})
         end
 
+        it "maps the hash to the given expression" do
+          calculator = Keisan::Calculator.new
+          expect(calculator.evaluate("{'a': 1, 'b': 2}.map(k, v, {let k = k+k; [k, 2v]}).to_h").value).to eq({
+            "aa" => 2,
+            "bb" => 4
+          })
+        end
+
         it "shadows variable definitions" do
           calculator = Keisan::Calculator.new
           calculator.evaluate("x = 5")
