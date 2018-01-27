@@ -10,12 +10,8 @@ module Keisan
         key = key.to_node
         return nil unless key.is_a?(AST::ConstantLiteral)
 
-        if val = @hash[key.value]
-          val
-        else
-          Cell.new(Null.new).tap do |cell|
-            @hash[key.value] = cell
-          end
+        @hash[key.value] || Cell.new(Null.new).tap do |cell|
+          @hash[key.value] = cell
         end
       end
 
