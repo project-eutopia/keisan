@@ -29,19 +29,6 @@ module Keisan
       def simplify(ast_function, context = nil)
         evaluate(ast_function, context)
       end
-
-      def differentiate(ast_function, variable, context = nil)
-        validate_arguments!(ast_function.children.count)
-        context ||= Context.new
-        AST::Function.new(
-          [
-            ast_function.children[0],
-            ast_function.children[1].differentiate(variable, context),
-            ast_function.children[2].differentiate(variable, context)
-          ],
-          @name
-        )
-      end
     end
   end
 end
