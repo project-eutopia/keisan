@@ -5,7 +5,7 @@ module Keisan
       # (list, variable, boolean_expression)
       # (hash, key, value, boolean_expression)
       def initialize(name)
-        super(name, ::Range.new(3, 4))
+        super(name, -3)
       end
 
       def value(ast_function, context = nil)
@@ -33,6 +33,14 @@ module Keisan
         evaluate(ast_function, context)
       end
 
+      protected
+
+      def verify_arguments!(arguments)
+        unless arguments.all? {|argument| argument.is_a?(AST::Variable)}
+          raise Exceptions::InvalidFunctionError.new("Middle arguments to #{name} must be variables")
+        end
+      end
+
       private
 
       def operand_arguments_expression_for(ast_function, context)
@@ -40,9 +48,7 @@ module Keisan
         arguments = ast_function.children[1...-1]
         expression = ast_function.children[-1]
 
-        unless arguments.all? {|argument| argument.is_a?(AST::Variable)}
-          raise Exceptions::InvalidFunctionError.new("Middle arguments to map must be variables")
-        end
+        verify_arguments!(arguments)
 
         [operand, arguments, expression]
       end

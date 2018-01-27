@@ -1,27 +1,31 @@
+require "keisan/functions/enumerable_function"
+
 module Keisan
   module Functions
-    class Reduce < Function
+    class Reduce < EnumerableFunction
       # Reduces (list, initial, accumulator, variable, expression)
       # e.g. reduce([1,2,3,4], 0, total, x, total+x)
       # should give 10
       def initialize
-        super("reduce", 5)
+        super("reduce")
       end
 
-      def value(ast_function, context = nil)
-        evaluate(ast_function, context)
+      protected
+
+      def verify_arguments!(arguments)
+        unless arguments[1..-1].all? {|argument| argument.is_a?(AST::Variable)}
+          raise Exceptions::InvalidFunctionError.new("Middle arguments to #{name} must be variables")
+        end
       end
 
-      def evaluate(ast_function, context = nil)
-        context ||= Context.new
-        simplify(ast_function, context).evaluate(context)
-      end
+      private
 
-      def simplify(ast_function, context = nil)
-        validate_arguments!(ast_function.children.count)
+      def evaluate_list(list, arguments, expression, context)
+        unless arguments.count == 3
+          raise Exceptions::InvalidFunctionError.new("Reduce on list must take 3 arguments")
+        end
 
-        context ||= Context.new
-        list, initial, accumulator, variable, expression = list_initial_accumulator_variable_expression_for(ast_function, context)
+        initial, accumulator, variable = arguments[0...3]
 
         local = context.spawn_child(transient: false, shadowed: [accumulator.name, variable.name])
         local.register_variable!(accumulator, initial.simplify(context))
@@ -33,30 +37,6 @@ module Keisan
         end
 
         local.variable(accumulator.name)
-      end
-
-      private
-
-      def list_initial_accumulator_variable_expression_for(ast_function, context)
-        list = ast_function.children[0].simplify(context)
-        initial = ast_function.children[1]
-        accumulator = ast_function.children[2]
-        variable = ast_function.children[3]
-        expression = ast_function.children[4]
-
-        unless list.is_a?(AST::List)
-          raise Exceptions::InvalidFunctionError.new("First argument to reduce must be a list")
-        end
-
-        unless accumulator.is_a?(AST::Variable)
-          raise Exceptions::InvalidFunctionError.new("Third argument to reduce is accumulator and must be a variable")
-        end
-
-        unless variable.is_a?(AST::Variable)
-          raise Exceptions::InvalidFunctionError.new("Fourth argument to reduce is variable and must be a variable")
-        end
-
-        [list, initial, accumulator, variable, expression]
       end
     end
   end
