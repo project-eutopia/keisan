@@ -24,6 +24,9 @@ RSpec.describe Keisan::Context do
       frozen_context.register_function!("f", Proc.new {|x| x})
       frozen_context.freeze
 
+      expect{frozen_context.register_variable!("x", 10)}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{frozen_context.register_function!("f", Proc.new {|x| x**2})}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+
       child_context = frozen_context.spawn_child
       child_context.register_variable!("x", 2)
       child_context.register_function!("f", Proc.new {|x| 2*x})
@@ -33,6 +36,38 @@ RSpec.describe Keisan::Context do
 
       expect(frozen_context.function("f").call(nil, 3).value).to eq 3
       expect(child_context.function("f").call(nil, 3).value).to eq 6
+    end
+
+    it "works on list/hash variables" do
+      calculator = Keisan::Calculator.new
+      calculator.evaluate("x = [1, [2,3], {'a': 10, 'b': 20}]")
+      calculator.evaluate("y = {'alpha': 6, 'beta': [7,7,7], 'gamma': {'foo': 100}}")
+
+      # Can modify list no problem
+      calculator.evaluate("x[0] += 10")
+      calculator.evaluate("x[1][0] += 10")
+      calculator.evaluate("x[2]['a'] += 10")
+      expect(calculator.evaluate("x")).to eq([11, [12,3], {"a" => 20, "b" => 20}])
+
+      # Can modify hash no problem
+      calculator.evaluate("y['alpha'] += 10")
+      calculator.evaluate("y['beta'][0] += 10")
+      calculator.evaluate("y['gamma']['foo'] += 10")
+      expect(calculator.evaluate("y")).to eq({"alpha" => 16, "beta" => [17,7,7], "gamma" => {"foo" => 110}})
+
+      # Freeze
+      calculator.context.freeze
+
+      # Can no longer modify
+      expect{calculator.evaluate("x[0] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{calculator.evaluate("x[1][0] = 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{calculator.evaluate("x[2]['a'] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{calculator.evaluate("x = 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+
+      expect{calculator.evaluate("y['alpha'] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{calculator.evaluate("y['beta'][0] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{calculator.evaluate("y['gamma']['foo'] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
+      expect{calculator.evaluate("y = 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
     end
   end
 

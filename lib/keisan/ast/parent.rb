@@ -25,6 +25,11 @@ module Keisan
         end
       end
 
+      def freeze
+        children.each(&:freeze)
+        super
+      end
+
       def ==(other)
         return false unless self.class == other.class
 

@@ -24,6 +24,11 @@ module Keisan
         dupped
       end
 
+      def freeze
+        node.freeze
+        super
+      end
+
       def value(context = nil)
         node.value(context)
       end

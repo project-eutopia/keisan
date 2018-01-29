@@ -7,6 +7,11 @@ module Keisan
         @hash = ::Hash[key_value_pairs.map(&:to_a).map {|k,v| [k.value, v.to_node]}]
       end
 
+      def freeze
+        values.each(&:freeze)
+        super
+      end
+
       def [](key)
         key = key.to_node
         return nil unless key.is_a?(AST::ConstantLiteral)
