@@ -9,7 +9,7 @@
 
 Keisan ([計算, to calculate](https://en.wiktionary.org/wiki/%E8%A8%88%E7%AE%97#Japanese)) is a Ruby library for parsing equations into an abstract syntax tree.
 This allows for safe evaluation of string representations of mathematical/logical expressions.
-It has support for variables, functions, conditionals, and loops, making it a Turing complete programming language.
+It has support for variables, functions, conditionals, and loops, making it a [Turing complete](https://github.com/project-eutopia/keisan/blob/master/spec/keisan/turing_machine_spec.rb) programming language.
 
 ## Installation
 
