@@ -26,6 +26,11 @@ module Keisan
         raise Exceptions::UndefinedVariableError.new name
       end
 
+      def freeze
+        @hash.values.each(&:freeze)
+        super
+      end
+
       def locals
         @hash
       end
@@ -41,10 +46,9 @@ module Keisan
       end
 
       def register!(name, value, force: false)
-        name = name.to_s
-        name = name.name if name.is_a?(AST::Variable)
-
         raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables registry") if frozen?
+        name = name.to_s
+
         self[name.to_s] = value.to_node.to_cell
       end
 

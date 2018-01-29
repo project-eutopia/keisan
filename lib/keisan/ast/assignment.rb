@@ -69,8 +69,17 @@ module Keisan
 
       private
 
+      def lhs_evaluate_and_check_modifiable(context, lhs)
+        begin
+          lhs.evaluate(context)
+        rescue RuntimeError => e
+          raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables") if e.message =~ /can't modify frozen/
+          raise
+        end
+      end
+
       def evaluate_cell_assignment(context, lhs, rhs)
-        lhs = lhs.evaluate(context)
+        lhs = lhs_evaluate_and_check_modifiable(context, lhs)
 
         unless lhs.is_a?(Cell)
           raise Exceptions::InvalidExpression.new("Unhandled left hand side #{lhs} in assignment")
