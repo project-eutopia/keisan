@@ -7,7 +7,9 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/760e213d5ea81bca4480/maintainability)](https://codeclimate.com/github/project-eutopia/keisan/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/project-eutopia/keisan/badge.svg?branch=master)](https://coveralls.io/github/project-eutopia/keisan?branch=master)
 
-Keisan ([計算, to calculate](https://en.wiktionary.org/wiki/%E8%A8%88%E7%AE%97#Japanese)) is a Ruby library for parsing equations into an abstract syntax tree.  This allows for safe evaluation of string representations of mathematical/logical expressions.  It also has support for variables, functions, conditionals, and loops, making it a Turing complete programming language.
+Keisan ([計算, to calculate](https://en.wiktionary.org/wiki/%E8%A8%88%E7%AE%97#Japanese)) is a Ruby library for parsing equations into an abstract syntax tree.
+This allows for safe evaluation of string representations of mathematical/logical expressions.
+It has support for variables, functions, conditionals, and loops, making it a Turing complete programming language.
 
 ## Installation
 
@@ -29,13 +31,17 @@ Or install it yourself as:
 
 ### REPL
 
-The command `bin/keisan` will open up an interactive REPL.  The commands you type in to this REPL are relayed to an internal `Keisan::Calculator` class and displayed back to you.
+To try `keisan` out locally, clone this repository and run the executable `bin/keisan` to open up an interactive REPL.
+The commands you type in to this REPL are relayed to an internal `Keisan::Calculator` class and displayed back to you.
 
 ![alt text](screenshots/repl.png "Keisan built-in REPL")
 
+
 ### Calculator class
 
-The functionality of `keisan` can be demonstrated by using the `Keisan::Calculator` class.  The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), then evaluating any member functions/variables given.  There is also a `simplify` method that allows undefined variables and functions to exist, and will just return the simplified AST.
+This library is interacted with primarily through the `Keisan::Calculator` class.
+The `evaluate` method evaluates an expression by parsing it into an abstract syntax tree (AST), and evaluating it.
+There is also a `simplify` method that allows undefined variables and functions to exist, and will just return the simplified AST.
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -50,29 +56,17 @@ For users who want access to the parsed abstract syntax tree, you can use the `a
 ```ruby
 calculator = Keisan::Calculator.new
 ast = calculator.ast("x**2+1")
-ast.to_s
-#=> "(x**2)+1"
 ast.class
 #=> Keisan::AST::Plus
-ast.children[0].class
-#=> Keisan::AST::Exponent
-ast.children[0].children[0].class
-#=> Keisan::AST::Variable
-ast.children[0].children[0].name
-#=> "x"
-ast.children[0].children[1].class
-#=> Keisan::AST::Number
-ast.children[0].children[1].value
-#=> 2
-ast.children[1].class
-#=> Keisan::AST::Number
-ast.children[1].value
-#=> 1
+ast.to_s
+#=> "(x**2)+1"
+ast.children.map(&:to_s)
+#=> ["x**2", "1"]
 ```
 
 ##### Specifying variables
 
-Passing in a hash of variable (`name`, `value`) pairs to the `evaluate` method defines variables
+Passing in a hash of variable (`name`, `value`) pairs to the `evaluate` method is one way of defining variables
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -80,15 +74,7 @@ calculator.evaluate("3*x + y**2", x: -2.5, y: 3)
 #=> 1.5
 ```
 
-It will raise an error if an variable is not defined
-
-```ruby
-calculator = Keisan::Calculator.new
-calculator.evaluate("x + 1")
-#=> Keisan::Exceptions::UndefinedVariableError: x
-```
-
-It is also possible to define variables in the string expression itself
+It is also possible to define variables in the string expression itself using the assignment `=` operator
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -96,6 +82,7 @@ calculator.evaluate("x = 10*n", n: 2)
 calculator.evaluate("3*x + 1")
 #=> 61
 ```
+
 
 ##### Specifying functions
 
@@ -107,42 +94,21 @@ calculator.evaluate("2*f(1+2) + 4", f: Proc.new {|x| x**2})
 #=> 22
 ```
 
-It will raise an error if a function is not defined
+Note that functions work in both regular (`f(x)`) and postfix (`x.f()`) notation, where for example `a.f(b,c)` is translated internally to `f(a,b,c)`.
+The postfix notation requires the function to take at least one argument, and if there is only one argument to the function then the braces can be left off: `x.f`.
 
 ```ruby
 calculator = Keisan::Calculator.new
-calculator.evaluate("f(2) + 1")
-#=> Keisan::Exceptions::UndefinedFunctionError: f
-```
-
-Note that functions work in both regular (`f(x)`) and postfix (`x.f()`) notation.  The postfix notation requires the function to take at least one argument.  In the case of `a.f(b,c)`, this is translated internally to `f(a,b,c)`.  If there is only a single argument to the function, the braces can be left off: `x.f`.
-
-```ruby
-calculator = Keisan::Calculator.new
-calculator.evaluate("[1,3,5,7].size()")
-#=> 4
 calculator.evaluate("[1,3,5,7].size")
 #=> 4
-```
-
-It is even possible to do more complicated things like follows
-
-```ruby
-calculator = Keisan::Calculator.new
 calculator.define_function!("f", Proc.new {|x| [[x-1,x+1], [x-2,x,x+2]]})
-calculator.evaluate("4.f")
-#=> [[3,5], [2,4,6]]
 calculator.evaluate("4.f[0]")
 #=> [3,5]
-calculator.evaluate("4.f[0].size")
-#=> 2
-calculator.evaluate("4.f[1]")
-#=> [2,4,6]
 calculator.evaluate("4.f[1].size")
 #=> 3
 ```
 
-Like variables, it is also possible to define functions in the string expression itself.
+Like variables, it is also possible to define functions in the string expression itself using the assignment operator `=`
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -165,19 +131,17 @@ calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
 
 calculator = Keisan::Calculator.new(allow_recursive: true)
 calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
-calculator.evaluate("my_fact(0)")
-#=> 1
-calculator.evaluate("my_fact(1)")
-#=> 1
-calculator.evaluate("my_fact(2)")
-#=> 2
+calculator.evaluate("my_fact(4)")
+#=> 24
 calculator.evaluate("my_fact(5)")
 #=> 120
 ```
 
 ##### Multiple lines and blocks
 
-Keisan understands strings which contain multiple lines.  It will evaluate each line separately, and the last line will be the the result of the total evaluation.  Lines can be separated by newlines or semi-colons.
+Keisan understands strings which contain multiple lines.
+It will evaluate each line separately, and the last line will be the the result of the total evaluation.
+Lines can be separated by newlines or semi-colons.
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -185,7 +149,8 @@ calculator.evaluate("x = 2; y = 5\n x+y")
 #=> 7
 ```
 
-The use of curly braces `{}` can be used to create block which has a new closure where variable definitions are local to the block itself.  Inside a block, external variables are still visible and re-assignable, but new variable definitions remain local.
+The use of curly braces `{}` can be used to create block which has a new closure where variable definitions are local to the block itself.
+Inside a block, external variables are still visible and re-assignable, but new variable definitions remain local.
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -198,7 +163,9 @@ calculator.evaluate("a")
 #=> Keisan::Exceptions::UndefinedVariableError: a
 ```
 
-By default assigning to a variable or function will bubble up to the first definition available in the parent scopes.  To assign to a local variable, you can use the `let` keyword.  The difference is illustrated below.
+By default assigning to a variable or function will bubble up to the first definition available in the parent scopes.
+To assign to a local variable instead of modifying an existing variable out of the closure, you can use the `let` keyword.
+The difference is illustrated below.
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -219,9 +186,9 @@ calculator.evaluate("[2, 3, 5, 8]")
 calculator.evaluate("[[1,2,3],[4,5,6],[7,8,9]][1][2]")
 #=> 6
 calculator.evaluate("a = [1,2,3]")
-calculator.evaluate("a[1] = 22")
+calculator.evaluate("a[1] += 10*a[2]")
 calculator.evaluate("a")
-#=> [1, 22, 3]
+#=> [1, 32, 3]
 ```
 
 They can also be concatenated using the `+` operator
@@ -254,30 +221,14 @@ calculator.evaluate("range(0,10,2)")
 #=> [0,2,4,6,8]
 ```
 
-Keisan also supports the basic functional programming operators `map` (or `collect`), `filter` (or `select`), and `reduce` (or `inject`).
-
-```ruby
-calculator = Keisan::Calculator.new
-calculator.evaluate("map([1,3,5], x, 2*x)")
-#=> [2,6,10]
-calculator.simplify("[1,3,5].map(x, y*x**2)").to_s
-#=> "[y,9*y,25*y]"
-calculator.evaluate("select([1,2,3,4], x, x % 2 == 0)")
-#=> [2,4]
-calculator.evaluate("[-2,-1,0,1,2].filter(x, x > 0)")
-#=> [1,2]
-calculator.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")
-#=> 120
-```
-
 ##### Hashes
 
-Keisan also supports associative arrays (hashes), which map strings to some value.
+Keisan also supports associative arrays (hashes), which maps keys to values.
 
 ```ruby
 calculator = Keisan::Calculator.new
-calculator.evaluate("my_hash = {'foo': 3*4, \"bar\": \"hello world\"}")
-calculator.evaluate("my_hash['foo']")
+calculator.evaluate("my_hash = {777: 3*4, \"bar\": \"hello world\"}")
+calculator.evaluate("my_hash[777]")
 #=> 12
 calculator.evaluate("s = 'ba'")
 calculator.evaluate("my_hash[s + 'r']")
@@ -287,6 +238,36 @@ calculator.evaluate("my_hash['baz']")
 calculator.evaluate("my_hash['baz'] = 999")
 calculator.evaluate("my_hash['baz']")
 #=> 999
+```
+
+There is also a `to_h` method which converts a list of key value pairs into a hash.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("range(1, 6).map(x, [x, x**2]).to_h")
+#=> {1 => 1, 2 => 4, 3 => 9, 4 => 16, 5 => 25}
+```
+
+##### Functional programming methods
+
+Keisan also supports the basic functional programming operators `map` (or `collect`), `filter` (or `select`), and `reduce` (or `inject`).
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("map([1,3,5], x, 2*x)")
+#=> [2,6,10]
+calculator.simplify("{'a': 1, 'b': 3, 'c': 5}.collect(k, v, y*v**2)").to_s
+#=> "[y,9*y,25*y]"
+
+calculator.evaluate("[1,2,3,4].select(x, x % 2 == 0)")
+#=> [2,4]
+calculator.evaluate("filter({'a': 1, 'bb': 4, 'ccc': 9}, k, v, k.size == 2)")
+#=> {"bb" => 4}
+
+calculator.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")
+#=> 120
+calculator.evaluate("{'foo': 'hello', 'bar': ' world'}.reduce('', res, k, v, res + v)")
+#=> "hello world"
 ```
 
 ##### Logical operations
@@ -311,11 +292,11 @@ calculator.evaluate("2 + if(1 > 0, 10, 29)")
 #=> 12
 ```
 
-For looping, you can use the basic `while` loop, which has an expression that evaluates to a boolean as the first argument, and any expression in the second argument.  This works just like the normal `while` loop.
+For looping, you can use the basic `while` loop, which has an expression that evaluates to a boolean as the first argument, and any expression in the second argument.
 
 ```ruby
 calculator = Keisan::Calculator.new
-calculator.evaluate("my_sum(a) = {let i = 0; let total = 0; while(i < a.size, {total = total + a[i]; i = i + 1}); total}")
+calculator.evaluate("my_sum(a) = {let i = 0; let total = 0; while(i < a.size, {total += a[i]; i += 1}); total}")
 calculator.evaluate("my_sum([1,3,5,7,9])")
 #=> 25
 ```
@@ -326,8 +307,8 @@ The basic bitwise operations, NOT `~`, OR `|`, XOR `^`, and AND `&` are also ava
 
 ```ruby
 calculator = Keisan::Calculator.new
-calculator.evaluate("2 + 12 & 7")
-#=> 6
+calculator.evaluate("0b00001111 & 0b10101010")
+#=> 10
 ```
 
 ##### String
@@ -387,19 +368,7 @@ calculator.evaluate("log10(1000)")
 #=> 3.0
 ```
 
-Furthermore, the following builtin constants are defined
-
-```ruby
-calculator = Keisan::Calculator.new
-calculator.evaluate("PI")
-#=> 3.141592653589793
-calculator.evaluate("E")
-#=> 2.718281828459045
-calculator.evaluate("I")
-#=> (0+1i)
-```
-
-This allows for simple calculations like
+Furthermore, the constants `PI`, `E`, and `I` are included.
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -452,63 +421,18 @@ calculator.evaluate("x = 5")
 calculator.evaluate("puts x**2") # prints "25\n" to STDOUT
 ```
 
-### Adding custom variables and functions
-
-The `Keisan::Calculator` class has a single `Keisan::Context` object in its `context` attribute.  This class is used to store local variables and functions.  These can be stored using either the `define_variable!` or `define_function!` methods, or by using the assignment operator `=` in an expression that is evaluated.  As an example of pre-defining some variables and functions, see the following
-
-```ruby
-calculator = Keisan::Calculator.new
-calculator.define_variable!("x", 5)
-calculator.evaluate("x + 1")
-#=> 6
-calculator.evaluate("x + 1", x: 10)
-#=> 11
-calculator.evaluate("x + 1")
-#=> 6
-
-calculator.evaluate("x = y = 10")
-#=> 10
-calculator.evaluate("x + y")
-#=> 20
-calculator.evaluate("x + y", y: 100)
-#=> 110
-calculator.evaluate("x + y")
-#=> 20
-```
-
-Notice how when passing variable values directly to the `evaluate` method, it only shadows the value of 5 for that specific calculation.  The same thing works for functions
-
-```ruby
-calculator = Keisan::Calculator.new
-calculator.define_function!("f", Proc.new {|x| 3*x})
-#=> #<Keisan::Function:0x005570f935ecc8 @function_proc=#<Proc:0x005570f935ecf0@(pry):6>, @name="f">
-calculator.evaluate("f(2)")
-#=> 6
-calculator.evaluate("f(2)", f: Proc.new {|x| 10*x})
-#=> 20
-calculator.evaluate("f(2)")
-#=> 6
-
-calculator.evaluate("f(x) = x + x**2")
-#=> nil
-calculator.evaluate("f(3)")
-#=> 12
-calculator.evaluate("f(3)", f: Proc.new {|x| 10*x})
-#=> 30
-calculator.evaluate("f(3)")
-#=> 12
-```
 
 ## Supported elements/operators
 
 `keisan` supports the following operators and elements.
 
-#### Numbers, variables, functions, lists
+#### Numbers, variables, brackets, functions, lists, hashes
 - `150`, `-5.67`, `6e-5`: regular numbers
 - `x`, `_myvar1`: variables
 - `(` and `)`: round brackets for grouping parts to evaluate first
-- `[0, 3, 6, 9]`: square brackets with comma separated values to denote lists
 - `f(x,y,z)`, `my_function(max([2.5, 5.5]))`, `[2,4,6,8].size`: functions using `(` `)` brackets (optional if using postfix notation and only takes a single argument)
+- `[0, 3, 6, 9]`: square brackets with comma separated values to denote lists
+- `{'foo': 11, 'bar': 22}`: curly brackets containing key/value pairs creates a hash
 
 #### Arithmetic operators
 - `+`, `-`, `*`, `/`: regular arithmetic operators
@@ -526,18 +450,25 @@ calculator.evaluate("f(3)")
 - `&`, `|`, `^`: bitwise **and**, **or**, **xor** operators
 - `~`: unary bitwise not
 
-#### Indexing of arrays
+#### Indexing of arrays/hashes
 - `list[i]`: for accessing elements in an array
+- `hash[k]`: for accessing elements in a hash
 
 #### Assignment
 - `=`: can be used to define variables and functions
+- `+=`: can be used in combination with operators above
+
 
 ## Development
 
-After checking out the repository, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.  You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repository, run `bin/setup` to install dependencies.
+Then, run `rake spec` to run the tests.
+You can also run `bin/console` for an interactive prompt that will allow you to experiment with the library pre-loaded.
 
-To install this gem onto your local machine, run `bundle exec rake install`.  To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
+To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/project-eutopia/keisan.  If there is any functionality you would like (e.g. new functions), feel free to open a [new issue](https://github.com/project-eutopia/keisan/issues/new).
+Bug reports and pull requests are welcome on GitHub at https://github.com/project-eutopia/keisan.
+If there is any functionality you would like (e.g. new functions), feel free to open a [new issue](https://github.com/project-eutopia/keisan/issues/new).

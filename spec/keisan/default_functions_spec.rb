@@ -88,7 +88,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect{Keisan::Calculator.new.evaluate("filter(10, k, v, v > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, 2, k > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
-          expect(Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k == 'a')")).to eq({"a" => 1})
+          expect(Keisan::Calculator.new.evaluate("filter({'a': 1, 'bb': 2}, k, v, k.size == 2)")).to eq({"bb" => 2})
         end
       end
 
