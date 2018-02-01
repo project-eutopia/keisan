@@ -41,7 +41,7 @@ module Keisan
           raise Exceptions::ASTError.new("Mismatch of children and operators")
         end
 
-        children = Array.wrap(children)
+        children = Array(children)
         super(children)
 
         @parsing_operators = parsing_operators

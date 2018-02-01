@@ -12,7 +12,7 @@ module Keisan
     end
 
     def self.type
-      @type ||= self.to_s.split("::").last.underscore.to_sym
+      @type ||= Util.underscore(self.to_s.split("::").last).to_sym
     end
 
     def regex

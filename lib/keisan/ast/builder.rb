@@ -12,10 +12,10 @@ module Keisan
         elsif !parser.nil?
           @components = parser.components
         else
-          @components = Array.wrap(components)
+          @components = Array(components)
         end
 
-        @lines = @components.split {|component|
+        @lines = Util.array_split(@components) {|component|
           component.is_a?(Parsing::LineSeparator)
         }.reject(&:empty?)
 
