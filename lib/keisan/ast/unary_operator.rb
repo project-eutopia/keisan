@@ -2,7 +2,7 @@ module Keisan
   module AST
     class UnaryOperator < Operator
       def initialize(children = [])
-        children = Array.wrap(children)
+        children = Array(children)
         super(children)
         if children.count != 1
           raise Exceptions::ASTError.new("Unary operator takes has a single child")

@@ -4,8 +4,8 @@ module Keisan
 
     def initialize(parent: nil, random: nil, allow_recursive: false, shadowed: [])
       @parent = parent
-      @function_registry = Functions::Registry.new(parent: @parent.try(:function_registry))
-      @variable_registry = Variables::Registry.new(parent: @parent.try(:variable_registry), shadowed: shadowed)
+      @function_registry = Functions::Registry.new(parent: @parent&.function_registry)
+      @variable_registry = Variables::Registry.new(parent: @parent&.variable_registry, shadowed: shadowed)
       @random            = random
       @allow_recursive   = allow_recursive
     end
@@ -47,7 +47,7 @@ module Keisan
 
     def transient_definitions
       return {} unless @transient
-      parent_definitions = @parent.present? ? @parent.transient_definitions : {}
+      parent_definitions = @parent.nil? ? {} : @parent.transient_definitions
       parent_definitions.merge(
         @variable_registry.locals
       ).merge(
@@ -100,7 +100,7 @@ module Keisan
     end
 
     def random
-      @random || @parent.try(:random) || Random.new
+      @random || @parent&.random || Random.new
     end
 
     protected

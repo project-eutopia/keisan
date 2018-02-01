@@ -4,7 +4,7 @@ module Keisan
       attr_reader :children
 
       def initialize(children = [])
-        children = Array.wrap(children).map do |child|
+        children = Array(children).map do |child|
           child.is_a?(Cell) ? child : child.to_node
         end
         raise Exceptions::InternalError.new unless children.is_a?(Array)

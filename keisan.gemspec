@@ -21,8 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.0.0"
 
-  spec.add_dependency "activesupport", ">= 4.2.2"
-
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"

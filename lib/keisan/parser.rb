@@ -39,7 +39,7 @@ module Keisan
     end
 
     def parse_multi_line!
-      line_parsers = @tokens.split {|token| token.is_a?(Tokens::LineSeparator)}.map {|tokens| self.class.new(tokens: tokens)}
+      line_parsers = Util.array_split(@tokens) {|token| token.is_a?(Tokens::LineSeparator)}.map {|tokens| self.class.new(tokens: tokens)}
       @components = []
       line_parsers.each.with_index do |line_parser, i|
         @components += line_parser.components
@@ -52,7 +52,7 @@ module Keisan
     def parse_keyword!
       keyword = tokens.first.string
       arguments = if tokens[1].is_a?(Tokens::Group)
-                    tokens[1].sub_tokens.split {|token| token.is_a?(Tokens::Comma)}.map {|argument_tokens|
+                    Util.array_split(tokens[1].sub_tokens) {|token| token.is_a?(Tokens::Comma)}.map {|argument_tokens|
                       Parsing::Argument.new(argument_tokens)
                     }
                   else
@@ -212,7 +212,7 @@ module Keisan
         @components << Parsing::List.new(arguments_from_group(token))
       when :curly
         if token.sub_tokens.any? {|token| token.is_a?(Tokens::Colon)}
-          @components << Parsing::Hash.new(token.sub_tokens.split {|token| token.is_a?(Tokens::Comma)})
+          @components << Parsing::Hash.new(Util.array_split(token.sub_tokens) {|token| token.is_a?(Tokens::Comma)})
         else
           @components << Parsing::CurlyGroup.new(token.sub_tokens)
         end
@@ -280,7 +280,7 @@ module Keisan
       if token.sub_tokens.empty?
         []
       else
-        token.sub_tokens.split {|sub_token| sub_token.is_a?(Tokens::Comma)}.map do |sub_tokens|
+        Util.array_split(token.sub_tokens) {|sub_token| sub_token.is_a?(Tokens::Comma)}.map do |sub_tokens|
           Parsing::Argument.new(sub_tokens)
         end
       end
