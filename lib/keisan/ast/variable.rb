@@ -60,11 +60,8 @@ module Keisan
       end
 
       def replace(variable, replacement)
-        if name == variable.name
-          replacement
-        else
-          self
-        end
+        to_replace_name = variable.is_a?(::String) ? variable : variable.name
+        name == to_replace_name ? replacement : self
       end
 
       def differentiate(variable, context = nil)
