@@ -658,6 +658,14 @@ RSpec.describe Keisan::AST::Node do
       ast = Keisan::AST.parse("replace(x**2 + 1 / x, x, 10)")
       expect(ast.value).to eq (100 + Rational(1,10))
     end
+
+    it "accepts string or variable as argument" do
+      ast1 = Keisan::AST.parse("x**2").replace(Keisan::AST::Variable.new("x"), 3)
+      ast2 = Keisan::AST.parse("x**2").replace("x", 5)
+
+      expect(ast1.to_s).to eq("3**2")
+      expect(ast2.to_s).to eq("5**2")
+    end
   end
 
   describe "multi line" do
