@@ -1,3 +1,5 @@
+require "date"
+
 module Keisan
   module AST
     def self.parse(expression)
@@ -76,6 +78,16 @@ module KeisanHash
   end
 end
 
+module KeisanDate
+  def to_node
+    Keisan::AST::Date.new(self)
+  end
+
+  def value(context = nil)
+    self
+  end
+end
+
 class Numeric; prepend KeisanNumeric; end
 class String; prepend KeisanString; end
 class TrueClass; prepend KeisanTrueClass; end
@@ -83,3 +95,4 @@ class FalseClass; prepend KeisanFalseClass; end
 class NilClass; prepend KeisanNilClass; end
 class Array; prepend KeisanArray; end
 class Hash; prepend KeisanHash; end
+class Date; prepend KeisanDate; end
