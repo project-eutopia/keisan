@@ -21,11 +21,28 @@ module Keisan
         end
       end
 
-      def -(other)
-        self + (-other.to_node)
-      end
       def to_s
         value.to_s
+      end
+
+      def >(other)
+        other = other.to_node
+        other.is_a?(AST::Date) ? Boolean.new(value > other.value) : super
+      end
+
+      def >=(other)
+        other = other.to_node
+        other.is_a?(AST::Date) ? Boolean.new(value >= other.value) : super
+      end
+
+      def <(other)
+        other = other.to_node
+        other.is_a?(AST::Date) ? Boolean.new(value < other.value) : super
+      end
+
+      def <=(other)
+        other = other.to_node
+        other.is_a?(AST::Date) ? Boolean.new(value <= other.value) : super
       end
 
       def equal(other)

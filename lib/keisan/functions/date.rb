@@ -9,7 +9,11 @@ module Keisan
       end
 
       def call(context, *args)
-        AST::Date.new(::Date.new(*args))
+        if args.count == 1 && args.first.is_a?(::String)
+          AST::Date.new(::Date.parse(args.first))
+        else
+          AST::Date.new(::Date.new(*args))
+        end
       end
     end
   end

@@ -24,6 +24,8 @@ module Keisan
         case other
         when Number
           Number.new(value + other.value)
+        when Date
+          Date.new(other.value + value)
         else
           super
         end

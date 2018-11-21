@@ -129,6 +129,11 @@ module Keisan
 
       def self.register_date_time_methods!(registry)
         registry.register!(:date, Keisan::Functions::Date.new, force: true)
+        registry.register!(:today, Proc.new { ::Date.today }, force: true)
+        registry.register!(:day,  Proc.new {|d| d.mday }, force: true)
+        registry.register!(:weekday,  Proc.new {|d| d.wday }, force: true)
+        registry.register!(:month, Proc.new {|d| d.month }, force: true)
+        registry.register!(:year,  Proc.new {|d| d.year }, force: true)
       end
     end
   end

@@ -63,6 +63,11 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
             "aa" => 2,
             "bb" => 4
           })
+          expect(calculator.evaluate("range(1,4).map(x, [x, date(2018, 11, x)]).to_h").value).to eq({
+            1 => Date.new(2018, 11, 1),
+            2 => Date.new(2018, 11, 2),
+            3 => Date.new(2018, 11, 3)
+          })
         end
 
         it "shadows variable definitions" do
