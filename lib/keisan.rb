@@ -12,6 +12,7 @@ require "keisan/ast/number"
 require "keisan/ast/string"
 require "keisan/ast/null"
 require "keisan/ast/boolean"
+require "keisan/ast/date"
 
 require "keisan/ast/block"
 require "keisan/ast/parent"

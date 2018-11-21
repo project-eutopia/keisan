@@ -34,6 +34,7 @@ require_relative "cbrt"
 require_relative "abs"
 require_relative "real"
 require_relative "imag"
+require_relative "date"
 
 module Keisan
   module Functions
@@ -65,6 +66,7 @@ module Keisan
         register_math!(registry)
         register_array_methods!(registry)
         register_random_methods!(registry)
+        register_date_time_methods!(registry)
       end
 
       def self.register_math!(registry)
@@ -123,6 +125,15 @@ module Keisan
       def self.register_random_methods!(registry)
         registry.register!(:rand, Rand.new, force: true)
         registry.register!(:sample, Sample.new, force: true)
+      end
+
+      def self.register_date_time_methods!(registry)
+        registry.register!(:date, Keisan::Functions::Date.new, force: true)
+        registry.register!(:today, Proc.new { ::Date.today }, force: true)
+        registry.register!(:day,  Proc.new {|d| d.mday }, force: true)
+        registry.register!(:weekday,  Proc.new {|d| d.wday }, force: true)
+        registry.register!(:month, Proc.new {|d| d.month }, force: true)
+        registry.register!(:year,  Proc.new {|d| d.year }, force: true)
       end
     end
   end

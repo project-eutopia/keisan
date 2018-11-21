@@ -22,6 +22,10 @@ module Keisan
         # Special case of array concatenation
         elsif children_values.all? {|child| child.is_a?(::Array)}
           children_values.inject([], &:+)
+        elsif children_values.one? {|child| child.is_a?(::Date)}
+          date = children_values.select {|child| child.is_a?(::Date)}.first
+          others = children_values.select {|child| !child.is_a?(::Date)}
+          date + others.inject(0, &:+)
         else
           children_values.inject(0, &:+)
         end.to_node.value(context)
