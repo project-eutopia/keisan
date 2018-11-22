@@ -34,8 +34,6 @@ require_relative "cbrt"
 require_relative "abs"
 require_relative "real"
 require_relative "imag"
-require_relative "date"
-require_relative "time"
 
 module Keisan
   module Functions
@@ -129,14 +127,28 @@ module Keisan
       end
 
       def self.register_date_time_methods!(registry)
-        registry.register!(:date, Keisan::Functions::Date.new, force: true)
+        registry.register!(:date, Proc.new {|*args|
+          if args.count == 1 && args.first.is_a?(::String)
+            AST::Date.new(::Date.parse(args.first))
+          else
+            AST::Date.new(::Date.new(*args))
+          end
+        }, force: true)
+
         registry.register!(:today, Proc.new { ::Date.today }, force: true)
         registry.register!(:day,  Proc.new {|d| d.mday }, force: true)
         registry.register!(:weekday,  Proc.new {|d| d.wday }, force: true)
         registry.register!(:month, Proc.new {|d| d.month }, force: true)
         registry.register!(:year,  Proc.new {|d| d.year }, force: true)
 
-        registry.register!(:time, Keisan::Functions::Time.new, force: true)
+        registry.register!(:time, Proc.new {|*args|
+          if args.count == 1 && args.first.is_a?(::String)
+            AST::Time.new(::Time.parse(args.first))
+          else
+            AST::Time.new(::Time.new(*args))
+          end
+        }, force: true)
+
         registry.register!(:now, Proc.new { ::Time.now }, force: true)
         registry.register!(:hour,  Proc.new {|t| t.hour }, force: true)
         registry.register!(:minute,  Proc.new {|t| t.min }, force: true)
