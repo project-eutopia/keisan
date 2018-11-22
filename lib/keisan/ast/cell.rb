@@ -73,28 +73,10 @@ module Keisan
         node
       end
 
-      def <(other)
-        node < other.to_node
-      end
-
-      def <=(other)
-        node <= other.to_node
-      end
-
-      def >(other)
-        node > other.to_node
-      end
-
-      def >=(other)
-        node >= other.to_node
-      end
-
-      def equal(other)
-        node.equal(other.to_node)
-      end
-
-      def not_equal(other)
-        node.not_equal(other.to_node)
+      %i(< <= > >= equal not_equal).each do |sym|
+        define_method(sym) {|other|
+          node.send(sym, other.to_node)
+        }
       end
     end
   end
