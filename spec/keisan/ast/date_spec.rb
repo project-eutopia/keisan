@@ -94,6 +94,15 @@ RSpec.describe Keisan::AST::Date do
         expect(ast.evaluate.value).to eq 2018
       end
     end
+
+    describe "#to_time" do
+      it "converts date to time" do
+        calculator = Keisan::Calculator.new
+        time = calculator.ast("date(2018, 11, 20).to_time").evaluate
+        expect(time).to be_a(Keisan::AST::Time)
+        expect(time.to_s).to eq "2018-11-20 00:00:00"
+      end
+    end
   end
 
   describe "#to_s" do
