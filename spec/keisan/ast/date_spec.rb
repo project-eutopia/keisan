@@ -42,7 +42,6 @@ RSpec.describe Keisan::AST::Date do
       ast = Keisan::AST.parse("date(2000) + date(2000)")
       expect(ast.evaluate).to be_a(Keisan::AST::Plus)
       expect{ast.evaluate.value}.to raise_error(TypeError)
-      # expect(ast.evaluate.value).to eq false
     end
 
     it "works in arrays" do
@@ -65,7 +64,7 @@ RSpec.describe Keisan::AST::Date do
     end
 
     describe "weekday" do
-      it "weekday number" do
+      it "returns the weekday number" do
         ast = Keisan::AST.parse("date(2018, 11, 20).weekday()")
         expect(ast.evaluate).to be_a(Keisan::AST::Number)
         expect(ast.evaluate.value).to eq 2
@@ -73,7 +72,7 @@ RSpec.describe Keisan::AST::Date do
     end
 
     describe "day" do
-      it "day number in month" do
+      it "returns the day number in month" do
         ast = Keisan::AST.parse("date(2018, 11, 20).day()")
         expect(ast.evaluate).to be_a(Keisan::AST::Number)
         expect(ast.evaluate.value).to eq 20
@@ -81,7 +80,7 @@ RSpec.describe Keisan::AST::Date do
     end
 
     describe "month" do
-      it "month number" do
+      it "returns the month number" do
         ast = Keisan::AST.parse("date(2018, 11, 20).month()")
         expect(ast.evaluate).to be_a(Keisan::AST::Number)
         expect(ast.evaluate.value).to eq 11
@@ -89,7 +88,7 @@ RSpec.describe Keisan::AST::Date do
     end
 
     describe "year" do
-      it "year number" do
+      it "returns the year number" do
         ast = Keisan::AST.parse("date(2018, 11, 20).year()")
         expect(ast.evaluate).to be_a(Keisan::AST::Number)
         expect(ast.evaluate.value).to eq 2018

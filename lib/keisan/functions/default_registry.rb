@@ -35,6 +35,7 @@ require_relative "abs"
 require_relative "real"
 require_relative "imag"
 require_relative "date"
+require_relative "time"
 
 module Keisan
   module Functions
@@ -134,6 +135,16 @@ module Keisan
         registry.register!(:weekday,  Proc.new {|d| d.wday }, force: true)
         registry.register!(:month, Proc.new {|d| d.month }, force: true)
         registry.register!(:year,  Proc.new {|d| d.year }, force: true)
+
+        registry.register!(:time, Keisan::Functions::Time.new, force: true)
+        registry.register!(:now, Proc.new { ::Time.now }, force: true)
+        registry.register!(:hour,  Proc.new {|t| t.hour }, force: true)
+        registry.register!(:minute,  Proc.new {|t| t.min }, force: true)
+        registry.register!(:second, Proc.new {|t| t.sec }, force: true)
+        registry.register!(:strftime, Proc.new {|*args| args.first.strftime(*args[1..-1]) }, force: true)
+
+        registry.register!(:to_time, Proc.new {|d| d.to_time }, force: true)
+        registry.register!(:to_date, Proc.new {|t| t.to_date }, force: true)
       end
     end
   end

@@ -26,6 +26,10 @@ module Keisan
           date = children_values.select {|child| child.is_a?(::Date)}.first
           others = children_values.select {|child| !child.is_a?(::Date)}
           date + others.inject(0, &:+)
+        elsif children_values.one? {|child| child.is_a?(::Time)}
+          time = children_values.select {|child| child.is_a?(::Time)}.first
+          others = children_values.select {|child| !child.is_a?(::Time)}
+          time + others.inject(0, &:+)
         else
           children_values.inject(0, &:+)
         end.to_node.value(context)

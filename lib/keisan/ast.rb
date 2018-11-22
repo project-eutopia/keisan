@@ -1,4 +1,5 @@
 require "date"
+require "time"
 
 module Keisan
   module AST
@@ -88,6 +89,16 @@ module KeisanDate
   end
 end
 
+module KeisanTime
+  def to_node
+    Keisan::AST::Time.new(self)
+  end
+
+  def value(context = nil)
+    self
+  end
+end
+
 class Numeric; prepend KeisanNumeric; end
 class String; prepend KeisanString; end
 class TrueClass; prepend KeisanTrueClass; end
@@ -96,3 +107,4 @@ class NilClass; prepend KeisanNilClass; end
 class Array; prepend KeisanArray; end
 class Hash; prepend KeisanHash; end
 class Date; prepend KeisanDate; end
+class Time; prepend KeisanTime; end
