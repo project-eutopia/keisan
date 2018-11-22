@@ -4,7 +4,7 @@ module Keisan
   module Functions
     class Date < ProcFunction
       def initialize
-        @name = "sample"
+        @name = "date"
         @arity = ::Range.new(1, 3)
       end
 

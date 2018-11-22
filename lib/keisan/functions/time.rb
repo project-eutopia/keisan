@@ -4,7 +4,7 @@ module Keisan
   module Functions
     class Time < ProcFunction
       def initialize
-        @name = "sample"
+        @name = "time"
         @arity = ::Range.new(1, 7)
       end
 
