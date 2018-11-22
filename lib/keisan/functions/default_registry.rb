@@ -127,27 +127,13 @@ module Keisan
       end
 
       def self.register_date_time_methods!(registry)
-        registry.register!(:date, Proc.new {|*args|
-          if args.count == 1 && args.first.is_a?(::String)
-            AST::Date.new(::Date.parse(args.first))
-          else
-            AST::Date.new(::Date.new(*args))
-          end
-        }, force: true)
+        register_date_time!(registry)
 
         registry.register!(:today, Proc.new { ::Date.today }, force: true)
         registry.register!(:day,  Proc.new {|d| d.mday }, force: true)
         registry.register!(:weekday,  Proc.new {|d| d.wday }, force: true)
         registry.register!(:month, Proc.new {|d| d.month }, force: true)
         registry.register!(:year,  Proc.new {|d| d.year }, force: true)
-
-        registry.register!(:time, Proc.new {|*args|
-          if args.count == 1 && args.first.is_a?(::String)
-            AST::Time.new(::Time.parse(args.first))
-          else
-            AST::Time.new(::Time.new(*args))
-          end
-        }, force: true)
 
         registry.register!(:now, Proc.new { ::Time.now }, force: true)
         registry.register!(:hour,  Proc.new {|t| t.hour }, force: true)
@@ -157,6 +143,18 @@ module Keisan
 
         registry.register!(:to_time, Proc.new {|d| d.to_time }, force: true)
         registry.register!(:to_date, Proc.new {|t| t.to_date }, force: true)
+      end
+
+      def self.register_date_time!(registry)
+        [::Date, ::Time].each do |klass|
+          registry.register!(klass.to_s.downcase.to_sym, Proc.new {|*args|
+            if args.count == 1 && args.first.is_a?(::String)
+              AST.const_get(klass.to_s).new(klass.parse(args.first))
+            else
+              AST.const_get(klass.to_s).new(klass.new(*args))
+            end
+          }, force: true)
+        end
       end
     end
   end
