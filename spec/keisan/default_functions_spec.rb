@@ -68,6 +68,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
             2 => Date.new(2018, 11, 2),
             3 => Date.new(2018, 11, 3)
           })
+          expect(calculator.evaluate("range(0,40,10).map(x, time(2018,5,5,12,12,12) + x)").value).to eq([
+            Time.new(2018, 5, 5, 12, 12, 12),
+            Time.new(2018, 5, 5, 12, 12, 22),
+            Time.new(2018, 5, 5, 12, 12, 32),
+            Time.new(2018, 5, 5, 12, 12, 42)
+          ])
         end
 
         it "shadows variable definitions" do

@@ -23,9 +23,9 @@ module Keisan
         elsif children_values.all? {|child| child.is_a?(::Array)}
           children_values.inject([], &:+)
         elsif children_values.one? {|child| child.is_a?(::Date)}
-          date = children_values.select {|child| child.is_a?(::Date)}.first
-          others = children_values.select {|child| !child.is_a?(::Date)}
-          date + others.inject(0, &:+)
+          date_time_plus(children_values, ::Date)
+        elsif children_values.one? {|child| child.is_a?(::Time)}
+          date_time_plus(children_values, ::Time)
         else
           children_values.inject(0, &:+)
         end.to_node.value(context)
@@ -80,6 +80,12 @@ module Keisan
       end
 
       private
+
+      def date_time_plus(elements, klass)
+        date_time = elements.select {|child| child.is_a?(klass)}.first
+        others = elements.select {|child| !child.is_a?(klass)}
+        date_time + others.inject(0, &:+)
+      end
 
       def convert_minus_to_plus!
         @parsing_operators.each.with_index do |parsing_operator, index|
