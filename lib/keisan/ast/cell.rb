@@ -72,6 +72,30 @@ module Keisan
       def to_node
         node
       end
+
+      def <(other)
+        other.is_a?(Cell) ? node < other.node : node < other
+      end
+
+      def <=(other)
+        other.is_a?(Cell) ? node <= other.node : node <= other
+      end
+
+      def >(other)
+        other.is_a?(Cell) ? node > other.node : node > other
+      end
+
+      def >=(other)
+        other.is_a?(Cell) ? node >= other.node : node >= other
+      end
+
+      def equal(other)
+        other.is_a?(Cell) ? node.equal(other.node) : node.equal(other)
+      end
+
+      def not_equal(other)
+        other.is_a?(Cell) ? node.not_equal(other.node) : node.not_equal(other)
+      end
     end
   end
 end

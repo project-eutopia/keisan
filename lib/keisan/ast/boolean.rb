@@ -12,7 +12,7 @@ module Keisan
       end
 
       def true?
-        false
+        bool
       end
 
       def !
