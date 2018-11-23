@@ -4,7 +4,8 @@ module Keisan
       VARIABLES = {
         "PI" => Math::PI,
         "E" => Math::E,
-        "I" => Complex(0,1)
+        "I" => Complex(0,1),
+        "INF" => Float::INFINITY
       }
 
       def self.registry

@@ -398,7 +398,7 @@ calculator.evaluate("log10(1000)")
 #=> 3.0
 ```
 
-Furthermore, the constants `PI`, `E`, and `I` are included.
+Furthermore, the constants `PI`, `E`, `I`, and `INF` are included.
 
 ```ruby
 calculator = Keisan::Calculator.new

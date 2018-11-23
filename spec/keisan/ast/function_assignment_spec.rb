@@ -22,4 +22,10 @@ RSpec.describe Keisan::AST::FunctionAssignment do
       expect(ast.unbound_variables).to eq Set["h", "x"]
     end
   end
+
+  it "works with complex reduce expression" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("minimum(a) = a.reduce(INF, current_min, element, if (element < current_min, element, current_min))")
+    expect(calculator.evaluate("minimum([5,1,3])")).to eq 1
+  end
 end
