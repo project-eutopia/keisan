@@ -5,12 +5,14 @@ module Keisan
         :">="
       end
 
-      def evaluate(context = nil)
-        children[0].evaluate(context) >= children[1].evaluate(context)
+      protected
+
+      def value_operator
+        :>=
       end
 
-      def value(context = nil)
-        children.first.value(context) >= children.last.value(context)
+      def operator
+        :>=
       end
     end
   end

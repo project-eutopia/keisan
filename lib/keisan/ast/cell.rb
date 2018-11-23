@@ -72,6 +72,12 @@ module Keisan
       def to_node
         node
       end
+
+      %i(< <= > >= equal not_equal).each do |sym|
+        define_method(sym) {|other|
+          node.send(sym, other.to_node)
+        }
+      end
     end
   end
 end
