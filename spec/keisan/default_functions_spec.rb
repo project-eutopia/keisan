@@ -238,7 +238,7 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
     describe "continue" do
       it "skips to the next iteration of the loop" do
         calculator = Keisan::Calculator.new
-        expect(calculator.evaluate("x = 0; sum = 0; while(x < 10, x += 1; if (x % 2 == 0, continue); sum += x**2); sum")).to eq(
+        expect(calculator.simplify("x = 0; sum = 0; while(x < 10, x += 1; if (x % 2 == 0, continue); sum += x**2); sum").value).to eq(
           1 + 3**2 + 5**2 + 7**2 + 9**2
         )
       end

@@ -26,4 +26,10 @@ RSpec.describe Keisan::Functions::While do
     expect(calculator.evaluate("[1,2,3].includes(2)")).to eq true
     expect(calculator.evaluate("[1,2,3].includes(4)")).to eq false
   end
+
+  it "must have boolean in condition expression" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("x = 0")
+    expect{calculator.evaluate("while(!x, x = x + 1)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+  end
 end
