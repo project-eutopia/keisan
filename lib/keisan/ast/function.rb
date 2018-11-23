@@ -13,6 +13,15 @@ module Keisan
         function_from_context(context).value(self, context)
       end
 
+      def unbound_variables(context = nil)
+        context ||= Context.new
+        if context.has_function?(name)
+          function_from_context(context).unbound_variables(children, context)
+        else
+          super
+        end
+      end
+
       def unbound_functions(context = nil)
         context ||= Context.new
 

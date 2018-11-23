@@ -23,6 +23,12 @@ module Keisan
       raise Exceptions::NotImplementedError.new
     end
 
+    def unbound_variables(children, context)
+      children.inject(Set.new) do |vars, child|
+        vars | child.unbound_variables(context)
+      end
+    end
+
     protected
 
     def validate_arguments!(count)

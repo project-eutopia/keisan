@@ -6,8 +6,17 @@ module Keisan
       # Reduces (list, initial, accumulator, variable, expression)
       # e.g. reduce([1,2,3,4], 0, total, x, total+x)
       # should give 10
+      # When hash: (hash, initial, accumulator, key, value, expression)
       def initialize
         super("reduce")
+      end
+
+      def unbound_variables(children, context)
+        if children.size == 5
+          super - Set[children[2].name, children[3].name]
+        else
+          super - Set[children[2].name, children[3].name, children[4].name]
+        end
       end
 
       protected
