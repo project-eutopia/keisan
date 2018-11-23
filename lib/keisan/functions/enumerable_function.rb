@@ -12,6 +12,10 @@ module Keisan
         evaluate(ast_function, context)
       end
 
+      def unbound_variables(children, context)
+        super - Set.new(shadowing_variable_names(children).map(&:name))
+      end
+
       def evaluate(ast_function, context = nil)
         validate_arguments!(ast_function.children.count)
         context ||= Context.new
@@ -20,9 +24,9 @@ module Keisan
 
         case operand
         when AST::List
-          evaluate_list(operand, arguments, expression, context)
+          evaluate_list(operand, arguments, expression, context).evaluate(context)
         when AST::Hash
-          evaluate_hash(operand, arguments, expression, context)
+          evaluate_hash(operand, arguments, expression, context).evaluate(context)
         else
           raise Exceptions::InvalidFunctionError.new("Unhandled first argument to #{name}: #{operand}")
         end
@@ -33,6 +37,10 @@ module Keisan
       end
 
       protected
+
+      def shadowing_variable_names(children)
+        raise Exceptions::NotImplementedError.new
+      end
 
       def verify_arguments!(arguments)
         unless arguments.all? {|argument| argument.is_a?(AST::Variable)}

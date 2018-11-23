@@ -10,12 +10,10 @@ module Keisan
         super("map")
       end
 
-      def unbound_variables(children, context)
-        if children.size == 3
-          super - Set[children[1].name]
-        else
-          super - Set[children[1].name, children[2].name]
-        end
+      protected
+
+      def shadowing_variable_names(children)
+        children.size == 3 ? children[1..1] : children[1..2]
       end
 
       private

@@ -27,5 +27,8 @@ RSpec.describe Keisan::AST::FunctionAssignment do
     calculator = Keisan::Calculator.new
     calculator.evaluate("minimum(a) = a.reduce(INF, current_min, element, if (element < current_min, element, current_min))")
     expect(calculator.evaluate("minimum([5,1,3])")).to eq 1
+
+    calculator.evaluate("includes(a, element) = a.reduce(false, found, x, found || (x == element))")
+    expect(calculator.evaluate("[3, 9].map(x, [1, 3, 5].includes(x))")).to eq([true, false])
   end
 end

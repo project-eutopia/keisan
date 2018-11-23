@@ -11,15 +11,11 @@ module Keisan
         super("reduce")
       end
 
-      def unbound_variables(children, context)
-        if children.size == 5
-          super - Set[children[2].name, children[3].name]
-        else
-          super - Set[children[2].name, children[3].name, children[4].name]
-        end
-      end
-
       protected
+
+      def shadowing_variable_names(children)
+        children.size == 5 ? children[2..3] : children[2..4]
+      end
 
       def verify_arguments!(arguments)
         unless arguments[1..-1].all? {|argument| argument.is_a?(AST::Variable)}
