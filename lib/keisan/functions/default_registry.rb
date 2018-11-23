@@ -1,5 +1,7 @@
 require_relative "let"
 require_relative "puts"
+require_relative "break"
+require_relative "continue"
 
 require_relative "if"
 require_relative "while"
@@ -49,6 +51,8 @@ module Keisan
       def self.register_defaults!(registry)
         registry.register!(:let, Let.new, force: true)
         registry.register!(:puts, Puts.new, force: true)
+        registry.register!(:break, Break.new, force: true)
+        registry.register!(:continue, Continue.new, force: true)
 
         registry.register!(:if, If.new, force: true)
         registry.register!(:while, While.new, force: true)

@@ -1,6 +1,6 @@
 module Keisan
   class Parser
-    KEYWORDS = %w(let puts).freeze
+    KEYWORDS = %w(let puts break continue).freeze
 
     attr_reader :tokens, :components
 
