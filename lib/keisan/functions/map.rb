@@ -10,6 +10,12 @@ module Keisan
         super("map")
       end
 
+      protected
+
+      def shadowing_variable_names(children)
+        children.size == 3 ? children[1..1] : children[1..2]
+      end
+
       private
 
       def evaluate_list(list, arguments, expression, context)

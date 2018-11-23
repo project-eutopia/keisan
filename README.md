@@ -119,6 +119,9 @@ calculator.evaluate("f(0-a)", a: 2)
 #=> -20
 calculator.evaluate("n") # n only exists in the definition of f(x)
 #=> Keisan::Exceptions::UndefinedVariableError: n
+calculator.evaluate("includes(a, element) = a.reduce(false, found, x, found || (x == element))")
+calculator.evaluate("[3, 9].map(x, [1, 3, 5].includes(x))").value
+#=> [true, false]
 ```
 
 This form even supports recursion, but you must explicitly allow it.
@@ -398,7 +401,7 @@ calculator.evaluate("log10(1000)")
 #=> 3.0
 ```
 
-Furthermore, the constants `PI`, `E`, and `I` are included.
+Furthermore, the constants `PI`, `E`, `I`, and `INF` are included.
 
 ```ruby
 calculator = Keisan::Calculator.new

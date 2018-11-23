@@ -6,11 +6,16 @@ module Keisan
       # Reduces (list, initial, accumulator, variable, expression)
       # e.g. reduce([1,2,3,4], 0, total, x, total+x)
       # should give 10
+      # When hash: (hash, initial, accumulator, key, value, expression)
       def initialize
         super("reduce")
       end
 
       protected
+
+      def shadowing_variable_names(children)
+        children.size == 5 ? children[2..3] : children[2..4]
+      end
 
       def verify_arguments!(arguments)
         unless arguments[1..-1].all? {|argument| argument.is_a?(AST::Variable)}
