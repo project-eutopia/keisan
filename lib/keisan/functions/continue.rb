@@ -1,20 +1,10 @@
+require_relative "loop_control_flow_function"
+
 module Keisan
   module Functions
-    class Continue < Function
+    class Continue < LoopControlFlowFuntion
       def initialize
-        super("continue", 0)
-      end
-
-      def value(ast_function, context = nil)
-        raise Exceptions::ContinueError.new
-      end
-
-      def evaluate(ast_function, context = nil)
-        raise Exceptions::ContinueError.new
-      end
-
-      def simplify(ast_function, context = nil)
-        raise Exceptions::ContinueError.new
+        super("continue", Exceptions::ContinueError)
       end
     end
   end

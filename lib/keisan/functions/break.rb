@@ -1,20 +1,10 @@
+require_relative "loop_control_flow_function"
+
 module Keisan
   module Functions
-    class Break < Function
+    class Break < LoopControlFlowFuntion
       def initialize
-        super("break", 0)
-      end
-
-      def value(ast_function, context = nil)
-        raise Exceptions::BreakError.new
-      end
-
-      def evaluate(ast_function, context = nil)
-        raise Exceptions::BreakError.new
-      end
-
-      def simplify(ast_function, context = nil)
-        raise Exceptions::BreakError.new
+        super("break", Exceptions::BreakError)
       end
     end
   end
