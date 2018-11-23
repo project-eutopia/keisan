@@ -248,6 +248,36 @@ calculator.evaluate("range(1, 6).map(x, [x, x**2]).to_h")
 #=> {1 => 1, 2 => 4, 3 => 9, 4 => 16, 5 => 25}
 ```
 
+##### Date and time objects
+
+Keisan supports date and time objects like in Ruby.
+You create a date object using either the method `date` (either a string to be parsed, or year, month, day numerical arguments) or `today`.
+They support methods `year`, `month`, `day`, `weekday`, `strftime`, and `to_time` to convert to a time object.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("x = 11")
+calculator.evaluate("(5 + date(2018, x, 2*x)).day")
+#=> 27
+calculator.evaluate("today() > date(2018, 11, 1)")
+#=> true
+calculator.evaluate("date('1999-12-31').to_time + 10")
+#=> Time.new(1999, 12, 31, 0, 0, 10)
+```
+
+Time objects are created using `time` (either a string to be parsed, or year, month, day, hour, minute, second arguments) or `now`.
+They support methods `year`, `month`, `day`, `hour`, `minute`, `second`, `weekday`, `strftime`, and `to_date` to convert to a date object.
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("time(2018, 11, 22, 12, 0, 0).to_date <= date(2018, 11, 22)")
+#=> true
+calculator.evaluate("time('2000-4-15 12:34:56').minute")
+#=> 34
+calculator.evaluate("time('5000-10-10 20:30:40').strftime('%b %d, %Y')")
+#=> "Oct 10, 5000"
+```
+
 ##### Functional programming methods
 
 Keisan also supports the basic functional programming operators `map` (or `collect`), `filter` (or `select`), and `reduce` (or `inject`).
