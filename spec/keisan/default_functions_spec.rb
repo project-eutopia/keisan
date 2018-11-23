@@ -226,4 +226,22 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
       expect(calculator.simplify("diff(cbrt(2*x), x)").to_s).to eq "(2/3)*((2*x)**(-2/3))"
     end
   end
+
+  context "loop control flow keywords" do
+    describe "break" do
+      it "immediately ends the loop" do
+        calculator = Keisan::Calculator.new
+        expect(calculator.evaluate("x = 0; while(true, x += 1; if(x >= 5, break)); x")).to eq 5
+      end
+    end
+
+    describe "continue" do
+      it "skips to the next iteration of the loop" do
+        calculator = Keisan::Calculator.new
+        expect(calculator.simplify("x = 0; sum = 0; while(x < 10, x += 1; if (x % 2 == 0, continue); sum += x**2); sum").value).to eq(
+          1 + 3**2 + 5**2 + 7**2 + 9**2
+        )
+      end
+    end
+  end
 end

@@ -650,9 +650,14 @@ RSpec.describe Keisan::Parser do
     end
 
     context "keyword" do
+      it "has these keywords" do
+        expect(described_class::KEYWORDS).to match_array(%w(let puts break continue))
+      end
+
       it "parses the keyword into a function call" do
         parser = described_class.new(string: "let x = 5")
         expect(parser.components.map(&:class)).to eq([Keisan::Parsing::Function])
+        expect(parser.components.first.name).to eq "let"
         expect(parser.components.first.arguments.count).to eq 1
         expect(parser.components.first.arguments.first.components.map(&:class)).to eq([
           Keisan::Parsing::Variable,

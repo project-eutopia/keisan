@@ -326,12 +326,16 @@ calculator.evaluate("2 + if(1 > 0, 10, 29)")
 ```
 
 For looping, you can use the basic `while` loop, which has an expression that evaluates to a boolean as the first argument, and any expression in the second argument.
+One can use the keywords `break` and `continue` to control loop flow as well.
 
 ```ruby
 calculator = Keisan::Calculator.new
 calculator.evaluate("my_sum(a) = {let i = 0; let total = 0; while(i < a.size, {total += a[i]; i += 1}); total}")
 calculator.evaluate("my_sum([1,3,5,7,9])")
 #=> 25
+calculator.evaluate("has_element(a, x) = {let i=0; let found=false; while(i<a.size, if(a[i] == x, found = true; break); i+=1); found}")
+calculator.evaluate("[2, 3, 7, 11].has_element(11)")
+#=> true
 ```
 
 ##### Bitwise operations

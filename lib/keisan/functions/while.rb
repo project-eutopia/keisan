@@ -28,7 +28,13 @@ module Keisan
         current = Keisan::AST::Null.new
 
         while logical_node_evaluates_to_true(logical_node, context)
-          current = body_node.evaluated(context)
+          begin
+            current = body_node.evaluated(context)
+          rescue Exceptions::BreakError
+            break
+          rescue Exceptions::ContinueError
+            next
+          end
         end
 
         current

@@ -18,5 +18,8 @@ module Keisan
     class InvalidExpression < StandardError; end
     class TypeError < StandardError; end
     class NonDifferentiableError < StandardError; end
+
+    class BreakError < StandardError; end
+    class ContinueError < StandardError; end
   end
 end
