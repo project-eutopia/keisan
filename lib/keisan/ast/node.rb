@@ -45,8 +45,16 @@ module Keisan
         raise Exceptions::NonDifferentiableError.new
       end
 
+      def differentiated(variable, context = nil)
+        deep_dup.differentiate(variable, context)
+      end
+
       def replace(variable, replacement)
         self
+      end
+
+      def replaced(variable, replacement)
+        deep_dup.replace(variable, replacement)
       end
 
       def coerce(other)

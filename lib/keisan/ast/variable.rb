@@ -13,7 +13,13 @@ module Keisan
 
       def value(context = nil)
         context ||= Context.new
-        variable_node_from_context(context).value(context)
+        node = variable_node_from_context(context)
+        case node
+        when Variable
+          node
+        else
+          node.value(context)
+        end
       end
 
       def unbound_variables(context = nil)
@@ -78,9 +84,7 @@ module Keisan
 
       def variable_node_from_context(context)
         variable = context.variable(name)
-        if variable.is_a?(Cell)
-          variable = variable.node
-        end
+        variable = variable.node if variable.is_a?(Cell)
         variable
       end
     end
