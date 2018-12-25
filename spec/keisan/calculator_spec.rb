@@ -136,6 +136,19 @@ RSpec.describe Keisan::Calculator do
       expect{calculator.evaluate("0*x+1")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
       expect(calculator.simplify("0*x+1").to_s).to eq "1"
     end
+
+    it "simplifies inside functions" do
+      ast = calculator.simplify("exp((a**2)*(1*(1*(1*(1*(1*(1*((b)**(-1)))))))))")
+      expect(ast).to be_a(Keisan::AST::Function)
+      expect(ast.name).to eq "exp"
+      expect(ast.children.size).to eq 1
+      expect(ast.children[0]).to be_a(Keisan::AST::Times)
+
+      expect(ast.children[0].children.size).to eq 2
+      expect(ast.children[0].children.map(&:to_s)).to eq([
+        "a**2", "b**-1"
+      ])
+    end
   end
 
   describe "#ast" do
