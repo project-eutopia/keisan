@@ -19,7 +19,7 @@ module Keisan
         @children = [child.simplify(context)]
         case child
         when Number
-          Number.new(Rational(1,child.value(context))).simplify(context)
+          Number.new(child.value**-1)
         else
           (child ** -1).simplify(context)
         end

@@ -28,7 +28,7 @@ module Keisan
 
         ast_function.instance_variable_set(
           :@children,
-          ast_function.children.map {|child| child.evaluate(context).to_node}
+          ast_function.children.map {|child| child.simplify(context).to_node}
         )
 
         if ast_function.children.all? {|child| child.well_defined?(context)}
@@ -44,7 +44,7 @@ module Keisan
 
         ast_function.instance_variable_set(
           :@children,
-          ast_function.children.map {|child| child.evaluate(context)}
+          ast_function.children.map {|child| child.simplify(context)}
         )
 
         if ast_function.children.all? {|child| child.is_a?(AST::ConstantLiteral)}

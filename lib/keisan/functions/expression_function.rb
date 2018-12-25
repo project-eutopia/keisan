@@ -5,7 +5,11 @@ module Keisan
 
       def initialize(name, arguments, expression, transient_definitions)
         super(name, arguments.count)
-        @expression = expression.deep_dup
+        if expression.is_a?(::String)
+          @expression = AST::parse(expression)
+        else
+          @expression = expression.deep_dup
+        end
         @arguments = arguments
         @transient_definitions = transient_definitions
       end
@@ -70,17 +74,20 @@ module Keisan
 
         local = local_context_for(context)
 
-        # expression.differentiate(variable, context)
-
-        argument_values = ast_function.children.map {|child| child.evaluate(local)}
+        argument_values = ast_function.children.map {|child| child.evaluated(local)}
 
         argument_derivatives = ast_function.children.map do |child|
-          child.differentiate(variable, context)
+          child.differentiated(variable, context)
         end
+
+        partial_derivatives = calculate_partial_derivatives(context)
 
         AST::Plus.new(
           argument_derivatives.map.with_index {|argument_derivative, i|
-            partial_derivative = partial_derivatives[i].replace(argument_variables[i], argument_values[i])
+            partial_derivative = partial_derivatives[i]
+            argument_variables.each.with_index {|argument_variable, j|
+              partial_derivative = partial_derivative.replaced(argument_variable, argument_values[j])
+            }
             AST::Times.new([argument_derivative, partial_derivative])
           }
         )
@@ -92,9 +99,9 @@ module Keisan
         @argument_variables ||= arguments.map {|argument| AST::Variable.new(argument)}
       end
 
-      def partial_derivatives
-        @partial_derivatives ||= argument_variables.map.with_index do |variable, i|
-          partial_derivative = expression.differentiate(variable)
+      def calculate_partial_derivatives(context)
+        argument_variables.map.with_index do |variable, i|
+          partial_derivative = expression.differentiated(variable, context)
         end
       end
 

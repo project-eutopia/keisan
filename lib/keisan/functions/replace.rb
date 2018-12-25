@@ -10,19 +10,19 @@ module Keisan
         evaluate(ast_function, context).value(context)
       end
 
-      def evaluate(ast_function, context = nil)
+      def simplify(ast_function, context = nil)
         context ||= Context.new
         expression, variable, replacement = expression_variable_replacement(ast_function)
 
-        expression = expression.evaluate(context)
-        replacement = replacement.evaluate(context)
+        expression = expression.simplify(context)
+        replacement = replacement.simplify(context)
 
-        expression.replace(variable, replacement).evaluate(context)
+        expression.replace(variable, replacement).simplify(context)
       end
 
-      def simplify(ast_function, context = nil)
+      def evaluate(ast_function, context = nil)
         context ||= Context.new
-        evaluate(ast_function, context).simplify(context)
+        simplify(ast_function, context).evaluate(context)
       end
 
       private
