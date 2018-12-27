@@ -340,7 +340,7 @@ calculator.evaluate("[2, 3, 7, 11].has_element(11)")
 
 ##### Bitwise operations
 
-The basic bitwise operations, NOT `~`, OR `|`, XOR `^`, and AND `&` are also available for use
+The basic bitwise operations, NOT `~`, OR `|`, XOR `^`, AND `&`, and left/right bitwise shifts (`<<` and `>>`) are also available for use
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -485,6 +485,7 @@ calculator.evaluate("puts x**2") # prints "25\n" to STDOUT
 
 #### Bitwise operators
 - `&`, `|`, `^`: bitwise **and**, **or**, **xor** operators
+- `<<`, `>>` bitwise shift operators
 - `~`: unary bitwise not
 
 #### Indexing of arrays/hashes

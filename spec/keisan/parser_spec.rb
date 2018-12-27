@@ -358,7 +358,7 @@ RSpec.describe Keisan::Parser do
     end
 
     context "bitwise operators" do
-      it "parses correctly" do
+      it "works with not, and, or, xor" do
         parser = described_class.new(string: "~~~~9 & 8 | (~16 + 1) ^ 4")
 
         expect(parser.components.map(&:class)).to match_array([
@@ -385,6 +385,22 @@ RSpec.describe Keisan::Parser do
 
         expect(group.components[1].value).to eq 16
         expect(group.components[3].value).to eq 1
+      end
+
+      it "works with shift operators" do
+        parser = described_class.new(string: "x >> 3 << 4")
+
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::Variable,
+          Keisan::Parsing::BitwiseRightShift,
+          Keisan::Parsing::Number,
+          Keisan::Parsing::BitwiseLeftShift,
+          Keisan::Parsing::Number
+        ])
+
+        expect(parser.components[0].name).to eq "x"
+        expect(parser.components[2].value).to eq 3
+        expect(parser.components[4].value).to eq 4
       end
     end
 

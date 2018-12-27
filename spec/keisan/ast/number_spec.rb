@@ -55,6 +55,14 @@ RSpec.describe Keisan::AST::Number do
       expect(ast.evaluate).to be_a(described_class)
       expect(ast.evaluate.value).to eq 5
 
+      ast = Keisan::AST.parse("4 << 2")
+      expect(ast.evaluate).to be_a(described_class)
+      expect(ast.evaluate.value).to eq 16
+
+      ast = Keisan::AST.parse("0b1111 >> 2")
+      expect(ast.evaluate).to be_a(described_class)
+      expect(ast.evaluate.value).to eq 0b11
+
       ast = Keisan::AST.parse("4 > 4")
       expect(ast.evaluate).to be_a(Keisan::AST::Boolean)
       expect(ast.evaluate.value).to eq false

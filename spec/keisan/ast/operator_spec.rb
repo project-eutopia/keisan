@@ -35,6 +35,10 @@ RSpec.describe Keisan::AST::Operator do
   it_behaves_like "an operator object", Keisan::AST::Plus,                                2,  80,  :left
   it_behaves_like "an operator object", Keisan::Parsing::Plus.new,                        2,  80,  :left
   it_behaves_like "an operator object", Keisan::Parsing::Minus.new,                       2,  80,  :left
+  it_behaves_like "an operator object", Keisan::AST::BitwiseLeftShift,                    2,  75,  :left
+  it_behaves_like "an operator object", Keisan::Parsing::BitwiseLeftShift.new,            2,  75,  :left
+  it_behaves_like "an operator object", Keisan::AST::BitwiseRightShift,                   2,  75,  :left
+  it_behaves_like "an operator object", Keisan::Parsing::BitwiseRightShift.new,           2,  75,  :left
   it_behaves_like "an operator object", Keisan::AST::BitwiseAnd,                          2,  70,  :left
   it_behaves_like "an operator object", Keisan::Parsing::BitwiseAnd.new,                  2,  70,  :left
   it_behaves_like "an operator object", Keisan::AST::BitwiseXor,                          2,  65,  :left
