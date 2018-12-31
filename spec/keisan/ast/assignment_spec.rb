@@ -235,9 +235,11 @@ RSpec.describe Keisan::AST::Assignment do
           expect{calculator.evaluate("x /= 2")}.to change{calculator.evaluate("x").value}.from(12).to(6)
           expect{calculator.evaluate("x **= 2")}.to change{calculator.evaluate("x").value}.from(6).to(36)
           expect{calculator.evaluate("x %= 5")}.to change{calculator.evaluate("x").value}.from(36).to(1)
-          expect{calculator.evaluate("x |= 5")}.to change{calculator.evaluate("x").value}.from(1).to(5)
+          expect{calculator.evaluate("x |= 4")}.to change{calculator.evaluate("x").value}.from(1).to(5)
           expect{calculator.evaluate("x ^= 3")}.to change{calculator.evaluate("x").value}.from(5).to(6)
           expect{calculator.evaluate("x &= 12")}.to change{calculator.evaluate("x").value}.from(6).to(4)
+          expect{calculator.evaluate("x <<= 2")}.to change{calculator.evaluate("x").value}.from(4).to(16)
+          expect{calculator.evaluate("x >>= 3")}.to change{calculator.evaluate("x").value}.from(16).to(2)
         end
 
         it "can do ||= operation" do

@@ -140,6 +140,14 @@ module Keisan
         BitwiseOr.new([self, other.to_node])
       end
 
+      def <<(other)
+        BitwiseLeftShift.new([self, other.to_node])
+      end
+
+      def >>(other)
+        BitwiseRightShift.new([self, other.to_node])
+      end
+
       def >(other)
         LogicalGreaterThan.new([self, other.to_node])
       end

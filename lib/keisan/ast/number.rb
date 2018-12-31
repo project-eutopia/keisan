@@ -111,6 +111,26 @@ module Keisan
         end
       end
 
+      def <<(other)
+        other = other.to_node
+        case other
+        when Number
+          Number.new(value << other.value)
+        else
+          super
+        end
+      end
+
+      def >>(other)
+        other = other.to_node
+        case other
+        when Number
+          Number.new(value >> other.value)
+        else
+          super
+        end
+      end
+
       def >(other)
         other = other.to_node
         case other

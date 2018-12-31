@@ -102,6 +102,18 @@ RSpec.describe Keisan::AST::Node do
         expect(ast.children[1].name).to eq "y"
       end
 
+      (x<<y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::BitwiseLeftShift)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
+      (x>>y).tap do |ast|
+        expect(ast).to be_a(Keisan::AST::BitwiseRightShift)
+        expect(ast.children[0].name).to eq "x"
+        expect(ast.children[1].name).to eq "y"
+      end
+
       (x>y).tap do |ast|
         expect(ast).to be_a(Keisan::AST::LogicalGreaterThan)
         expect(ast.children[0].name).to eq "x"

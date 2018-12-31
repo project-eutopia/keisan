@@ -8,6 +8,7 @@ module Keisan
       Tokens::Word,
       Tokens::Number,
       Tokens::Assignment,
+      Tokens::BitwiseShift,
       Tokens::LogicalOperator,
       Tokens::ArithmeticOperator,
       Tokens::BitwiseOperator,

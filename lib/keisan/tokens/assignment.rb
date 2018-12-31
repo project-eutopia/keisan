@@ -13,7 +13,9 @@ module Keisan
          \% |
          \& |
          \| |
-         \^
+         \^ |
+         \<\< |
+         \>\>
         )?
         \=
         (?!\=) # negative lookahead to prevent matching ==

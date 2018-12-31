@@ -13,6 +13,8 @@ module Keisan
         "%":  [2,  85, :left],   # Modulo
         "+":  [2,  80, :left],   # Plus
         # "-":  [2,  80, :left], # Minus
+        "<<": [2,  75, :left],   # Bitwise left shift
+        ">>": [2,  75, :left],   # Bitwise right shift
         "&":  [2,  70, :left],   # Bitwise and
         "^":  [2,  65, :left],   # Bitwise xor
         "|":  [2,  65, :left],   # Bitwise or

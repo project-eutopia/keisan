@@ -241,6 +241,8 @@ module Keisan
       :"&"  => Parsing::BitwiseAnd,
       :"|"  => Parsing::BitwiseOr,
       :"^"  => Parsing::BitwiseXor,
+      :<<   => Parsing::BitwiseLeftShift,
+      :>>   => Parsing::BitwiseRightShift,
       :"==" => Parsing::LogicalEqual,
       :"!=" => Parsing::LogicalNotEqual,
       :"&&" => Parsing::LogicalAnd,

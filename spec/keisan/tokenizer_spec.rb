@@ -326,7 +326,7 @@ RSpec.describe Keisan::Tokenizer do
   end
 
   context "bitwise operators" do
-    it "gets correct operators" do
+    it "understands bitwise and, or, xor, not" do
       tokenizer = described_class.new("~x ^ (7|2) & 4")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([
@@ -355,6 +355,32 @@ RSpec.describe Keisan::Tokenizer do
 
       expect(group.sub_tokens[0].string).to eq "7"
       expect(group.sub_tokens[1].operator_type).to eq :"|"
+      expect(group.sub_tokens[2].string).to eq "2"
+    end
+
+    it "understands bitwise shift operators" do
+      tokenizer = described_class.new("(x << 2) >> 1")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Group,
+        Keisan::Tokens::BitwiseShift,
+        Keisan::Tokens::Number
+      ])
+
+      expect(tokenizer.tokens[0].string).to eq "(x << 2)"
+      expect(tokenizer.tokens[1].operator_type).to eq :>>
+      expect(tokenizer.tokens[2].string).to eq "1"
+
+      group = tokenizer.tokens[0]
+
+      expect(group.sub_tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Word,
+        Keisan::Tokens::BitwiseShift,
+        Keisan::Tokens::Number
+      ])
+
+      expect(group.sub_tokens[0].string).to eq "x"
+      expect(group.sub_tokens[1].operator_type).to eq :<<
       expect(group.sub_tokens[2].string).to eq "2"
     end
   end
@@ -445,6 +471,20 @@ RSpec.describe Keisan::Tokenizer do
       expect(tokenizer.tokens[0].string).to eq "x"
       expect(tokenizer.tokens[2].string).to eq "y"
       expect(tokenizer.tokens[4].value).to eq 5
+    end
+
+    it "parses compound assignment" do
+      tokenizer = described_class.new("i >>= 1")
+
+      expect(tokenizer.tokens.map(&:class)).to eq([
+        Keisan::Tokens::Word,
+        Keisan::Tokens::Assignment,
+        Keisan::Tokens::Number
+      ])
+
+      expect(tokenizer.tokens[0].string).to eq "i"
+      expect(tokenizer.tokens[1].string).to eq ">>="
+      expect(tokenizer.tokens[2].string).to eq "1"
     end
   end
 

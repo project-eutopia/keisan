@@ -55,6 +55,14 @@ RSpec.describe Keisan::AST::Number do
       expect(ast.evaluate).to be_a(described_class)
       expect(ast.evaluate.value).to eq 5
 
+      ast = Keisan::AST.parse("4 << 2")
+      expect(ast.evaluate).to be_a(described_class)
+      expect(ast.evaluate.value).to eq 16
+
+      ast = Keisan::AST.parse("0b1111 >> 2")
+      expect(ast.evaluate).to be_a(described_class)
+      expect(ast.evaluate.value).to eq 0b11
+
       ast = Keisan::AST.parse("4 > 4")
       expect(ast.evaluate).to be_a(Keisan::AST::Boolean)
       expect(ast.evaluate.value).to eq false
@@ -78,6 +86,68 @@ RSpec.describe Keisan::AST::Number do
       ast = Keisan::AST.parse("4 != 4")
       expect(ast.evaluate).to be_a(Keisan::AST::Boolean)
       expect(ast.evaluate.value).to eq false
+    end
+
+    it "stays as an AST when using non-number" do
+      ast = Keisan::AST.parse("1+x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Plus)
+
+      ast = Keisan::AST.parse("1-x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Plus)
+
+      ast = Keisan::AST.parse("1*x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Times)
+
+      ast = Keisan::AST.parse("1/x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Times)
+
+      ast = Keisan::AST.parse("1%x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Modulo)
+
+      ast = Keisan::AST.parse("2**x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Exponent)
+
+      ast = Keisan::AST.parse("+x")
+      expect(ast.evaluate).to be_a(Keisan::AST::Variable)
+
+      ast = Keisan::AST.parse("-x")
+      expect(ast.evaluate).to be_a(Keisan::AST::UnaryMinus)
+
+      ast = Keisan::AST.parse("~x")
+      expect(ast.evaluate).to be_a(Keisan::AST::UnaryBitwiseNot)
+
+      ast = Keisan::AST.parse("1&x")
+      expect(ast.evaluate).to be_a(Keisan::AST::BitwiseAnd)
+
+      ast = Keisan::AST.parse("1|x")
+      expect(ast.evaluate).to be_a(Keisan::AST::BitwiseOr)
+
+      ast = Keisan::AST.parse("1^x")
+      expect(ast.evaluate).to be_a(Keisan::AST::BitwiseXor)
+
+      ast = Keisan::AST.parse("1<<x")
+      expect(ast.evaluate).to be_a(Keisan::AST::BitwiseLeftShift)
+
+      ast = Keisan::AST.parse("1>>x")
+      expect(ast.evaluate).to be_a(Keisan::AST::BitwiseRightShift)
+
+      ast = Keisan::AST.parse("1>x")
+      expect(ast.evaluate).to be_a(Keisan::AST::LogicalGreaterThan)
+
+      ast = Keisan::AST.parse("1>=x")
+      expect(ast.evaluate).to be_a(Keisan::AST::LogicalGreaterThanOrEqualTo)
+
+      ast = Keisan::AST.parse("1<x")
+      expect(ast.evaluate).to be_a(Keisan::AST::LogicalLessThan)
+
+      ast = Keisan::AST.parse("1<=x")
+      expect(ast.evaluate).to be_a(Keisan::AST::LogicalLessThanOrEqualTo)
+
+      ast = Keisan::AST.parse("1==x")
+      expect(ast.evaluate).to be_a(Keisan::AST::LogicalEqual)
+
+      ast = Keisan::AST.parse("1!=x")
+      expect(ast.evaluate).to be_a(Keisan::AST::LogicalNotEqual)
     end
   end
 
