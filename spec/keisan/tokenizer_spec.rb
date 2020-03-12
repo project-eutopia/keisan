@@ -224,6 +224,32 @@ RSpec.describe Keisan::Tokenizer do
     end
 
     it "has nested groups properly tokenized" do
+      tokenizer = described_class.new("'1'+'2'+(']]') + (('3') + '4')")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::String,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::String,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::Group,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::Group
+      ])
+
+      group = tokenizer.tokens[4]
+      expect(group.string).to eq "(']]')"
+      expect(group.sub_tokens.map(&:class)).to match_array([Keisan::Tokens::String])
+
+      group = tokenizer.tokens[6]
+      expect(group.string).to eq "(('3') + '4')"
+      expect(group.sub_tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Group,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::String
+      ])
+    end
+
+    it "has nested groups properly tokenized" do
       tokenizer = described_class.new("1+(2+(3+4)+5)+(6)")
 
       expect(tokenizer.tokens.map(&:class)).to match_array([

@@ -131,6 +131,12 @@ RSpec.describe Keisan::Calculator do
     end
   end
 
+  describe "unmatched braces inside strings" do
+    it "does not match against actual braces outside strings" do
+      expect(calculator.evaluate("'1'+'2'+(']\\]') + (('3') + '4')")).to eq "12]]34"
+    end
+  end
+
   describe "#simplify" do
     it "allows for undefined variables to still exist and returns a string representation of the expression" do
       expect{calculator.evaluate("0*x+1")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
