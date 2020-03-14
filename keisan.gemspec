@@ -21,10 +21,12 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.3.0"
 
-  spec.add_development_dependency "coveralls"
-  spec.add_development_dependency "bundler", "~> 1.14"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_dependency "cmath", "~> 1.0"
+
+  spec.add_development_dependency "bundler", "~> 2.0"
+  spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "pry-stack_explorer"
+  spec.add_development_dependency "simplecov"
 end
