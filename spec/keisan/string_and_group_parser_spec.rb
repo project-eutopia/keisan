@@ -52,10 +52,17 @@ RSpec.describe Keisan::StringAndGroupParser do
     end
 
     it "handles escape characters" do
-      parser = described_class.new("1 + 'a\\\\b' + 2", 4)
+      parser = described_class.new("1 + 'a\\\\\\a\\b\\r\\n\\s\\tb' + 2", 4)
       expect(parser.start_index).to eq 4
-      expect(parser.end_index).to eq 10
-      expect(parser.string).to eq "'a\\b'"
+      expect(parser.end_index).to eq 22
+      expect(parser.string).to eq "'a\\\a\b\r\n\s\tb'"
+    end
+
+    it "handles escape quotes" do
+      parser = described_class.new("\"\\'hello\"", 0)
+      expect(parser.start_index).to eq 0
+      expect(parser.end_index).to eq 9
+      expect(parser.string).to eq "\"'hello\""
     end
 
     it "can have braces" do
@@ -63,6 +70,10 @@ RSpec.describe Keisan::StringAndGroupParser do
       expect(parser.start_index).to eq 4
       expect(parser.end_index).to eq 10
       expect(parser.string).to eq '"a()b"'
+    end
+
+    it "fails with single quote" do
+      expect { described_class.new("'", 0) }.to raise_error Keisan::Exceptions::TokenizingError
     end
 
     it "fails on incorrect start_index" do
@@ -75,6 +86,10 @@ RSpec.describe Keisan::StringAndGroupParser do
 
     it "fails on unknown escape character" do
       expect { described_class.new("'as\\cdf'", 0) }.to raise_error Keisan::Exceptions::TokenizingError
+    end
+
+    it "fails on escape character at end" do
+      expect { described_class.new("'as\\", 0) }.to raise_error Keisan::Exceptions::TokenizingError
     end
   end
 

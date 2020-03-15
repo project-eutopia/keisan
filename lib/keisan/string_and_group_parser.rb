@@ -1,10 +1,9 @@
 module Keisan
   class StringAndGroupParser
     class Portion
-      attr_reader :expression, :start_index, :end_index
+      attr_reader :start_index, :end_index
 
-      def initialize(expression, start_index)
-        @expression = expression
+      def initialize(start_index)
         @start_index = start_index
       end
     end
@@ -13,61 +12,25 @@ module Keisan
       attr_reader :string
 
       def initialize(expression, start_index)
-        super
+        super(start_index)
 
         @string = expression[start_index]
-        index = start_index + 1
+        @end_index = start_index + 1
 
-        while index < expression.size
-          c = expression[index]
-          if c == quote_type
-            @string << c
-            index += 1
-            break
+        while @end_index < expression.size
+          if expression[@end_index] == quote_type
+            @string << quote_type
+            @end_index += 1
+            # Successfully parsed the string
+            return
           end
 
-          # escape character
-          if c == "\\"
-            index += 1
-            if index >= expression.size
-              raise Keisan::Exceptions::TokenizingError.new("Tokenizing error, no closing quote #{quote_type}")
-            end
-            c = expression[index]
-
-            case c
-            when "\\", '"', "'"
-              @string << c
-            when "a"
-              @string << "\a"
-            when "b"
-              @string << "\b"
-            when "r"
-              @string << "\r"
-            when "n"
-              @string << "\n"
-            when "s"
-              @string << "\s"
-            when "t"
-              @string << "\t"
-            else
-              raise Keisan::Exceptions::TokenizingError.new("Tokenizing error, unknown escape character: \\#{c}")
-            end
-          else
-            @string << c
-          end
-
-          index += 1
+          n, c = process_next_character(expression, @end_index)
+          @string << c
+          @end_index += n
         end
 
-        @end_index = index
-
-        if @string.size <= 1 || @string[-1] != @string[0]
-          raise Keisan::Exceptions::TokenizingError.new("Tokenizing error, no closing quote #{quote_type}")
-        end
-      end
-
-      def quote_type
-        @string[0]
+        raise Keisan::Exceptions::TokenizingError.new("Tokenizing error, no closing quote #{quote_type}")
       end
 
       def size
@@ -77,30 +40,65 @@ module Keisan
       def to_s
         string
       end
+
+      private
+
+      # Returns number of processed input characters, and the output character
+      def process_next_character(expression, index)
+        # escape character
+        if expression[index] == "\\"
+          return [2, escaped_character(expression[index + 1])]
+        else
+          return [1, expression[index]]
+        end
+      end
+
+      def quote_type
+        @string[0]
+      end
+
+      def escaped_character(character)
+        case character
+        when "\\", '"', "'"
+          character
+        when "a"
+          "\a"
+        when "b"
+          "\b"
+        when "r"
+          "\r"
+        when "n"
+          "\n"
+        when "s"
+          "\s"
+        when "t"
+          "\t"
+        else
+          raise Keisan::Exceptions::TokenizingError.new("Tokenizing error, unknown escape character: \"\\#{character}\"")
+        end
+      end
     end
 
     class GroupPortion < Portion
       attr_reader :opening_brace, :closing_brace ,:portions, :size
 
+      OPENING_TO_CLOSING_BRACE = {
+        "(" => ")",
+        "{" => "}",
+        "[" => "]",
+      }
+
       def initialize(expression, start_index)
-        super
+        super(start_index)
 
         case expression[start_index]
         when OPEN_GROUP_REGEX
           @opening_brace = expression[start_index]
-
         else
           raise Keisan::Exceptions::TokenizingError.new("Internal error, GroupPortion did not start with brace")
         end
 
-        case opening_brace
-        when "("
-          @closing_brace = ")"
-        when "{"
-          @closing_brace = "}"
-        when "["
-          @closing_brace = "]"
-        end
+        @closing_brace = OPENING_TO_CLOSING_BRACE[opening_brace]
 
         parser = StringAndGroupParser.new(expression, start_index: start_index + 1, ending_character: closing_brace)
         @portions = parser.portions
@@ -120,7 +118,7 @@ module Keisan
       attr_reader :string
 
       def initialize(expression, start_index)
-        super
+        super(start_index)
 
         case expression[start_index]
         when STRING_CHARACTER_REGEX, OPEN_GROUP_REGEX, CLOSED_GROUP_REGEX
