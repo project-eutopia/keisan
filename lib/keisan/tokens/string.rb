@@ -1,10 +1,8 @@
 module Keisan
   module Tokens
     class String < Token
-      REGEX = /(\"[^\"]*\"|\'[^\']*\')/
-
-      def self.regex
-        REGEX
+      def initialize(string)
+        @string = string
       end
 
       def value
