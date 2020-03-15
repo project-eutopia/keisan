@@ -85,6 +85,7 @@ require "keisan/tokens/word"
 require "keisan/tokens/line_separator"
 require "keisan/tokens/unknown"
 
+require "keisan/string_and_group_parser"
 require "keisan/tokenizer"
 
 require "keisan/parsing/component"

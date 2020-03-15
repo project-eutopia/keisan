@@ -1,8 +1,6 @@
 module Keisan
   class Tokenizer
     TOKEN_CLASSES = [
-      Tokens::Group,
-      Tokens::String,
       Tokens::Null,
       Tokens::Boolean,
       Tokens::Word,
@@ -27,8 +25,22 @@ module Keisan
 
     def initialize(expression)
       @expression = self.class.normalize_expression(expression)
-      @scan = @expression.scan(TOKEN_REGEX)
-      @tokens = tokenize!
+
+      portions = StringAndGroupParser.new(@expression).portions
+
+      @tokens = portions.inject([]) do |tokens, portion|
+        case portion
+        when StringAndGroupParser::StringPortion
+          tokens << Tokens::String.new(portion.to_s)
+        when StringAndGroupParser::GroupPortion
+          tokens << Tokens::Group.new(portion.to_s)
+        when StringAndGroupParser::OtherPortion
+          scan = portion.to_s.scan(TOKEN_REGEX)
+          tokens += tokenize!(scan)
+        end
+
+        tokens
+      end
     end
 
     def self.normalize_expression(expression)
@@ -46,8 +58,8 @@ module Keisan
       expression.gsub(/#[^;]*/, "")
     end
 
-    def tokenize!
-      @scan.map do |scan_result|
+    def tokenize!(scan)
+      scan.map do |scan_result|
         i = scan_result.find_index {|token| !token.nil?}
         token_string = scan_result[i]
         token = TOKEN_CLASSES[i].new(token_string)

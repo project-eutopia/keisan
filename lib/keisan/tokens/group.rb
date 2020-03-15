@@ -1,17 +1,11 @@
 module Keisan
   module Tokens
     class Group < Token
-      REGEX = /(\((?:[^\[\]\(\)\{\}]*+\g<1>*+)*+\)|\[(?:[^\[\]\(\)\{\}]*+\g<1>*+)*+\]|\{(?:[^\[\]\(\)\{\}]*+\g<1>*+)*+\})/
-
       attr_reader :sub_tokens
 
       def initialize(string)
-        super
+        @string = string
         @sub_tokens = Tokenizer.new(string[1...-1]).tokens
-      end
-
-      def self.regex
-        REGEX
       end
 
       # Either :round, :square
