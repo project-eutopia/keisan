@@ -256,6 +256,7 @@ calculator.evaluate("range(1, 6).map(x, [x, x**2]).to_h")
 Keisan supports date and time objects like in Ruby.
 You create a date object using either the method `date` (either a string to be parsed, or year, month, day numerical arguments) or `today`.
 They support methods `year`, `month`, `day`, `weekday`, `strftime`, and `to_time` to convert to a time object.
+`epoch_days` computes the number of days since Unix epoch (Jan 1, 1970).
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -266,10 +267,13 @@ calculator.evaluate("today() > date(2018, 11, 1)")
 #=> true
 calculator.evaluate("date('1999-12-31').to_time + 10")
 #=> Time.new(1999, 12, 31, 0, 0, 10)
+calculator.evaluate("date(1970, 1, 15).epoch_days")
+#=> 14
 ```
 
 Time objects are created using `time` (either a string to be parsed, or year, month, day, hour, minute, second arguments) or `now`.
 They support methods `year`, `month`, `day`, `hour`, `minute`, `second`, `weekday`, `strftime`, and `to_date` to convert to a date object.
+`epoch_seconds` computes the number of seconds since Unix epoch (00:00:00 on Jan 1, 1970).
 
 ```ruby
 calculator = Keisan::Calculator.new
@@ -279,6 +283,8 @@ calculator.evaluate("time('2000-4-15 12:34:56').minute")
 #=> 34
 calculator.evaluate("time('5000-10-10 20:30:40').strftime('%b %d, %Y')")
 #=> "Oct 10, 5000"
+calculator.evaluate("time(1970, 1, 1, 2, 3, 4).epoch_seconds")
+#=> 7384
 ```
 
 ##### Functional programming methods

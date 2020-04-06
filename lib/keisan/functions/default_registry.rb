@@ -147,6 +147,9 @@ module Keisan
 
         registry.register!(:to_time, Proc.new {|d| d.to_time }, force: true)
         registry.register!(:to_date, Proc.new {|t| t.to_date }, force: true)
+
+        registry.register!(:epoch_seconds, Proc.new {|d| d.to_time - Time.new(1970, 1, 1, 0, 0, 0) }, force: true)
+        registry.register!(:epoch_days, Proc.new {|t| t.to_date  - Date.new(1970, 1, 1) }, force: true)
       end
 
       def self.register_date_time!(registry)

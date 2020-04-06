@@ -127,6 +127,24 @@ RSpec.describe Keisan::AST::Time do
         expect(date.to_s).to eq "2018-11-20"
       end
     end
+
+    describe "#epoch_days" do
+      it "returns the number of days since Unix epoch" do
+        calculator = Keisan::Calculator.new
+        time = calculator.ast("time(1970, 2, 2, 0, 0, 0).epoch_days").evaluate
+        expect(time).to be_a(Keisan::AST::Number)
+        expect(time.value).to eq 32
+      end
+    end
+
+    describe "#epoch_seconds" do
+      it "returns the number of days since Unix epoch" do
+        calculator = Keisan::Calculator.new
+        time = calculator.ast("time(1970, 1, 2, 3, 4, 5).epoch_seconds").evaluate
+        expect(time).to be_a(Keisan::AST::Number)
+        expect(time.value).to eq 86400 + 3*3600 + 4*60 + 5
+      end
+    end
   end
 
   describe "#to_s" do
