@@ -258,9 +258,15 @@ RSpec.describe Keisan::Calculator do
       context "cannot define recursive functions" do
         let(:calculator) { described_class.new(allow_recursive: false) }
 
-        it "can define factorial" do
+        it "raises an exception when defining a recursive function" do
           expect {
             calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
+          }.to raise_error(Keisan::Exceptions::InvalidExpression)
+          expect {
+            calculator.evaluate("my_fact(n) = { if (n > 1, n*my_fact(n-1), 1) }")
+          }.to raise_error(Keisan::Exceptions::InvalidExpression)
+          expect {
+            calculator.evaluate("my_fact(n) = if (n > 1, { n*my_fact(n-1) }, 1)")
           }.to raise_error(Keisan::Exceptions::InvalidExpression)
         end
       end
