@@ -37,13 +37,21 @@ module Keisan
       private
 
       def verify_rhs_of_function_assignment_is_valid!
+        verify_unbound_functions!
+        verify_unbound_variables!
+      end
+
+      def verify_unbound_functions!
         # Cannot have undefined functions unless allowed by context
         unless context.allow_recursive || rhs.unbound_functions(context).empty?
           raise Exceptions::InvalidExpression.new("Unbound function definitions are not allowed by current context")
         end
+      end
 
+      def verify_unbound_variables!
+        # We allow unbound variables inside block statements, as they could be temporary
+        # variables assigned locally
         return if rhs.is_a?(Block)
-
         # Only variables that can appear are those that are arguments to the function
         unless rhs.unbound_variables(context) <= Set.new(argument_names)
           raise Exceptions::InvalidExpression.new("Unbound variables found in function definition")

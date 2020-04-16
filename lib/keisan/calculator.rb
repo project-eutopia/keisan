@@ -2,6 +2,8 @@ module Keisan
   class Calculator
     attr_reader :context
 
+    # Note, allow_recursive would be more appropriately named:
+    # allow_unbound_functions_in_function_definitions, but it is too late for that.
     def initialize(context: nil, allow_recursive: false, allow_blocks: true, allow_multiline: true)
       @context = context || Context.new(
         allow_recursive: allow_recursive,
@@ -16,6 +18,14 @@ module Keisan
 
     def allow_recursive!
       context.allow_recursive!
+    end
+
+    def allow_blocks
+      context.allow_blocks
+    end
+
+    def allow_multiline
+      context.allow_multiline
     end
 
     def evaluate(expression, definitions = {})

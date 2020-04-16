@@ -30,16 +30,21 @@ module Keisan
 
     def parse_ast(expression)
       AST.parse(expression).tap do |ast|
-        if !calculator.context.allow_multiline && ast.contains_a?(Keisan::AST::MultiLine)
-          raise Keisan::Exceptions::InvalidExpression.new("Context does not permit multiline expressions")
-        end
-        if !calculator.context.allow_blocks && ast.contains_a?(Keisan::AST::Block)
-          raise Keisan::Exceptions::InvalidExpression.new("Context does not permit blocks")
+        disallowed = disallowed_nodes
+        if !disallowed.empty? && ast.contains_a?(disallowed)
+          raise Keisan::Exceptions::InvalidExpression.new("Context does not permit expressions with #{disallowed}")
         end
       end
     end
 
     private
+
+    def disallowed_nodes
+      disallowed = []
+      disallowed << Keisan::AST::Block unless calculator.allow_blocks
+      disallowed << Keisan::AST::MultiLine unless calculator.allow_multiline
+      disallowed
+    end
 
     def last_line(ast)
       ast.is_a?(AST::MultiLine) ? ast.children.last : ast
