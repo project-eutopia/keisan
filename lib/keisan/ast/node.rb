@@ -38,7 +38,12 @@ module Keisan
       end
 
       def contains_a?(klass)
-        return is_a?(klass)
+        case klass
+        when Array
+          return klass.any? {|k| is_a?(k) }
+        else
+          return is_a?(klass)
+        end
       end
 
       def evaluate_assignments(context = nil)

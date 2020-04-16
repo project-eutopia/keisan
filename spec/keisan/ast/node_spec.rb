@@ -96,6 +96,14 @@ RSpec.describe Keisan::AST::Node do
       expect(ast.contains_a?(Keisan::AST::Boolean)).to eq true
       expect(ast.contains_a?(Keisan::AST::Function)).to eq true
     end
+
+    it "can check multiple classes at once" do
+      ast = Keisan::Calculator.new.ast("5*x")
+
+      expect(ast.contains_a?([Keisan::AST::Number, Keisan::AST::String])).to eq true
+      expect(ast.contains_a?([Keisan::AST::Boolean, Keisan::AST::String])).to eq false
+      expect(ast.contains_a?([Keisan::AST::Times, Keisan::AST::String])).to eq true
+    end
   end
 
   describe "operators" do
