@@ -1,13 +1,24 @@
 module Keisan
   class Context
-    attr_reader :function_registry, :variable_registry, :allow_recursive
+    attr_reader :function_registry,
+      :variable_registry,
+      :allow_recursive,
+      :allow_multiline,
+      :allow_blocks
 
-    def initialize(parent: nil, random: nil, allow_recursive: false, shadowed: [])
+    def initialize(parent: nil,
+                   random: nil,
+                   allow_recursive: false,
+                   allow_multiline: true,
+                   allow_blocks: true,
+                   shadowed: [])
       @parent = parent
       @function_registry = Functions::Registry.new(parent: @parent&.function_registry)
       @variable_registry = Variables::Registry.new(parent: @parent&.variable_registry, shadowed: shadowed)
       @random            = random
       @allow_recursive   = allow_recursive
+      @allow_multiline   = allow_multiline
+      @allow_blocks      = allow_blocks
     end
 
     def allow_recursive!
@@ -110,7 +121,13 @@ module Keisan
     end
 
     def pure_child(shadowed: [])
-      self.class.new(parent: self, shadowed: shadowed, allow_recursive: allow_recursive)
+      self.class.new(
+        parent: self,
+        shadowed: shadowed,
+        allow_recursive: allow_recursive,
+        allow_multiline: allow_multiline,
+        allow_blocks: allow_blocks
+      )
     end
   end
 end

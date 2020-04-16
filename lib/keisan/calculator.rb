@@ -2,8 +2,12 @@ module Keisan
   class Calculator
     attr_reader :context
 
-    def initialize(context: nil, allow_recursive: false)
-      @context = context || Context.new(allow_recursive: allow_recursive)
+    def initialize(context: nil, allow_recursive: false, allow_blocks: true, allow_multiline: true)
+      @context = context || Context.new(
+        allow_recursive: allow_recursive,
+        allow_blocks: allow_blocks,
+        allow_multiline: allow_multiline
+      )
     end
 
     def allow_recursive
@@ -23,7 +27,7 @@ module Keisan
     end
 
     def ast(expression)
-      Evaluator.new(self).ast(expression)
+      Evaluator.new(self).parse_ast(expression)
     end
 
     def define_variable!(name, value)

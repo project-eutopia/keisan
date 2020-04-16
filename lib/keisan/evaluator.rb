@@ -8,7 +8,7 @@ module Keisan
 
     def evaluate(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
-      ast = ast(expression)
+      ast = parse_ast(expression)
       last_line = last_line(ast)
 
       evaluation = ast.evaluated(context)
@@ -24,12 +24,19 @@ module Keisan
 
     def simplify(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
-      ast = AST.parse(expression)
+      ast = parse_ast(expression)
       ast.simplify(context)
     end
 
-    def ast(expression)
-      AST.parse(expression)
+    def parse_ast(expression)
+      AST.parse(expression).tap do |ast|
+        if !calculator.context.allow_multiline && ast.contains_a?(Keisan::AST::MultiLine)
+          raise Keisan::Exceptions::InvalidExpression.new("Context does not permit multiline expressions")
+        end
+        if !calculator.context.allow_blocks && ast.contains_a?(Keisan::AST::Block)
+          raise Keisan::Exceptions::InvalidExpression.new("Context does not permit blocks")
+        end
+      end
     end
 
     private
