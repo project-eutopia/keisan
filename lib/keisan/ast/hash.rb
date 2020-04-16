@@ -21,6 +21,10 @@ module Keisan
         end
       end
 
+      def contains_a?(klass)
+        super || @hash.any? {|k, v| k.to_node.contains_a?(klass) || v.contains_a?(klass) }
+      end
+
       def evaluate(context = nil)
         context ||= Context.new
 

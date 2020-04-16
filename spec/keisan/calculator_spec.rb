@@ -254,13 +254,19 @@ RSpec.describe Keisan::Calculator do
       end
     end
 
-    context "recursive" do
+    describe "allow_recursive" do
       context "cannot define recursive functions" do
         let(:calculator) { described_class.new(allow_recursive: false) }
 
-        it "can define factorial" do
+        it "raises an exception when defining a recursive function" do
           expect {
             calculator.evaluate("my_fact(n) = if (n > 1, n*my_fact(n-1), 1)")
+          }.to raise_error(Keisan::Exceptions::InvalidExpression)
+          expect {
+            calculator.evaluate("my_fact(n) = { if (n > 1, n*my_fact(n-1), 1) }")
+          }.to raise_error(Keisan::Exceptions::InvalidExpression)
+          expect {
+            calculator.evaluate("my_fact(n) = if (n > 1, { n*my_fact(n-1) }, 1)")
           }.to raise_error(Keisan::Exceptions::InvalidExpression)
         end
       end
@@ -273,6 +279,62 @@ RSpec.describe Keisan::Calculator do
           expect(calculator.evaluate("my_fact(0)")).to eq 1
           expect(calculator.evaluate("my_fact(1)")).to eq 1
           expect(calculator.evaluate("my_fact(5)")).to eq 120
+        end
+      end
+    end
+
+    describe "allow_blocks" do
+      context "cannot define blocks" do
+        let(:calculator) { described_class.new(allow_blocks: false) }
+
+        it "raises an exception when receiving an expression with a block" do
+          expect {
+            calculator.evaluate("f(x) = (1; x**2)")
+          }.not_to raise_error
+          expect {
+            calculator.evaluate("f(x) = { 1; x**2 }")
+          }.to raise_error(Keisan::Exceptions::InvalidExpression)
+        end
+      end
+
+      context "can define blocks" do
+        let(:calculator) { described_class.new(allow_blocks: true) }
+
+        it "raises an exception when receiving an expression with a block" do
+          expect {
+            calculator.evaluate("f(x) = (1; x**2)")
+          }.not_to raise_error
+          expect {
+            calculator.evaluate("f(x) = { 1; x**2 }")
+          }.not_to raise_error
+        end
+      end
+    end
+
+    describe "allow_multiline" do
+      context "cannot define multiline" do
+        let(:calculator) { described_class.new(allow_multiline: false) }
+
+        it "raises an exception when receiving an expression with multiple lines" do
+          expect {
+            calculator.evaluate("f(x) = { 1 + x**2 }")
+          }.not_to raise_error
+          expect {
+            calculator.evaluate("f(x) = { 1; x**2 }")
+          }.to raise_error(Keisan::Exceptions::InvalidExpression)
+        end
+      end
+
+      context "can define multiline" do
+        let(:calculator) { described_class.new(allow_multiline: true) }
+
+        it "raises an exception when receiving an expression with a block" do
+          expect {
+            calculator.evaluate("f(x) = { 1 + x**2 }")
+          }.not_to raise_error
+          expect {
+            calculator.evaluate("f(x) = { 1; x**2 }")
+          }.not_to raise_error
         end
       end
     end

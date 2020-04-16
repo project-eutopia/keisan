@@ -37,6 +37,15 @@ module Keisan
         value(context)
       end
 
+      def contains_a?(klass)
+        case klass
+        when Array
+          klass.any? {|k| is_a?(k) }
+        else
+          is_a?(klass)
+        end
+      end
+
       def evaluate_assignments(context = nil)
         self
       end
