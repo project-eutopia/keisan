@@ -26,7 +26,7 @@ module Keisan
       end
 
       def contains_a?(klass)
-        super | children.any? {|child| child.contains_a?(klass) }
+        super || children.any? {|child| child.contains_a?(klass) }
       end
 
       def freeze
