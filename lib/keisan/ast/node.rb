@@ -40,9 +40,9 @@ module Keisan
       def contains_a?(klass)
         case klass
         when Array
-          return klass.any? {|k| is_a?(k) }
+          klass.any? {|k| is_a?(k) }
         else
-          return is_a?(klass)
+          is_a?(klass)
         end
       end
 
