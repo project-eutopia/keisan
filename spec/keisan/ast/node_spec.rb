@@ -22,6 +22,82 @@ RSpec.describe Keisan::AST::Node do
     end
   end
 
+  describe "contains_a?" do
+    it "checks type of regular node" do
+      expect(Keisan::AST::Node.new.contains_a?(Keisan::AST::Node)).to eq true
+      expect(Keisan::AST::Node.new.contains_a?(Keisan::AST::Variable)).to eq false
+      expect(Keisan::AST::Variable.new("x").contains_a?(Keisan::AST::Node)).to eq true
+      expect(Keisan::AST::Variable.new("x").contains_a?(Keisan::AST::Variable)).to eq true
+    end
+
+    it "checks content of blocks" do
+      ast = Keisan::Calculator.new.ast("{1; x}")
+
+      expect(ast.contains_a?(Keisan::AST::Node)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Block)).to eq true
+      expect(ast.contains_a?(Keisan::AST::MultiLine)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Number)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Variable)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Boolean)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Times)).to eq false
+      expect(ast.contains_a?(Keisan::AST::String)).to eq false
+    end
+
+    it "checks internal node of a cell" do
+      ast = Keisan::AST::Cell.new(Keisan::AST::Number.new(5))
+
+      expect(ast.contains_a?(Keisan::AST::Node)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Cell)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Number)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Variable)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Times)).to eq false
+      expect(ast.contains_a?(Keisan::AST::String)).to eq false
+    end
+
+    it "checks arguments for function calls" do
+      ast = Keisan::Calculator.new.ast("f('a')")
+
+      expect(ast.contains_a?(Keisan::AST::Node)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Function)).to eq true
+      expect(ast.contains_a?(Keisan::AST::String)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Variable)).to eq false
+    end
+
+    it "checks children for operators" do
+      ast = Keisan::Calculator.new.ast("5*x")
+
+      expect(ast.contains_a?(Keisan::AST::Node)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Times)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Function)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Number)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Variable)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Plus)).to eq false
+    end
+
+    it "checks content of lists and hashes" do
+      ast = Keisan::Calculator.new.ast("[1, '2']")
+
+      expect(ast.contains_a?(Keisan::AST::Node)).to eq true
+      expect(ast.contains_a?(Keisan::AST::List)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Hash)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Number)).to eq true
+      expect(ast.contains_a?(Keisan::AST::String)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Variable)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Boolean)).to eq false
+
+      ast = Keisan::Calculator.new.ast("{true: f(true)}")
+
+      expect(ast.contains_a?(Keisan::AST::Node)).to eq true
+      expect(ast.contains_a?(Keisan::AST::List)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Hash)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Number)).to eq false
+      expect(ast.contains_a?(Keisan::AST::String)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Variable)).to eq false
+      expect(ast.contains_a?(Keisan::AST::Boolean)).to eq true
+      expect(ast.contains_a?(Keisan::AST::Function)).to eq true
+    end
+  end
+
   describe "operators" do
     it "combines the AST appropriately" do
       x = Keisan::AST::Variable.new("x")

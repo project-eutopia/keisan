@@ -25,6 +25,10 @@ module Keisan
         end
       end
 
+      def contains_a?(klass)
+        super | children.any? {|child| child.contains_a?(klass) }
+      end
+
       def freeze
         children.each(&:freeze)
         super

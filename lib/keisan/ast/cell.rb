@@ -15,6 +15,10 @@ module Keisan
         node.unbound_functions(context)
       end
 
+      def contains_a?(klass)
+        super || node.contains_a?(klass)
+      end
+
       def deep_dup
         dupped = dup
         dupped.instance_variable_set(

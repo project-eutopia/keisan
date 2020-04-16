@@ -17,6 +17,10 @@ module Keisan
         child.unbound_functions(local)
       end
 
+      def contains_a?(klass)
+        super || child.contains_a?(klass)
+      end
+
       def deep_dup
         dupped = dup
         dupped.instance_variable_set(

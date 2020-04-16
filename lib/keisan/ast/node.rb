@@ -37,6 +37,10 @@ module Keisan
         value(context)
       end
 
+      def contains_a?(klass)
+        return is_a?(klass)
+      end
+
       def evaluate_assignments(context = nil)
         self
       end
