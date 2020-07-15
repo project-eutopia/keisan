@@ -133,7 +133,7 @@ RSpec.describe Keisan::Calculator do
 
   describe "unmatched braces inside strings" do
     it "does not match against actual braces outside strings" do
-      expect(calculator.evaluate("'1'+'2'+(']\n]') + (('3') + '4')")).to eq "12];]34"
+      expect(calculator.evaluate("'1'+'2'+(']\n]') + (('3') + '4')")).to eq "12]\n]34"
     end
   end
 

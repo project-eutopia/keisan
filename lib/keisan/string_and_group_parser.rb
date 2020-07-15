@@ -129,7 +129,7 @@ module Keisan
 
         while index < expression.size
           case expression[index]
-          when STRING_CHARACTER_REGEX, OPEN_GROUP_REGEX, CLOSED_GROUP_REGEX
+          when STRING_CHARACTER_REGEX, OPEN_GROUP_REGEX, CLOSED_GROUP_REGEX, COMMENT_CHARACTER_REGEX
             break
           else
             index += 1
@@ -149,9 +149,40 @@ module Keisan
       end
     end
 
+    class CommentPortion < Portion
+      attr_reader :string
+
+      def initialize(expression, start_index)
+        super(start_index)
+
+        if expression[start_index] != '#'
+          raise Keisan::Exceptions::TokenizingError.new("Comment should start with '#'")
+        else
+          index = start_index + 1
+        end
+
+        while index < expression.size
+          break if expression[index] == "\n"
+          index += 1
+        end
+
+        @end_index = index
+        @string = expression[start_index...end_index]
+      end
+
+      def size
+        string.size
+      end
+
+      def to_s
+        string
+      end
+    end
+
     # An ordered array of "portions", which
     attr_reader :portions, :size
 
+    COMMENT_CHARACTER_REGEX = /[#]/
     STRING_CHARACTER_REGEX = /["']/
     OPEN_GROUP_REGEX = /[\(\{\[]/
     CLOSED_GROUP_REGEX = /[\)\}\]]/
@@ -175,6 +206,11 @@ module Keisan
 
         when CLOSED_GROUP_REGEX
           raise Keisan::Exceptions::TokenizingError.new("Tokenizing error, unexpected closing brace #{expression[start_index]}")
+
+        when COMMENT_CHARACTER_REGEX
+          portion = CommentPortion.new(expression, index)
+          index += portion.size
+          @portions << portion
 
         else
           portion = OtherPortion.new(expression, index)
