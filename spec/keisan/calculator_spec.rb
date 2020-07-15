@@ -17,6 +17,7 @@ RSpec.describe Keisan::Calculator do
     expect(calculator.evaluate("# Hello world")).to eq nil
     expect(calculator.evaluate("2 + 3 # 4")).to eq 5
     expect(calculator.evaluate("# Initial comment\n 1+2\n 123 # Real result\n# Trailing comment\n")).to eq 123
+    expect(calculator.evaluate("# Blah )(('\"\n 'foo' + '#bar' #Ignore")).to eq "foo#bar"
   end
 
   it "can handle custom functions" do
