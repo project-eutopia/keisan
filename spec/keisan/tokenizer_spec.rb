@@ -223,6 +223,30 @@ RSpec.describe Keisan::Tokenizer do
       end
     end
 
+    it "handles #hashtags in strings" do
+      tokenizer = described_class.new("1 - 2 # Comm'ent\nx + '#math' # Anot'her comment")
+
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Number,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::Number,
+        Keisan::Tokens::LineSeparator,
+        Keisan::Tokens::Word,
+        Keisan::Tokens::ArithmeticOperator,
+        Keisan::Tokens::String
+      ])
+
+      expect(tokenizer.tokens.map(&:string)).to match_array([
+        "1",
+        "-",
+        "2",
+        "\n",
+        "x",
+        "+",
+        "'#math'"
+      ])
+    end
+
     it "has nested groups properly tokenized" do
       tokenizer = described_class.new("'1'+'2'+(']]') + (('3') + '4')")
 

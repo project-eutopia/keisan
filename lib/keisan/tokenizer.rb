@@ -24,9 +24,11 @@ module Keisan
     attr_reader :expression, :tokens
 
     def initialize(expression)
-      @expression = self.class.normalize_expression(expression)
+      @expression = expression
 
-      portions = StringAndGroupParser.new(@expression).portions
+      portions = StringAndGroupParser.new(expression).portions.reject do |portion|
+        portion.is_a? StringAndGroupParser::CommentPortion
+      end
 
       @tokens = portions.inject([]) do |tokens, portion|
         case portion
@@ -43,20 +45,7 @@ module Keisan
       end
     end
 
-    def self.normalize_expression(expression)
-      expression = normalize_line_delimiters(expression)
-      expression = remove_comments(expression)
-    end
-
     private
-
-    def self.normalize_line_delimiters(expression)
-      expression.gsub(/\n/, ";")
-    end
-
-    def self.remove_comments(expression)
-      expression.gsub(/#[^;]*/, "")
-    end
 
     def tokenize!(scan)
       scan.map do |scan_result|
