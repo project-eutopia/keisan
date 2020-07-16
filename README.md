@@ -178,6 +178,22 @@ calculator.evaluate("x = 11; {let x = 12}; x")
 #=> 11
 ```
 
+##### Comments
+
+When working with multi-line blocks of code, sometimes comments are useful to include.
+Comments are parts of a string from the `#` character to the end of a line (indicated by a newline character `"\n"`).
+
+```
+calculator = Keisan::Calculator.new
+calculator.evaluate("""
+  # This is a comment
+  x = 'foo'
+  x += '#bar' # Notice that `#` inside strings is not part of the comment
+  x # Should print 'foo#bar'
+""")
+#=> "foo#bar"
+```
+
 ##### Lists
 
 Just like in Ruby, lists can be defined using square brackets, and indexed using square brackets
