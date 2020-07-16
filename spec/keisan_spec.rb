@@ -1,10 +1,6 @@
 require "spec_helper"
 
 RSpec.describe Keisan do
-  it "has the expected version number" do
-    expect(Keisan::VERSION).to eq "0.8.3"
-  end
-
   context "module methods" do
     after do
       # Want to reset the calculator internal to Keisan after each spec
