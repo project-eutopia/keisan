@@ -9,24 +9,26 @@ module Keisan
     end
 
     class StringPortion < Portion
-      attr_reader :string
+      attr_reader :string, :escaped_string
 
       def initialize(expression, start_index)
         super(start_index)
 
         @string = expression[start_index]
+        @escaped_string = expression[start_index]
         @end_index = start_index + 1
 
         while @end_index < expression.size
           if expression[@end_index] == quote_type
             @string << quote_type
+            @escaped_string << quote_type
             @end_index += 1
             # Successfully parsed the string
             return
           end
 
-          n, c = process_next_character(expression, @end_index)
-          @string << c
+          n, c = get_potentially_escaped_next_character(expression, @end_index)
+          @escaped_string << c
           @end_index += n
         end
 
@@ -44,9 +46,13 @@ module Keisan
       private
 
       # Returns number of processed input characters, and the output character
-      def process_next_character(expression, index)
-        # escape character
-        if expression[index] == "\\"
+      # If a sequence like '\"' is encountered, the first backslash escapes the
+      # second double-quote, and the two characters will act as a one double-quote
+      # character.
+      def get_potentially_escaped_next_character(expression, index)
+        @string << expression[index]
+        if expression[index] == "\\" && index + 1 < expression.size
+          @string << expression[index + 1]
           return [2, escaped_character(expression[index + 1])]
         else
           return [1, expression[index]]

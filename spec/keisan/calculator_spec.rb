@@ -172,6 +172,15 @@ RSpec.describe Keisan::Calculator do
       expect(ast.children[1]).to be_a(Keisan::AST::Number)
       expect(ast.children[1].value).to eq 1
     end
+
+    it "works with strings inside groups" do
+      expect(calculator.ast('"a"').value).to eq 'a'
+      expect(calculator.ast('"\"a"').value).to eq '"a'
+      expect(calculator.ast('("\"a")').value).to eq '"a'
+      expect(calculator.ast('("\"a" + "\"")').value).to eq '"a"'
+      expect(calculator.ast(%q{("\"a\'")}).value).to eq '"a\''
+      expect(calculator.ast(%q{("\"a)\'[")}).value).to eq '"a)\'['
+    end
   end
 
   describe "defining variables and functions" do
