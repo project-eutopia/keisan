@@ -202,6 +202,17 @@ RSpec.describe Keisan::Parser do
           ])
         end
       end
+
+      it "handles escaped characters inside strings inside groups" do
+        parser = described_class.new(string: '("\"a\"")')
+        expect(parser.components.map(&:class)).to match_array([
+          Keisan::Parsing::RoundGroup,
+        ])
+        expect(parser.components[0].components.map(&:class)).to match_array([
+          Keisan::Parsing::String,
+        ])
+        expect(parser.components[0].components[0].value).to eq '"a"'
+      end
     end
 
     context "has nested brackets" do

@@ -33,7 +33,7 @@ module Keisan
       @tokens = portions.inject([]) do |tokens, portion|
         case portion
         when StringAndGroupParser::StringPortion
-          tokens << Tokens::String.new(portion.to_s)
+          tokens << Tokens::String.new(portion.escaped_string)
         when StringAndGroupParser::GroupPortion
           tokens << Tokens::Group.new(portion.to_s)
         when StringAndGroupParser::OtherPortion

@@ -321,6 +321,20 @@ RSpec.describe Keisan::Tokenizer do
       expect(tokenizer.tokens[1].string).to eq "*"
       expect(tokenizer.tokens[2].string).to eq "(3+4)"
     end
+
+    it "handles strings with escaped characters inside parentheses" do
+      tokenizer = described_class.new(%q{("\"foo")})
+      expect(tokenizer.tokens.map(&:class)).to match_array([
+        Keisan::Tokens::Group,
+      ])
+      expect(tokenizer.tokens[0].sub_tokens.map(&:class)).to match_array([
+        Keisan::Tokens::String,
+      ])
+      expect(tokenizer.tokens[0].sub_tokens[0].value).to eq '"foo'
+
+      tokenizer = described_class.new('("\"a\"()\"")')
+      expect(tokenizer.tokens[0].sub_tokens[0].value).to eq '"a"()"'
+    end
   end
 
   context "logical operators" do
