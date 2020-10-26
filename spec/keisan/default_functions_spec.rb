@@ -55,6 +55,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect(Keisan::Calculator.new.simplify("[1,3,5].map(x, y*x**2)").to_s).to eq "[y,9*y,25*y]"
           expect(Keisan::Calculator.new.evaluate("map([1,3,5], x, [x, 2*x])")).to eq [[1,2], [3,6], [5,10]]
           expect(Keisan::Calculator.new.evaluate("[1,3,5].map(x, [x, 2*x]).to_h")).to eq({1 => 2, 3 => 6, 5 => 10})
+          expect(Keisan::Calculator.new.evaluate("l.map(x, x['a']*2)", l: [{ 'a' => 2 }, { 'a' => 3 }]))
+            .to eq([4,6])
+          expect(Keisan::Calculator.new.evaluate("h['l'].map(x, x['a']*2)", h: { 'l' => [{ 'a' => 2 }, { 'a' => 3 }] }))
+            .to eq([4,6])
+          expect(Keisan::Calculator.new.evaluate("l[0].map(x, x['a']*2)", l: [[{ 'a' => 2 }, { 'a' => 3 }]]))
+            .to eq([4,6])
         end
 
         it "maps the hash to the given expression" do
@@ -74,6 +80,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
             Time.new(2018, 5, 5, 12, 12, 32),
             Time.new(2018, 5, 5, 12, 12, 42)
           ])
+          expect(calculator.evaluate("h.map(k, v, [k, 2v]).to_h", h: { 'a' => 2, 'b' => 3 }))
+            .to eq({ 'a' => 4, 'b' => 6 })
+          expect(calculator.evaluate("h['hh'].map(k, v, [k, 2v]).to_h", h: { 'hh' => { 'a' => 2, 'b' => 3 } }))
+            .to eq({ 'a' => 4, 'b' => 6 })
+          expect(calculator.evaluate("l[0].map(k, v, [k, 2v]).to_h", l: [{ 'a' => 2, 'b' => 3 }]))
+            .to eq({ 'a' => 4, 'b' => 6 })
         end
 
         it "shadows variable definitions" do
@@ -93,6 +105,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect(Keisan::Calculator.new.evaluate("filter([-1,0,1], x, x > 0)")).to eq [1]
           expect(Keisan::Calculator.new.evaluate("select([1,2,3,4], x, x % 2 == 0)")).to eq [2,4]
           expect(Keisan::Calculator.new.simplify("[1,3,5].filter(x, x == 3)").to_s).to eq "[3]"
+          expect(Keisan::Calculator.new.evaluate("l.filter(x, x['a'] == 2)", l: [{ 'a' => 2 }, { 'a' => 3 }]))
+            .to eq([{ 'a' => 2 }])
+          expect(Keisan::Calculator.new.evaluate("h['l'].filter(x, x['a'] == 2)", h: { 'l' => [{ 'a' => 2 }, { 'a' => 3 }] }))
+            .to eq([{ 'a' => 2 }])
+          expect(Keisan::Calculator.new.evaluate("l[0].filter(x, x['a'] == 2)", l: [[{ 'a' => 2 }, { 'a' => 3 }] ]))
+            .to eq([{ 'a' => 2 }])
         end
 
         it "filters the hash given the logical expression" do
@@ -100,6 +118,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, 2, k > 0)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("filter({'a': 1, 'b': 2}, k, v, k)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect(Keisan::Calculator.new.evaluate("filter({'a': 1, 'bb': 2}, k, v, k.size == 2)")).to eq({"bb" => 2})
+          expect(Keisan::Calculator.new.evaluate("h.filter(k, v, k == 'a')", h: { 'a' => 2, 'b' => 3 }))
+            .to eq({ 'a' => 2 })
+          expect(Keisan::Calculator.new.evaluate("h['hh'].filter(k, v, k == 'a')", h: { 'hh' => { 'a' => 2, 'b' => 3 } }))
+            .to eq({ 'a' => 2 })
+          expect(Keisan::Calculator.new.evaluate("l[0].filter(k, v, k == 'a')", l: [{ 'a' => 2, 'b' => 3 }]))
+            .to eq({ 'a' => 2 })
         end
       end
 
@@ -110,6 +134,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
 
           expect(Keisan::Calculator.new.simplify("reduce([1,2,3], init, total, x, total+x)").to_s).to eq "6+init"
           expect(Keisan::Calculator.new.evaluate("[1,2,3,4,5].inject(1, total, x, total*x)")).to eq 120
+          expect(Keisan::Calculator.new.evaluate("l.reduce(1, total, x, total + x['a'])", l: [{ 'a' => 2 }, { 'a' => 3 }]))
+            .to eq(6)
+          expect(Keisan::Calculator.new.evaluate("h['l'].reduce(1, total, x, total + x['a'])", h: { 'l' => [{ 'a' => 2 }, { 'a' => 3 }] }))
+            .to eq(6)
+          expect(Keisan::Calculator.new.evaluate("l[0].reduce(1, total, x, total + x['a'])", l: [[{ 'a' => 2 }, { 'a' => 3 }]]))
+            .to eq(6)
         end
 
         it "reduces the hash given an expression" do
@@ -117,6 +147,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
           expect{Keisan::Calculator.new.evaluate("reduce({'a': 1, 'b': 2}, 0, 1, 2, 333)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect{Keisan::Calculator.new.evaluate("reduce({'a': 1, 'b': 2}, 0, total, cur, total+cur)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
           expect(Keisan::Calculator.new.evaluate("reduce({'a': 10, 'bb': 20}, 0, total, key, value, total+value+key.size**2)")).to eq 35
+          expect(Keisan::Calculator.new.evaluate("h.reduce(1, total, k, v, total + v)", h: { 'a' => 2, 'b' => 3 }))
+            .to eq(6)
+          expect(Keisan::Calculator.new.evaluate("h['hh'].reduce(1, total, k, v, total + v)", h: { 'hh' => { 'a' => 2, 'b' => 3 } }))
+            .to eq(6)
+          expect(Keisan::Calculator.new.evaluate("l[0].reduce(1, total, k, v, total + v)", l: [{ 'a' => 2, 'b' => 3 }]))
+            .to eq(6)
         end
       end
 
