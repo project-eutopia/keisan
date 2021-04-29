@@ -166,6 +166,25 @@ RSpec.describe Keisan::Context do
 
       expect(matches.any? {|bool| bool == false}).to be true
     end
+
+    it "has the random object set once and only once" do
+      context = described_class.new
+      random = context.random
+      expect(random).to eq context.random
+    end
+
+    it "can be set to override existing internal random object" do
+      rand1 = Random.new(2244)
+      rand1_copy = Random.new(2244)
+      rand2 = Random.new(4466)
+
+      context = described_class.new(random: rand2)
+      context.set_random(rand1_copy)
+
+      20.times do
+        expect(context.random.rand(100)).to eq rand1.rand(100)
+      end
+    end
   end
 
   describe "has_variable?" do
