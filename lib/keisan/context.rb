@@ -111,7 +111,11 @@ module Keisan
     end
 
     def random
-      @random || @parent&.random || Random.new
+      @random ||= @parent&.random || Random.new
+    end
+
+    def set_random(random)
+      @random = random
     end
 
     protected
