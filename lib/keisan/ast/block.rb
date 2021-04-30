@@ -17,8 +17,8 @@ module Keisan
         child.unbound_functions(local)
       end
 
-      def contains_a?(klass)
-        super || child.contains_a?(klass)
+      def traverse(&block)
+        super(&block) || child.traverse(&block)
       end
 
       def deep_dup

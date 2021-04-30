@@ -37,12 +37,26 @@ module Keisan
         value(context)
       end
 
+      # Takes a block, and does a DFS down the AST, evaluating the received block
+      # at each node, passing in the node as the single argument. If the block
+      # returns a truthy value at any point, the DFS ends and the return value is
+      # percolated up the tree.
+      def traverse(&block)
+        block.call(self)
+      end
+
       def contains_a?(klass)
         case klass
         when Array
-          klass.any? {|k| is_a?(k) }
+          klass.any? do |k|
+            traverse do |node|
+              node.is_a?(k)
+            end
+          end
         else
-          is_a?(klass)
+          traverse do |node|
+            node.is_a?(klass)
+          end
         end
       end
 

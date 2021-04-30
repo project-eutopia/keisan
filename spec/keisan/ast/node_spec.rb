@@ -22,6 +22,22 @@ RSpec.describe Keisan::AST::Node do
     end
   end
 
+  describe "traverse" do
+    it "traverses DFS down block AST" do
+      nodes = []
+      ast = Keisan::Calculator.new.ast("{1; x}")
+      ast.traverse {|n| nodes << n.class; nil}
+      expect(nodes).to eq([Keisan::AST::Block, Keisan::AST::MultiLine, Keisan::AST::Number, Keisan::AST::Variable])
+    end
+
+    it "short-circuits when block is truthy" do
+      nodes = []
+      ast = Keisan::Calculator.new.ast("{1; x; 2; y}")
+      ast.traverse {|n| nodes << n.class; n.is_a?(Keisan::AST::Number) && n.number == 2}
+      expect(nodes).to eq([Keisan::AST::Block, Keisan::AST::MultiLine, Keisan::AST::Number, Keisan::AST::Variable, Keisan::AST::Number])
+    end
+  end
+
   describe "contains_a?" do
     it "checks type of regular node" do
       expect(Keisan::AST::Node.new.contains_a?(Keisan::AST::Node)).to eq true
