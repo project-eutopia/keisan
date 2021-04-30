@@ -25,8 +25,14 @@ module Keisan
         end
       end
 
-      def contains_a?(klass)
-        super || children.any? {|child| child.contains_a?(klass) }
+      def traverse(&block)
+        value = super(&block)
+        return value if value
+        children.each do |child|
+          value = child.traverse(&block)
+          return value if value
+        end
+        false
       end
 
       def freeze

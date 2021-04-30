@@ -21,8 +21,16 @@ module Keisan
         end
       end
 
-      def contains_a?(klass)
-        super || @hash.any? {|k, v| k.to_node.contains_a?(klass) || v.contains_a?(klass) }
+      def traverse(&block)
+        value = super(&block)
+        return value if value
+        @hash.each do |k, v|
+          value = k.to_node.traverse(&block)
+          return value if value
+          value = v.traverse(&block)
+          return value if value
+        end
+        false
       end
 
       def evaluate(context = nil)

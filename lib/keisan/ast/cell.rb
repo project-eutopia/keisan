@@ -15,8 +15,8 @@ module Keisan
         node.unbound_functions(context)
       end
 
-      def contains_a?(klass)
-        super || node.contains_a?(klass)
+      def traverse(&block)
+        super(&block) || node.traverse(&block)
       end
 
       def deep_dup
