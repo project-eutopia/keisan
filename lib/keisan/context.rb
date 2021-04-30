@@ -4,13 +4,15 @@ module Keisan
       :variable_registry,
       :allow_recursive,
       :allow_multiline,
-      :allow_blocks
+      :allow_blocks,
+      :allow_random
 
     def initialize(parent: nil,
                    random: nil,
                    allow_recursive: false,
                    allow_multiline: true,
                    allow_blocks: true,
+                   allow_random: true,
                    shadowed: [])
       @parent = parent
       @function_registry = Functions::Registry.new(parent: @parent&.function_registry)
@@ -19,6 +21,7 @@ module Keisan
       @allow_recursive   = allow_recursive
       @allow_multiline   = allow_multiline
       @allow_blocks      = allow_blocks
+      @allow_random      = allow_random
     end
 
     def allow_recursive!
@@ -111,10 +114,12 @@ module Keisan
     end
 
     def random
+      raise Keisan::Exceptions::InvalidExpression.new("Context does not permit expressions with randomness") unless allow_random
       @random ||= @parent&.random || Random.new
     end
 
     def set_random(random)
+      raise Keisan::Exceptions::InvalidExpression.new("Context does not permit expressions with randomness") unless allow_random
       @random = random
     end
 
