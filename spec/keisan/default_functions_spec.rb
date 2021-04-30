@@ -194,6 +194,12 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
         expect(calc1.evaluate("rand(100)")).to eq calc2.evaluate("rand(100)")
       end
     end
+
+    it "doesn't work when allow_random is false" do
+      calculator = Keisan::Calculator.new(allow_random: false)
+      expect{calculator.evaluate("rand(100)")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+      expect{calculator.evaluate("sample([1, 2, 3])")}.to raise_error(Keisan::Exceptions::InvalidExpression)
+    end
   end
 
   context "combinatorical methods" do
