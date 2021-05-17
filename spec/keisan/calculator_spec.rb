@@ -9,6 +9,16 @@ RSpec.describe Keisan::Calculator do
     expect(calculator.evaluate("2 / 3 ** 2")).to eq Rational(2,9)
   end
 
+  it "reduces Rational with 1 denominator to Integer" do
+    one = calculator.evaluate("1/1")
+    expect(one).to be_a(Integer)
+    expect(one).to eq 1
+
+    minus_three = calculator.evaluate("-6/2")
+    expect(minus_three).to be_a(Integer)
+    expect(minus_three).to eq -3
+  end
+
   it "does nothing for blank strings" do
     expect(calculator.evaluate("  ")).to eq nil
   end

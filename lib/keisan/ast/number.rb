@@ -5,6 +5,11 @@ module Keisan
 
       def initialize(number)
         @number = number
+        # Reduce the number if possible
+        case @number
+        when Rational
+          @number = @number.numerator if @number.denominator == 1
+        end
       end
 
       def value(context = nil)
