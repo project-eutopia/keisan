@@ -6,6 +6,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
+        return self if frozen?
         context ||= Context.new
         @children = children.map {|child| child.is_a?(Cell) ? child : child.evaluate(context)}
         self

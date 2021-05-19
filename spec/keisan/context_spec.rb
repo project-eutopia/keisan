@@ -58,7 +58,15 @@ RSpec.describe Keisan::Context do
       # Freeze
       calculator.context.freeze
 
-      # Can no longer modify
+      # Can still access the values
+      expect(calculator.evaluate("x[0]")).to eq(11)
+      expect(calculator.evaluate("y['alpha'] + 2")).to eq(18)
+
+      child_calculator = Keisan::Calculator.new(context: calculator.context.spawn_child)
+      child_calculator.evaluate("z = y['gamma']['foo'] * 3")
+      expect(child_calculator.evaluate("z")).to eq(330)
+
+      # But can no longer modify
       expect{calculator.evaluate("x[0] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
       expect{calculator.evaluate("x[1][0] = 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
       expect{calculator.evaluate("x[2]['a'] += 10")}.to raise_error(Keisan::Exceptions::UnmodifiableError)
