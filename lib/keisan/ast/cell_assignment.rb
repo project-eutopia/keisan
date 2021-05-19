@@ -30,7 +30,11 @@ module Keisan
       private
 
       def lhs_evaluate_and_check_modifiable
-        lhs.evaluate(context)
+        res = lhs.evaluate(context)
+        if res.frozen?
+          raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables")
+        end
+        res
       rescue RuntimeError => e
         raise Exceptions::UnmodifiableError.new("Cannot modify frozen variables") if e.message =~ /can't modify frozen/
         raise

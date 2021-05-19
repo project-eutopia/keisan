@@ -34,6 +34,7 @@ module Keisan
       end
 
       def evaluate(context = nil)
+        return self if frozen?
         context ||= Context.new
 
         @hash = ::Hash[
