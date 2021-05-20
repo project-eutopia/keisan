@@ -91,6 +91,13 @@ module Keisan
 
         self.class.new([self, variable], "diff")
       end
+
+      # Functions cannot be guaranteed to be constant even if the arguments
+      # are constants, because there might be randomness involved in the
+      # outputs.
+      def is_constant?
+        false
+      end
     end
   end
 end

@@ -1,6 +1,12 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Number do
+  describe "is_constant?" do
+    it "is true" do
+      expect(Keisan::AST::Number.new(1).is_constant?).to eq true
+    end
+  end
+
   describe "evaluate" do
     it "reduces to a single number when using arithmetic operators" do
       ast = Keisan::AST.parse("1+2")

@@ -1,6 +1,12 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::String do
+  describe "is_constant?" do
+    it "is true" do
+      expect(Keisan::AST::String.new('foo').is_constant?).to eq true
+    end
+  end
+
   describe "evaluate" do
     it "reduces to a single string when using plus to concatenate" do
       ast = Keisan::AST.parse("'hello ' + 'world'")

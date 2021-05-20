@@ -75,6 +75,10 @@ module Keisan
         @children = children.map {|child| child.replace(variable, replacement)}
         self
       end
+
+      def is_constant?
+        @children.all?(&:is_constant?)
+      end
     end
   end
 end

@@ -9,6 +9,12 @@ RSpec.describe Keisan::AST::Boolean do
     end
   end
 
+  describe "is_constant?" do
+    it "is true" do
+      expect(described_class.new(true).is_constant?).to eq true
+    end
+  end
+
   describe "operations" do
     it "should reduce to the answer right away" do
       res = !Keisan::AST::Boolean.new(true)

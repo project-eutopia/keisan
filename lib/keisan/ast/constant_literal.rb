@@ -22,6 +22,10 @@ module Keisan
           value.to_s
         end
       end
+
+      def is_constant?
+        true
+      end
     end
   end
 end

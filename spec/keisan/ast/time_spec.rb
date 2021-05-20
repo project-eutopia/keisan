@@ -1,6 +1,13 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Time do
+  describe "is_constant?" do
+    it "is true" do
+      time = Keisan::AST.parse("time(2018)").evaluate
+      expect(time.is_constant?).to eq true
+    end
+  end
+
   describe "evaluate" do
     it "reduces to a time when adding numbers" do
       ast = Keisan::AST.parse("time(2018, 11, 20) + 1")
