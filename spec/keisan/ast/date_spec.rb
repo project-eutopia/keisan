@@ -47,8 +47,7 @@ RSpec.describe Keisan::AST::Date do
       expect(ast.evaluate.value).to eq false
 
       ast = Keisan::AST.parse("date(2000) + date(2000)")
-      expect(ast.evaluate).to be_a(Keisan::AST::Plus)
-      expect{ast.evaluate.value}.to raise_error(TypeError)
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
     end
 
     it "works in arrays" do

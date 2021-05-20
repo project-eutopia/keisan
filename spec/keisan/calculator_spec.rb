@@ -9,6 +9,26 @@ RSpec.describe Keisan::Calculator do
     expect(calculator.evaluate("2 / 3 ** 2")).to eq Rational(2,9)
   end
 
+  it "can do complex nested operations" do
+    calculator.evaluate("get_rand() = sample([1, 2, 3, 4, 5])")
+    calculator.evaluate("includes(a, element) = a.reduce(false, found, x, found || (x == element))")
+    calculator.evaluate("""f(n) = {
+              let values = []
+              let i = 0
+              while (i < n,
+                let value = nil
+                while (value == nil || includes(values, value),
+                  value = get_rand()
+                )
+                values += [value]
+                i += 1
+              )
+              values
+          } """)
+    res = calculator.evaluate("f(5)")
+    expect(res).to match_array([1, 2, 3, 4, 5])
+  end
+
   it "reduces Rational with 1 denominator to Integer" do
     one = calculator.evaluate("1/1")
     expect(one).to be_a(Integer)

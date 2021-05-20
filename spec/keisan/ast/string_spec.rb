@@ -71,8 +71,10 @@ RSpec.describe Keisan::AST::String do
       equal_other     = described_class.new("a").equal     Keisan::AST::Number.new(1)
       not_equal_other = described_class.new("a").not_equal Keisan::AST::Number.new(1)
 
-      expect(equal_other).to be_a(Keisan::AST::LogicalEqual)
-      expect(not_equal_other).to be_a(Keisan::AST::LogicalNotEqual)
+      expect(equal_other).to be_a(Keisan::AST::Boolean)
+      expect(equal_other.value).to eq false
+      expect(not_equal_other).to be_a(Keisan::AST::Boolean)
+      expect(not_equal_other.value).to eq true
     end
   end
 end

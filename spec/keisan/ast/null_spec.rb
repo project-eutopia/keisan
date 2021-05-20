@@ -20,8 +20,10 @@ RSpec.describe Keisan::AST::Null do
       expect(negative_not_equal).to be_a(Keisan::AST::Boolean)
       expect(negative_not_equal.value).to eq false
 
-      expect(other_equal).to be_a(Keisan::AST::LogicalEqual)
-      expect(other_not_equal).to be_a(Keisan::AST::LogicalNotEqual)
+      expect(other_equal).to be_a(Keisan::AST::Boolean)
+      expect(other_equal.value).to eq false
+      expect(other_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(other_not_equal.value).to eq true
     end
   end
 end

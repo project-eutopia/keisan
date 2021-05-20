@@ -155,6 +155,61 @@ RSpec.describe Keisan::AST::Number do
       ast = Keisan::AST.parse("1!=x")
       expect(ast.evaluate).to be_a(Keisan::AST::LogicalNotEqual)
     end
+
+    it "has definite behavior for other constants" do
+      ast = Keisan::AST.parse("1+'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1-'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1*'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1/'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1%'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("2**'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1&'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1|'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1^'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1<<'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1>>'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1>'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1>='a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1<'a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1<='a'")
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
+
+      ast = Keisan::AST.parse("1=='a'")
+      expect(ast.evaluate).to be_a(Keisan::AST::Boolean)
+      expect(ast.evaluate.value).to eq false
+
+      ast = Keisan::AST.parse("1!='a'")
+      expect(ast.evaluate).to be_a(Keisan::AST::Boolean)
+      expect(ast.evaluate.value).to eq true
+    end
   end
 
   describe "operations" do
