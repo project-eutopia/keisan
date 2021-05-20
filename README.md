@@ -83,6 +83,18 @@ calculator.evaluate("3*x + 1")
 #=> 61
 ```
 
+To perform multiple assigments, lists can be used
+
+```ruby
+calculator = Keisan::Calculator.new
+calculator.evaluate("x = [1, 2]")
+calculator.evaluate("[x[1], y] = [11, 22]")
+calculator.evaluate("x")
+#=> [1, 11]
+calculator.evaluate("y")
+#=> 22
+```
+
 
 ##### Specifying functions
 
