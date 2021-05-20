@@ -90,6 +90,10 @@ module Keisan
         ])
         AST::Cell.new(h)
       end
+
+      def is_constant?
+        @hash.all? {|k,v| v.is_constant?}
+      end
     end
   end
 end

@@ -1,6 +1,12 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Null do
+  describe "is_constant?" do
+    it "is true" do
+      expect(Keisan::AST::Null.new.is_constant?).to eq true
+    end
+  end
+
   describe "logical operations" do
     it "can do == and != checks" do
       positive_equal     = described_class.new.equal     described_class.new
@@ -14,8 +20,10 @@ RSpec.describe Keisan::AST::Null do
       expect(negative_not_equal).to be_a(Keisan::AST::Boolean)
       expect(negative_not_equal.value).to eq false
 
-      expect(other_equal).to be_a(Keisan::AST::LogicalEqual)
-      expect(other_not_equal).to be_a(Keisan::AST::LogicalNotEqual)
+      expect(other_equal).to be_a(Keisan::AST::Boolean)
+      expect(other_equal.value).to eq false
+      expect(other_not_equal).to be_a(Keisan::AST::Boolean)
+      expect(other_not_equal.value).to eq true
     end
   end
 end

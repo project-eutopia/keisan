@@ -9,6 +9,12 @@ RSpec.describe Keisan::AST::Boolean do
     end
   end
 
+  describe "is_constant?" do
+    it "is true" do
+      expect(described_class.new(true).is_constant?).to eq true
+    end
+  end
+
   describe "operations" do
     it "should reduce to the answer right away" do
       res = !Keisan::AST::Boolean.new(true)
@@ -41,11 +47,14 @@ RSpec.describe Keisan::AST::Boolean do
       expect(negative_or).to be_a(Keisan::AST::Boolean)
       expect(negative_or.value).to eq false
 
-      and_other = described_class.new(true).and Keisan::AST::Number.new(1)
-      or_other  = described_class.new(true).or  Keisan::AST::Number.new(1)
+      and_other = described_class.new(true).and Keisan::AST::Variable.new("x")
+      or_other  = described_class.new(true).or  Keisan::AST::Variable.new("x")
 
       expect(and_other).to be_a(Keisan::AST::LogicalAnd)
       expect(or_other).to be_a(Keisan::AST::LogicalOr)
+
+      expect{described_class.new(true).and Keisan::AST::Number.new(1)}.to raise_error(Keisan::Exceptions::InvalidExpression)
+      expect{described_class.new(true).or Keisan::AST::Number.new(1)}.to raise_error(Keisan::Exceptions::InvalidExpression)
     end
 
     it "can do == and != checks" do
@@ -63,11 +72,18 @@ RSpec.describe Keisan::AST::Boolean do
       expect(negative_not_equal).to be_a(Keisan::AST::Boolean)
       expect(negative_not_equal.value).to eq false
 
-      equal_other     = described_class.new(true).equal     Keisan::AST::Number.new(1)
-      not_equal_other = described_class.new(true).not_equal Keisan::AST::Number.new(1)
+      equal_other     = described_class.new(true).equal     Keisan::AST::Variable.new("x")
+      not_equal_other = described_class.new(true).not_equal Keisan::AST::Variable.new("x")
 
       expect(equal_other).to be_a(Keisan::AST::LogicalEqual)
       expect(not_equal_other).to be_a(Keisan::AST::LogicalNotEqual)
+
+      equal_number = described_class.new(true).equal Keisan::AST::Number.new(1)
+      expect(equal_number).to be_a(Keisan::AST::Boolean)
+      expect(equal_number.value).to eq false
+      not_equal_number = described_class.new(true).not_equal Keisan::AST::Number.new(1)
+      expect(not_equal_number).to be_a(Keisan::AST::Boolean)
+      expect(not_equal_number.value).to eq true
     end
   end
 end

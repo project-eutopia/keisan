@@ -1,6 +1,20 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::List do
+  describe "is_constant?" do
+    it "is true when all elements are constant" do
+      list = [[1,"x"],[2,"y",true]].to_node
+      expect(list.is_constant?).to eq true
+    end
+
+    it "is false if one element is not constant" do
+      list = described_class.new([
+        "a".to_node, Keisan::AST::Variable.new("x")
+      ])
+      expect(list.is_constant?).to eq false
+    end
+  end
+
   describe "to_node" do
     it "can created nested lists" do
       node = [[1,"x"],[2,"y",true]].to_node

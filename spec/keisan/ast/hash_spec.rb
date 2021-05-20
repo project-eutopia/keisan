@@ -1,6 +1,22 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Hash do
+  describe "is_constant?" do
+    it "is true when all elements are constant" do
+      hash = {"foo" => {"a" => 1, "b" => 2}, "bar" => {"c" => 3, "d" => 4}}.to_node
+      expect(hash.is_constant?).to eq true
+    end
+
+    it "is false if one element is not constant" do
+      hash = {"foo" => {"a" => 1, "b" => 2}, "bar" => {"c" => 3, "d" => 4}}.to_node
+      hash = described_class.new([
+        ["a".to_node, 1.to_node],
+        ["b".to_node, Keisan::AST::Variable.new("x")]
+      ])
+      expect(hash.is_constant?).to eq false
+    end
+  end
+
   describe "to_node" do
     it "can created nested hashes" do
       hash = {"foo" => {"a" => 1, "b" => 2}, "bar" => {"c" => 3, "d" => 4}}.to_node

@@ -21,7 +21,7 @@ module Keisan
         context ||= Context.new
 
         operand, arguments, expression = operand_arguments_expression_for(ast_function, context)
-        
+
         # Extract underlying operand for cells
         real_operand = operand.is_a?(AST::Cell) ? operand.node : operand
 

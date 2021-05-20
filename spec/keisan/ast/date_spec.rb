@@ -1,6 +1,13 @@
 require "spec_helper"
 
 RSpec.describe Keisan::AST::Date do
+  describe "is_constant?" do
+    it "is true" do
+      date = Keisan::AST.parse("date(2018, 11, 20)").evaluate
+      expect(date.is_constant?).to eq true
+    end
+  end
+
   describe "evaluate" do
     it "reduces to a date when adding numbers" do
       ast = Keisan::AST.parse("date(2018, 11, 20) + 1")
@@ -40,8 +47,7 @@ RSpec.describe Keisan::AST::Date do
       expect(ast.evaluate.value).to eq false
 
       ast = Keisan::AST.parse("date(2000) + date(2000)")
-      expect(ast.evaluate).to be_a(Keisan::AST::Plus)
-      expect{ast.evaluate.value}.to raise_error(TypeError)
+      expect{ast.evaluate}.to raise_error(Keisan::Exceptions::InvalidExpression)
     end
 
     it "works in arrays" do

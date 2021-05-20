@@ -202,6 +202,10 @@ module Keisan
       def or(other)
         LogicalOr.new([self, other.to_node])
       end
+
+      def is_constant?
+        false
+      end
     end
   end
 end
