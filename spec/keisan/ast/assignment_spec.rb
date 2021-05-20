@@ -204,6 +204,58 @@ RSpec.describe Keisan::AST::Assignment do
       end
     end
 
+
+    context "LHS is a list" do
+      context "list assignment" do
+        it "works when lhs is a list of variables and rhs is a list of same length" do
+          context = Keisan::Context.new
+          ast = Keisan::AST.parse("[a, b] = [1, 2]")
+
+          expect(context.has_variable?("a")).to eq false
+          expect(context.has_variable?("b")).to eq false
+          ast.evaluate(context)
+          expect(context.has_variable?("a")).to eq true
+          expect(context.has_variable?("b")).to eq true
+
+          expect(context.variable("a").value).to eq 1
+          expect(context.variable("b").value).to eq 2
+        end
+
+        it "can do compound operators" do
+          context = Keisan::Context.new
+          Keisan::AST.parse("x = 3").evaluate(context)
+
+          expect(context.has_variable?("x")).to eq true
+          expect(context.has_variable?("y")).to eq false
+          expect(context.variable("x").value).to eq 3
+
+          ast = Keisan::AST.parse("[x, y] = [4, 5]")
+
+          ast.evaluate(context)
+
+          expect(context.has_variable?("x")).to eq true
+          expect(context.has_variable?("y")).to eq true
+          expect(context.variable("x").value).to eq 4
+          expect(context.variable("y").value).to eq 5
+        end
+
+        it "can do compound operators" do
+          context = Keisan::Context.new
+          Keisan::AST.parse("x = [1, 2]").evaluate(context)
+          Keisan::AST.parse("y = {'a': 4, 'b': 5}").evaluate(context)
+
+          ast = Keisan::AST.parse("[x[0], y['b']] += [10, x[1]]")
+
+          ast.evaluate(context)
+
+          expect(context.has_variable?("x")).to eq true
+          expect(context.has_variable?("y")).to eq true
+          expect(context.variable("x").value).to eq([11, 2])
+          expect(context.variable("y").value).to eq({'a' => 4, 'b' => 7})
+        end
+      end
+    end
+
     context "function that uses previously defined variable" do
       it "shadows variables within function definitions" do
         context = Keisan::Context.new
