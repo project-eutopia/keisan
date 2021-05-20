@@ -83,7 +83,7 @@ calculator.evaluate("3*x + 1")
 #=> 61
 ```
 
-To perform multiple assigments, lists can be used
+To perform multiple assignments, lists can be used
 
 ```ruby
 calculator = Keisan::Calculator.new

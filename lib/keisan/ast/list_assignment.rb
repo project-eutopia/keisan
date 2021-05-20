@@ -14,10 +14,10 @@ module Keisan
         rhs = @rhs.evaluate(context)
 
         if !rhs.is_a?(List)
-          raise Exceptions::InvalidExpression.new("To do multiple assigment, RHS must be a list")
+          raise Exceptions::InvalidExpression.new("To do multiple assignment, RHS must be a list")
         end
         if lhs.children.size != rhs.children.size
-          raise Exceptions::InvalidExpression.new("To do multiple assigment, RHS list must have same length as LHS list")
+          raise Exceptions::InvalidExpression.new("To do multiple assignment, RHS list must have same length as LHS list")
         end
 
         i = 0
