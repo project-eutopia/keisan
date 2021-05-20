@@ -1,3 +1,5 @@
+require "set"
+
 module Keisan
   module Variables
     class Registry
@@ -5,7 +7,7 @@ module Keisan
 
       def initialize(variables: {}, shadowed: [], parent: nil, use_defaults: true, force: false)
         @hash = {}
-        @shadowed = Set.new(shadowed.map(&:to_s))
+        @shadowed = ::Set.new(shadowed.map(&:to_s))
         @parent = parent
         @use_defaults = use_defaults
 
