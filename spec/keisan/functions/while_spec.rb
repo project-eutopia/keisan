@@ -48,6 +48,14 @@ RSpec.describe Keisan::Functions::While do
       expect(res).to be_a(Keisan::AST::Function)
       expect(res.name).to eq "while"
     end
+
+    it "works on unary logical not" do
+      calculator = Keisan::Calculator.new
+      calculator.evaluate("l = [false]")
+      res = calculator.simplify("x = 0; while(!l[0], x = 10; l[0] = true); x")
+      expect(res).to be_a(Keisan::AST::Number)
+      expect(res.value).to eq 10
+    end
   end
 
   describe "evaluate" do
@@ -66,6 +74,14 @@ RSpec.describe Keisan::Functions::While do
     it "raises an error if cannot determine what the logical field is" do
       calculator = Keisan::Calculator.new
       expect{calculator.evaluate("while(!x, x = x + 1)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+    end
+
+    it "works on unary logical not" do
+      calculator = Keisan::Calculator.new
+      calculator.evaluate("h = {'foo': false}")
+      res = calculator.simplify("x = 0; while(!h['foo'], x = 10; h['foo'] = true); x")
+      expect(res).to be_a(Keisan::AST::Number)
+      expect(res.value).to eq 10
     end
   end
 end
