@@ -13,12 +13,13 @@ module Keisan
       def evaluate(ast_function, context = nil)
         validate_arguments!(ast_function.children.count)
         context ||= Context.new
-
-        bool = ast_function.children[0].evaluate(context)
+        bool = ast_function.children[0].evaluate(context).to_node
 
         if bool.is_a?(AST::Boolean)
           node = bool.value ? ast_function.children[1] : ast_function.children[2]
           node.to_node.evaluate(context)
+        elsif bool.is_constant?
+          raise Keisan::Exceptions::InvalidFunctionError.new("if statement must work on booleans, other constants are not supported")
         else
           ast_function
         end
@@ -27,7 +28,7 @@ module Keisan
       def simplify(ast_function, context = nil)
         validate_arguments!(ast_function.children.count)
         context ||= Context.new
-        bool = ast_function.children[0].simplify(context)
+        bool = ast_function.children[0].simplify(context).to_node
 
         if bool.is_a?(AST::Boolean)
           if bool.value
@@ -37,6 +38,8 @@ module Keisan
           else
             Keisan::AST::Null.new
           end
+        elsif bool.is_constant?
+          raise Keisan::Exceptions::InvalidFunctionError.new("if statement must work on booleans, other constants are not supported")
         else
           ast_function
         end
