@@ -29,7 +29,7 @@ module Keisan
         AST::List.new(
           list.children.select do |element|
             local.register_variable!(variable, element)
-            result = expression.evaluated(local)
+            result = expression.evaluated(local).to_node
 
             case result
             when AST::Boolean
@@ -54,7 +54,7 @@ module Keisan
           hash.select do |cur_key, cur_value|
             local.register_variable!(key, cur_key)
             local.register_variable!(value, cur_value)
-            result = expression.evaluated(local)
+            result = expression.evaluated(local).to_node
 
             case result
             when AST::Boolean
