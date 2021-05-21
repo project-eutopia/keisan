@@ -31,4 +31,12 @@ RSpec.describe Keisan::AST::Cell do
       expect(cell.to_node).to eq node
     end
   end
+
+  describe "#to_cell" do
+    it "wraps the node in a new cell" do
+      new_cell = cell.to_cell
+      expect(cell).not_to eq new_cell
+      expect(cell.node).to eq new_cell.node
+    end
+  end
 end
