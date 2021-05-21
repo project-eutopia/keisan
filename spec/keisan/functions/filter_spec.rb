@@ -21,6 +21,8 @@ RSpec.describe Keisan::Functions::Filter do
       .to eq([{ 'a' => 2 }])
     expect(Keisan::Calculator.new.evaluate("l.filter(x, x[0])", l: [[true, 'a'], [false, 'b']]))
       .to eq([[true, 'a']])
+    expect(Keisan::Calculator.new.evaluate("l.filter(x, !x[0])", l: [[true, 'a'], [false, 'b']]))
+      .to eq([[false, 'b']])
   end
 
   it "filters the hash given the logical expression" do
@@ -36,5 +38,7 @@ RSpec.describe Keisan::Functions::Filter do
       .to eq({ 'a' => 2 })
     expect(Keisan::Calculator.new.evaluate("h.filter(k, v, v[0])", h: {'a' => [true, 'aa'], 'b' => [false, 'bb']}))
       .to eq({'a' => [true, 'aa']})
+    expect(Keisan::Calculator.new.evaluate("h.filter(k, v, !v[0])", h: {'a' => [true, 'aa'], 'b' => [false, 'bb']}))
+      .to eq({'b' => [false, 'bb']})
   end
 end

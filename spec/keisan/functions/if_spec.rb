@@ -75,4 +75,14 @@ RSpec.describe Keisan::Functions::If do
     expect{calculator.evaluate("if(x, 1, 2)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
     expect{calculator.evaluate("if('foo', 'bar', 'baz')")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
   end
+
+  it "can deal with unary logical not" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("a = true")
+    calculator.evaluate("b = [true, false, 'banana']")
+    expect(calculator.evaluate("if(!a, 1, 2)")).to eq 2
+    expect(calculator.evaluate("if(!b[0], 1, 2)")).to eq 2
+    expect(calculator.evaluate("if(!b[1], 1, 2)")).to eq 1
+    expect{calculator.evaluate("if(!b[2], 1, 2)")}.to raise_error(Keisan::Exceptions::InvalidFunctionError)
+  end
 end

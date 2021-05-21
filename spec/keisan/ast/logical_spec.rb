@@ -24,6 +24,29 @@ RSpec.describe Keisan::AST::LogicalOperator do
       expect(calculator.evaluate("a[i] > 0")).to be true
       expect(calculator.evaluate("a[i] >= 0")).to be true
     end
+
+    context "unary logical not" do
+      it "works as expected" do
+        expect(calculator.evaluate("!true")).to eq false
+        calculator.evaluate("t = true")
+        calculator.evaluate("f = false")
+        calculator.evaluate("l = [false, true]")
+        calculator.evaluate("h = {'f': false, 't': true}")
+        expect(calculator.evaluate("!t")).to eq false
+        expect(calculator.evaluate("!f")).to eq true
+        expect(calculator.evaluate("!l[0]")).to eq true
+        expect(calculator.evaluate("!l[1]")).to eq false
+        expect(calculator.evaluate("!h['t']")).to eq false
+        expect(calculator.evaluate("!h['f']")).to eq true
+
+        expect(calculator.evaluate("if(!t, 1, 2)")).to eq 2
+        expect(calculator.evaluate("if(!f, 1, 2)")).to eq 1
+        expect(calculator.evaluate("if(!l[0], 1, 2)")).to eq 1
+        expect(calculator.evaluate("if(!l[1], 1, 2)")).to eq 2
+        expect(calculator.evaluate("if(!h['f'], 1, 2)")).to eq 1
+        expect(calculator.evaluate("if(!h['t'], 1, 2)")).to eq 2
+      end
+    end
   end
 
   describe "simplify" do
