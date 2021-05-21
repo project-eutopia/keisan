@@ -37,5 +37,29 @@ RSpec.describe Keisan::AST::LogicalOperator do
       expect(calculator.simplify("false || (x = 1)").value).to be 1
       expect(calculator.simplify("x").value).to eq 1
     end
+
+    context "with embedded list/hash values" do
+      it "logical and still short-circuits" do
+        calculator.evaluate("xs = [true, false]")
+
+        expect(calculator.evaluate("xs[0] && (a = 1)")).to eq 1
+        expect(calculator.evaluate("a")).to eq 1
+        expect(calculator.evaluate("xs[1] && (b = 2)")).to eq false
+        expect{calculator.evaluate("b")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+      end
+
+      it "logical or still short-circuits" do
+        calculator.evaluate("hs = {'t': true, 'f': false}")
+        expect(calculator.evaluate("hs['t'] || (c = 3)")).to eq true
+        expect{calculator.evaluate("c")}.to raise_error(Keisan::Exceptions::UndefinedVariableError)
+        expect(calculator.evaluate("hs['f'] || (d = 4)")).to eq 4
+        expect(calculator.evaluate("d")).to eq 4
+      end
+
+      it "can compare embedded numbers" do
+        calculator.evaluate("as = [1, 2, 3]")
+        expect(calculator.evaluate("as[2] > as[0]")).to eq true
+      end
+    end
   end
 end

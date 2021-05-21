@@ -26,7 +26,7 @@ module Keisan
 
       def short_circuit_do(method, context)
         context ||= Context.new
-        lhs = children[0].send(method, context)
+        lhs = children[0].send(method, context).to_node
         case lhs
         when AST::Boolean
           lhs.true? ? AST::Boolean.new(true) : children[1].send(method, context)
