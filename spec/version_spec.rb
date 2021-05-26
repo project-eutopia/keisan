@@ -2,6 +2,6 @@ require "spec_helper"
 
 RSpec.describe Keisan do
   it "has the expected version number" do
-    expect(Keisan::VERSION).to eq "0.8.13"
+    expect(Keisan::VERSION).to eq "0.9.0"
   end
 end
