@@ -3,7 +3,7 @@ module Keisan
     class Plus < ArithmeticOperator
       def initialize(children = [], parsing_operators = [])
         super
-        convert_minus_to_plus!
+        convert_minus_to_plus!(parsing_operators)
       end
 
       def self.symbol
@@ -87,8 +87,8 @@ module Keisan
         date_time + others.inject(0, &:+)
       end
 
-      def convert_minus_to_plus!
-        @parsing_operators.each.with_index do |parsing_operator, index|
+      def convert_minus_to_plus!(parsing_operators)
+        parsing_operators.each.with_index do |parsing_operator, index|
           if parsing_operator.is_a?(Parsing::Minus)
             @children[index+1] = UnaryMinus.new(@children[index+1])
           end
