@@ -64,6 +64,36 @@ ast.children.map(&:to_s)
 #=> ["x**2", "1"]
 ```
 
+#### Caching AST results
+
+Computing the AST from a string takes some non-zero amount of time.
+For applications of this gem that evaluate some set of fixed expressions (possibly with different variable values, but with fixed ASTs), it might be worthwhile to cache the ASTs for faster computation.
+To accomplish this, you can use the `Keisan::AST::Cache` class.
+Passing an instance of this class into the `Calculator` will mean everytime a new expression is encountered it will compute the AST and store it in this cache for retrieval next time the expression is encountered.
+
+```ruby
+cache = Keisan::AST::Cache.new
+# Note: if you don't want to create the Cache instance, you can just pass `cache: true` here as well
+calculator = Keisan::Calculator.new(cache: cache)
+calculator.evaluate("exp(-x/T)", x: 1.0, T: 10)
+#=> 0.9048374180359595
+# This call will use the cached AST for "exp(-x/T)"
+calculator.evaluate("exp(-x/T)", x: 2.0, T: 10)
+#=> 0.8187307530779818
+```
+
+If you just want to pre-populate the cache with some predetermined values, you can call `#fetch_or_build` on the `Cache` for each instance, `freeze` the cache, then use this frozen cache in your calculator.
+A cache that has been frozen will only fetch from the cache, never write new values to it.
+
+```ruby
+cache = Keisan::AST::Cache.new
+cache.fetch_or_build("f(x) + diff(g(x), x)")
+cache.freeze
+# This calculator will never write new values to the cache, but when
+# evaluating `"f(x) + diff(g(x), x)"` will fetch this cached AST.
+calculator = Keisan::Calculator.new(cache: cache)
+```
+
 ##### Specifying variables
 
 Passing in a hash of variable (`name`, `value`) pairs to the `evaluate` method is one way of defining variables
