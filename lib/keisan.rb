@@ -55,6 +55,7 @@ require "keisan/ast/indexing"
 
 require "keisan/ast/line_builder"
 require "keisan/ast/builder"
+require "keisan/ast/cache"
 require "keisan/ast"
 
 require "keisan/function"

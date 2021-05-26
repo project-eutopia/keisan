@@ -2,8 +2,9 @@ module Keisan
   class Evaluator
     attr_reader :calculator
 
-    def initialize(calculator)
+    def initialize(calculator, cache: nil)
       @calculator = calculator
+      @cache = cache
     end
 
     def evaluate(expression, definitions = {})
@@ -25,16 +26,16 @@ module Keisan
     def simplify(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
       ast = parse_ast(expression)
-      ast.simplify(context)
+      ast.simplified(context)
     end
 
     def parse_ast(expression)
-      AST.parse(expression).tap do |ast|
-        disallowed = disallowed_nodes
-        if !disallowed.empty? && ast.contains_a?(disallowed)
-          raise Keisan::Exceptions::InvalidExpression.new("Context does not permit expressions with #{disallowed}")
-        end
+      ast = @cache.nil? ? AST.parse(expression) : @cache.fetch_or_build(expression)
+      disallowed = disallowed_nodes
+      if !disallowed.empty? && ast.contains_a?(disallowed)
+        raise Keisan::Exceptions::InvalidExpression.new("Context does not permit expressions with #{disallowed}")
       end
+      ast
     end
 
     private
