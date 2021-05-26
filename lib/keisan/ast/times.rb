@@ -3,7 +3,7 @@ module Keisan
     class Times < ArithmeticOperator
       def initialize(children = [], parsing_operators = [])
         super
-        convert_divide_to_inverse!
+        convert_divide_to_inverse!(parsing_operators)
       end
 
       def self.symbol
@@ -63,8 +63,8 @@ module Keisan
 
       private
 
-      def convert_divide_to_inverse!
-        @parsing_operators.each.with_index do |parsing_operator, index|
+      def convert_divide_to_inverse!(parsing_operators)
+        parsing_operators.each.with_index do |parsing_operator, index|
           if parsing_operator.is_a?(Parsing::Divide)
             @children[index+1] = UnaryInverse.new(@children[index+1])
           end

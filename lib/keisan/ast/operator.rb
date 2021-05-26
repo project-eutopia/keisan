@@ -45,8 +45,6 @@ module Keisan
 
         children = Array(children)
         super(children)
-
-        @parsing_operators = parsing_operators
       end
 
       def evaluate_assignments(context = nil)
