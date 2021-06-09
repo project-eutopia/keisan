@@ -9,7 +9,11 @@ module Keisan
 
     def evaluate(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
-      ast = parse_ast(expression)
+      evaluate_ast(parse_ast(expression), context: context)
+    end
+
+    def evaluate_ast(ast, definitions: {}, context: nil)
+      context ||= calculator.context.spawn_child(definitions: definitions, transient: true)
       last_line = last_line(ast)
 
       evaluation = ast.evaluated(context)
