@@ -55,6 +55,10 @@ module Keisan
       Evaluator.new(self, cache: @cache).simplify(expression, definitions)
     end
 
+    def simplify_ast(ast, definitions = {})
+      Evaluator.new(self, cache: @cache).simplify_ast(ast, definitions: definitions)
+    end
+
     def ast(expression)
       Evaluator.new(self, cache: @cache).parse_ast(expression)
     end

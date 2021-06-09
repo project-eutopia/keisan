@@ -29,7 +29,11 @@ module Keisan
 
     def simplify(expression, definitions = {})
       context = calculator.context.spawn_child(definitions: definitions, transient: true)
-      ast = parse_ast(expression)
+      simplify_ast(parse_ast(expression), context: context)
+    end
+
+    def simplify_ast(ast, definitions: {}, context: nil)
+      context ||= calculator.context.spawn_child(definitions: definitions, transient: true)
       ast.simplified(context)
     end
 

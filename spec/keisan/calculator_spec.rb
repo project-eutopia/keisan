@@ -220,6 +220,14 @@ RSpec.describe Keisan::Calculator do
     end
   end
 
+  describe "#simplify_ast" do
+    it "processes the given AST" do
+      result = calculator.simplify_ast(calculator.ast("0*x+1"))
+      expect(result).to be_a(Keisan::AST::Number)
+      expect(result.value).to eq 1
+    end
+  end
+
   describe "defining variables and functions" do
     it "saves them in the calculators context" do
       calculator.define_variable!("x", 5)
