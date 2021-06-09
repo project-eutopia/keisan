@@ -211,7 +211,8 @@ module Keisan
       when :square
         @components << Parsing::List.new(arguments_from_group(token))
       when :curly
-        if token.sub_tokens.any? {|token| token.is_a?(Tokens::Colon)}
+        # A hash either has a colon, or is empty
+        if token.sub_tokens.any? {|token| token.is_a?(Tokens::Colon)} || token.sub_tokens.empty?
           @components << Parsing::Hash.new(Util.array_split(token.sub_tokens) {|token| token.is_a?(Tokens::Comma)})
         else
           @components << Parsing::CurlyGroup.new(token.sub_tokens)

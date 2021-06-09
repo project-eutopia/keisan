@@ -154,6 +154,12 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("h").value).to eq({"a" => 1, 10 => 3, true => "hello"})
     end
 
+    it "can add elements to a blank hash" do
+      calculator.evaluate("h = {}")
+      calculator.evaluate("h['foo'] = 'bar'")
+      expect(calculator.evaluate("h").value).to eq({"foo" => "bar"})
+    end
+
     describe "#to_s" do
       it "outputs correct hash format" do
         hash_string = "{'a': 1, 'b': 2}"

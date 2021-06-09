@@ -695,6 +695,16 @@ RSpec.describe Keisan::Parser do
     end
 
     context "hash definition" do
+      it "works on empty hashes" do
+        parser = described_class.new(string: "{ }")
+        expect(parser.components.map(&:class)).to eq([Keisan::Parsing::Hash])
+        expect(parser.components.first.key_value_pairs).to be_empty
+
+        parser = described_class.new(string: "{x}")
+        expect(parser.components.map(&:class)).to eq([Keisan::Parsing::CurlyGroup])
+        expect(parser.components.first.components.map(&:class)).to eq([Keisan::Parsing::Variable])
+      end
+
       it "parses the hash correctly" do
         parser = described_class.new(string: "{'foo': 1, 'bar': x**2 + 1}")
 

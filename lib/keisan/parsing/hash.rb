@@ -4,9 +4,14 @@ module Keisan
       attr_reader :key_value_pairs
 
       def initialize(key_value_pairs)
-        @key_value_pairs = Array(key_value_pairs).map {|key_value_pair|
-          validate_and_extract_key_value_pair(key_value_pair)
-        }
+        key_value_pairs = Array(key_value_pairs)
+        if key_value_pairs.size == 1 && key_value_pairs.first.empty?
+          @key_value_pairs = []
+        else
+          @key_value_pairs = key_value_pairs.map {|key_value_pair|
+            validate_and_extract_key_value_pair(key_value_pair)
+          }
+        end
       end
 
       private
