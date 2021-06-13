@@ -63,6 +63,14 @@ RSpec.describe Keisan::Functions::DefaultRegistry do
             .to eq([4,6])
         end
 
+        it "can chain on proc functions" do
+          context = Keisan::Context.new
+          context.register_function!("uniq", Proc.new {|a| a.uniq})
+          calculator = Keisan::Calculator.new(context: context)
+
+          expect(calculator.evaluate("[1, 2, 3, 1].uniq.map(x, x**2)")).to eq([1, 4, 9])
+        end
+
         it "maps the hash to the given expression" do
           calculator = Keisan::Calculator.new
           expect(calculator.evaluate("{'a': 1, 'b': 2}.map(k, v, {let k = k+k; [k, 2v]}).to_h").value).to eq({

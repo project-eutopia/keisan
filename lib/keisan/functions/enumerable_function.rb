@@ -54,7 +54,7 @@ module Keisan
       private
 
       def operand_arguments_expression_for(ast_function, context)
-        operand = ast_function.children[0].simplify(context)
+        operand = ast_function.children[0].evaluate(context)
         arguments = ast_function.children[1...-1]
         expression = ast_function.children[-1]
 
