@@ -41,4 +41,10 @@ RSpec.describe Keisan::AST::List do
       expect(result.to_s).to eq "[1,2,3,4]"
     end
   end
+
+  it "can be defined across multiple lines" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("l = [\n'a',\n'foo'\n]")
+    expect(calculator.evaluate("l")).to eq(["a", "foo"])
+  end
 end

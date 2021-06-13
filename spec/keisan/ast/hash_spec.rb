@@ -41,4 +41,10 @@ RSpec.describe Keisan::AST::Hash do
       expect(calculator.evaluate("[['a', 3], ['b', 7]].to_h").value).to eq({"a" => 3, "b" => 7})
     end
   end
+
+  it "can be defined across multiple lines" do
+    calculator = Keisan::Calculator.new
+    calculator.evaluate("h = {\n'a':\n'foo',\n'b': 'bar'}")
+    expect(calculator.evaluate("h")).to eq({"a" => "foo", "b" => "bar"})
+  end
 end
