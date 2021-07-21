@@ -8,6 +8,19 @@ module Keisan
         @indexes = indexes
       end
 
+      def deep_dup
+        dupped = super
+        dupped.instance_variable_set(
+          :@indexes, indexes.map(&:deep_dup)
+        )
+        dupped
+      end
+
+      def freeze
+        indexes.each(&:freeze)
+        super
+      end
+
       def value(context = nil)
         return child.value(context).send(:[], *indexes.map {|index| index.value(context)})
       end

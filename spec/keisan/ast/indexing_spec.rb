@@ -16,4 +16,35 @@ RSpec.describe Keisan::AST::Indexing do
       expect(ast.evaluate.value).to eq 3
     end
   end
+
+  describe "#deep_dup" do
+    it "duplicates the argument and index" do
+      ast1 = Keisan::AST.parse("x[i+1]")
+      ast2 = ast1.deep_dup
+
+      expect(ast1.children.size).to eq 1
+      expect(ast2.children.size).to eq 1
+      expect(ast1.children.first).not_to equal(ast2.children.first)
+
+      expect(ast1.indexes.size).to eq 1
+      expect(ast2.indexes.size).to eq 1
+      expect(ast1.indexes.first).not_to equal(ast2.indexes.first)
+    end
+  end
+
+  describe "#freeze" do
+    it "freezes indexes and children" do
+      ast = Keisan::AST.parse("x[i+1]")
+
+      expect(ast).not_to be_frozen
+      expect(ast.children.any?(&:frozen?)).to be false
+      expect(ast.indexes.any?(&:frozen?)).to be false
+
+      ast.freeze
+
+      expect(ast).to be_frozen
+      expect(ast.children.all?(&:frozen?)).to be true
+      expect(ast.indexes.all?(&:frozen?)).to be true
+    end
+  end
 end
