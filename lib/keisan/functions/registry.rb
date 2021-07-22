@@ -44,6 +44,9 @@ module Keisan
         when Proc
           self[name] = ProcFunction.new(name, function)
         when Function
+          # The expression AST which represents the function should be constant,
+          # so we freeze it so it will always have the same behavior.
+          function.freeze if function.is_a?(ExpressionFunction)
           self[name] = function
         else
           raise Exceptions::InvalidFunctionError.new

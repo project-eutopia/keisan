@@ -14,6 +14,12 @@ module Keisan
         @transient_definitions = transient_definitions
       end
 
+      def freeze
+        @arguments.freeze
+        @expression.freeze
+        super
+      end
+
       def call(context, *args)
         validate_arguments!(args.count)
 
@@ -96,7 +102,7 @@ module Keisan
       private
 
       def argument_variables
-        @argument_variables ||= arguments.map {|argument| AST::Variable.new(argument)}
+        arguments.map {|argument| AST::Variable.new(argument)}
       end
 
       def calculate_partial_derivatives(context)

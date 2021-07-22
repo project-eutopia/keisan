@@ -55,4 +55,17 @@ RSpec.describe Keisan::Functions::Registry do
       expect(parent_registry["parent_function"].call(nil).value).to eq 5
     end
   end
+
+  it "should freeze expression functions" do
+    function = Keisan::Functions::ExpressionFunction.new(
+      "foo",
+      ["x"],
+      Keisan::AST.parse("x + 1"),
+      {}
+    )
+    registry.register!("foo", function)
+
+    expect(registry["foo"]).to be_frozen
+    expect(registry["foo"].expression).to be_frozen
+  end
 end
