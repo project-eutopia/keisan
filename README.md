@@ -280,6 +280,14 @@ calculator.evaluate("range(5,10)")
 #=> [5,6,7,8,9]
 calculator.evaluate("range(0,10,2)")
 #=> [0,2,4,6,8]
+calculator.evaluate("[1, 2, 2, 3].uniq")
+#=> [1,2,3]
+calculator.evaluate("[1, 2, 3].difference([2, 3, 4])")
+#=> [1]
+calculator.evaluate("[1, 2, 3].intersection([2, 3, 4])")
+#=> [2, 3]
+calculator.evaluate("[1, 2, 3].union([2, 3, 4])")
+#=> [1, 2, 3, 4]
 ```
 
 ##### Hashes
