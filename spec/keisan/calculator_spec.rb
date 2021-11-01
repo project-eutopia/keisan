@@ -105,6 +105,15 @@ RSpec.describe Keisan::Calculator do
       calculator.evaluate("h['c'][1] = a[2]['b']")
       expect(calculator.evaluate("h").value).to eq({"c" => [1,33,3], "d" => 4})
     end
+
+    it "can do set operations on lists like in Ruby" do
+      expect(calculator.evaluate("[1, 1, 2, 2, 3, 3, 3, 3].difference([2, 3, 4])")).to eq([1, 1])
+      expect(calculator.evaluate("[1, 1, 2, 2, 3, 3, 3, 3].intersection([2, 3, 4])")).to eq([2, 3])
+      expect(calculator.evaluate("[1, 1, 2, 2, 3, 3, 3, 3].union([2, 3, 4])")).to eq([1, 2, 3, 4])
+      expect(calculator.evaluate("[1, 2, 3].difference([2, 3, 4])")).to eq([1])
+      expect(calculator.evaluate("[1, 2, 3].intersection([2, 3, 4])")).to eq([2, 3])
+      expect(calculator.evaluate("[1, 2, 3].union([2, 3, 4])")).to eq([1, 2, 3, 4])
+    end
   end
 
   context "hash operations" do
