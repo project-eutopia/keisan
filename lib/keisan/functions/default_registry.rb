@@ -118,10 +118,13 @@ module Keisan
       end
 
       def self.register_array_methods!(registry)
-        %i(min max size flatten reverse).each do |method|
+        %i(min max size flatten reverse uniq).each do |method|
           registry.register!(method, Proc.new {|a| a.send(method)}, force: true)
         end
 
+        registry.register!(:difference, Proc.new {|a, b| a - b}, force: true)
+        registry.register!(:intersection, Proc.new {|a, b| a & b}, force: true)
+        registry.register!(:union, Proc.new {|a, b| a | b}, force: true)
         registry.register!("range", Functions::Range.new, force: true)
       end
 
