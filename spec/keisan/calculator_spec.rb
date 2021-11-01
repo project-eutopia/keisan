@@ -114,6 +114,10 @@ RSpec.describe Keisan::Calculator do
       expect(calculator.evaluate("[1, 2, 3].intersection([2, 3, 4])")).to eq([2, 3])
       expect(calculator.evaluate("[1, 2, 3].union([2, 3, 4])")).to eq([1, 2, 3, 4])
     end
+
+    it "can call uniq" do
+      expect(calculator.evaluate("[1, 1, 2, 2, 2, 'a', 'b', 'a'].uniq")).to eq([1, 2, 'a', 'b'])
+    end
   end
 
   context "hash operations" do
