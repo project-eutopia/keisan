@@ -395,4 +395,14 @@ RSpec.describe Keisan::AST::Assignment do
       end
     end
   end
+
+  describe "unbound_variables" do
+    context "multi-line" do
+      it "binds assigned variables" do
+        context = Keisan::Context.new
+        ast = Keisan::AST.parse("x = 5; y = 6; x + y")
+        expect(ast.unbound_variables(context)).to eq Set.new
+      end
+    end
+  end
 end
