@@ -50,8 +50,7 @@ module Keisan
 
       def unbound_variables(context = nil)
         variables = super(context)
-        if is_variable_definition?
-          context.register_variable!(children.first.name, children.last) if context
+        if is_variable_definition? && children.first != children.last
           variables.delete(children.first.name)
         else
           variables

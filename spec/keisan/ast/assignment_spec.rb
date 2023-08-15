@@ -397,11 +397,24 @@ RSpec.describe Keisan::AST::Assignment do
   end
 
   describe "unbound_variables" do
-    context "multi-line" do
-      it "binds assigned variables" do
-        context = Keisan::Context.new
-        ast = Keisan::AST.parse("x = 5; y = 6; x + y")
-        expect(ast.unbound_variables(context)).to eq Set.new
+    it "reports unbound variables" do
+      node = Keisan::AST.parse("x = 1")
+      expect(node.unbound_variables).to eq Set.new
+
+      node = Keisan::AST.parse("x = y")
+      expect(node.unbound_variables).to eq Set.new(["y"])
+
+      node = Keisan::AST.parse("x = y + z")
+      expect(node.unbound_variables).to eq Set.new(["y", "z"])
+
+      node = Keisan::AST.parse("x = y = z")
+      expect(node.unbound_variables).to eq Set.new(["z"])
+    end
+
+    context "when variable is assigned to itself" do
+      it "returns the variable" do
+        node = Keisan::AST.parse("x = x")
+        expect(node.unbound_variables).to eq Set.new(["x"])
       end
     end
   end
