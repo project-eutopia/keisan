@@ -395,4 +395,72 @@ RSpec.describe Keisan::AST::Assignment do
       end
     end
   end
+
+  describe "unbound_variables" do
+    let(:context) { Keisan::Context.new }
+
+    context "single-line" do
+      context "empty context" do
+        it "assigns to itself" do
+          ast = Keisan::AST.parse("x = x")
+          expect(ast.unbound_variables(context)).to eq Set.new(["x"])
+        end
+
+        it "has assigned variables bound" do
+          ast = Keisan::AST.parse("x = 5")
+          expect(ast.unbound_variables(context)).to eq Set.new
+        end
+
+        it "has variable set to unknown unbound" do
+          ast = Keisan::AST.parse("x = y")
+          expect(ast.unbound_variables(context)).to eq Set.new(["x", "y"])
+        end
+      end
+
+      context "with one defintion in context" do
+        let(:context) {
+          Keisan::Context.new.tap do |context|
+            context.register_variable!("x", 1)
+          end
+        }
+
+        it "can self-assign" do
+          ast = Keisan::AST.parse("x = x")
+          expect(ast.unbound_variables(context)).to eq Set.new
+        end
+
+        it "re-assigns" do
+          ast = Keisan::AST.parse("x = 5")
+          expect(ast.unbound_variables(context)).to eq Set.new
+        end
+
+        it "has assigned variables bound" do
+          ast = Keisan::AST.parse("y = x")
+          expect(ast.unbound_variables(context)).to eq Set.new
+        end
+
+        it "has assigned variables bound" do
+          ast = Keisan::AST.parse("y = x + z")
+          expect(ast.unbound_variables(context)).to eq Set.new(["y", "z"])
+        end
+      end
+    end
+
+    context "multi-line" do
+      it "binds assigned variables" do
+        ast = Keisan::AST.parse("x = 1; y = 2; x + y")
+        expect(ast.unbound_variables(context)).to eq Set.new
+      end
+
+      it "recognizes when one variable is assigned to" do
+        ast = Keisan::AST.parse("x = 3; y = 4; x + y")
+        expect(ast.unbound_variables(context)).to eq Set.new
+      end
+
+      it "recognizes when one variable is assigned to and one is not" do
+        ast = Keisan::AST.parse("x = 5; y = x + z; y")
+        expect(ast.unbound_variables(context)).to eq Set.new(["y", "z"])
+      end
+    end
+  end
 end

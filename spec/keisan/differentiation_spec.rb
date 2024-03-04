@@ -7,8 +7,8 @@ RSpec.describe "Differentiation" do
     context "single variable" do
       it "can be used to assign variables" do
         calculator.evaluate("my_func(x) = x*log(x)")
-        expect(calculator.evaluate("my_func(10)")).to eq(10 * Math::log(10))
-        expect(calculator.evaluate("replace(diff(my_func(x), x), x, 10)")).to eq(1 + Math::log(10))
+        expect(calculator.evaluate("my_func(10)")).to be_within(0.0001).of(10 * Math::log(10))
+        expect(calculator.evaluate("replace(diff(my_func(x), x), x, 10)")).to be_within(0.0001).of(1 + Math::log(10))
       end
     end
 

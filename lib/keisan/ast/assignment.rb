@@ -49,11 +49,13 @@ module Keisan
       end
 
       def unbound_variables(context = nil)
-        variables = super(context)
+        context ||= Context.new
+
         if is_variable_definition?
-          variables.delete(children.first.name)
+          variable_assignment_unbound_variables(context)
         else
-          variables
+          # TODO: Should update to handle function / list assignment.
+          super(context)
         end
       end
 
@@ -70,12 +72,20 @@ module Keisan
         children.first.is_a?(Variable)
       end
 
+      def variable_name
+        children.first.name
+      end
+
       def is_function_definition?
         children.first.is_a?(Function)
       end
 
       def is_list_assignment?
         children.first.is_a?(List)
+      end
+
+      def rhs_unbound_variables(context = nil)
+        children.last.unbound_variables(context)
       end
 
       private
@@ -95,6 +105,16 @@ module Keisan
 
       def evaluate_cell_assignment(context, lhs, rhs)
         CellAssignment.new(self, context, lhs, rhs).evaluate
+      end
+
+      def variable_assignment_unbound_variables(context)
+        rhs = rhs_unbound_variables(context)
+        # If the right-side is fully defined, then this is a valid assignment.
+        if rhs.empty?
+          Set.new
+        else
+          rhs | Set.new([variable_name])
+        end
       end
     end
   end
